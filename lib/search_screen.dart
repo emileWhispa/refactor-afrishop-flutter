@@ -66,9 +66,10 @@ class _SearchScreenState extends State<SearchScreen> with SuperBase {
 
   void loadHistories() {
     this.ajax(
-        url: "search/getRecords/${widget.user()?.id}",
+        url: "search/getRecords",
         authKey: widget.user()?.token,
         auth: true,
+        error: (s,v)=>print(s),
         onValue: (source, url) {
           setState(() {
             _searchUrl = url;
@@ -85,7 +86,7 @@ class _SearchScreenState extends State<SearchScreen> with SuperBase {
         url: "itemStation/queryHotRecommended",
         onValue: (source, url) {
           var map = json.decode(source);
-          Iterable _data = map['data']['recommended'];
+          Iterable _data = map['data'];
           setState(() {
             _recommended = _data.map((f) => f.toString()).toList();
           });

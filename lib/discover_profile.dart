@@ -249,7 +249,7 @@ class _DiscoverProfileState extends State<DiscoverProfile> with SuperBase {
     );
   }
 
-  bool get isMe => widget.user()?.discoverId == widget.object()?.discoverId;
+  bool get isMe => widget.user()?.id == widget.object()?.id;
 
   @override
   Widget build(BuildContext context) {
@@ -467,7 +467,7 @@ class _DiscoverProfileState extends State<DiscoverProfile> with SuperBase {
                             children: [
                               TextSpan(
                                 text:
-                                    "${widget.user()?.slogan ?? (isMe ? "Please fill in a personalized signature" : "")}",
+                                    "${_user?.slogan ?? (isMe ? "Please fill in a personalized signature" : "")}",
                                 style: TextStyle(
                                     color: Color(0xff999999),
                                     fontSize: 15.5,

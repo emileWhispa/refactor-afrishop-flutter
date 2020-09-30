@@ -41,7 +41,7 @@ class _EditMaterialState extends State<EditMaterial> with SuperBase {
         url: "user/edit/slogan",
         authKey: widget.object()?.token,
         server: true,
-        data: FormData.fromMap(page),
+        map: page,
         method: "POST",
         error: (s,v)=>print(s),
         onValue: (source, url) {

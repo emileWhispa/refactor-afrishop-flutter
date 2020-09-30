@@ -116,7 +116,7 @@ class _IncomeScreenState extends State<IncomeScreen> with SuperBase {
         onEnd: () {});
     return this.ajax(
         url:
-            "discover/bonus/list/bonus/${widget.user()?.discoverId}/currentMonth?pageNo=$_current2&pageSize=50",
+            "discover/bonus/list/bonus/${widget.user()?.id}/currentMonth?pageNo=$_current2&pageSize=50",
         authKey: widget.user()?.token,
         onValue: (source, url) {
           if (!_urls.contains(url)) {

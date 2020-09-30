@@ -377,7 +377,7 @@ class __RepostState extends State<_Repost> with SuperBase {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                widget.user()?.discoverId == widget.post.userId
+                widget.user()?.id == widget.post.userId
                     ? FlatButton(
                         onPressed: () {
                           Navigator.pop(context);
@@ -388,7 +388,7 @@ class __RepostState extends State<_Repost> with SuperBase {
                           textAlign: TextAlign.left,
                         ))
                     : SizedBox.shrink(),
-                widget.user()?.discoverId == widget.post.userId
+                widget.user()?.id == widget.post.userId
                     ? SizedBox.shrink()
                     : FlatButton(onPressed: rePost, child: Text("REPORT POST")),
                 FlatButton(

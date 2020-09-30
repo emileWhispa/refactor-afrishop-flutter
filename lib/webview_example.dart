@@ -14,10 +14,11 @@ class WebViewExample extends StatefulWidget {
   final String title;
   final User Function() user;
   final Order order;
+  final bool isDpo;
   final void Function(User user) callback;
 
   const WebViewExample(
-      {Key key, @required this.url, this.title,@required this.user, this.order,@required this.callback})
+      {Key key, @required this.url, this.title,@required this.user, this.order,@required this.callback, this.isDpo:false})
       : super(key: key);
 
   @override
@@ -76,7 +77,7 @@ class _WebViewExampleState extends State<WebViewExample> with SuperBase {
 
     flutterWebviewPlugin.onUrlChanged.listen((url) async {
       print(url);
-      var isMatch = url.contains("dpo/notify");
+      var isMatch = url.contains("dpo/notify") && widget.isDpo;
       if (isMatch) {
         showMd();
         ajax(
@@ -118,7 +119,7 @@ class _WebViewExampleState extends State<WebViewExample> with SuperBase {
 
       var isMatch2 = url.contains("app/loading.html?res");
       var isMatch3 = url.contains("message=Approved") && url.contains("submitting_mock_form");
-      if( isMatch2 || isMatch3 || isJson ){
+      if( !widget.isDpo && (isMatch2 || isMatch3 || isJson) ){
 
         showMd();
         ajax(

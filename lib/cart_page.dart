@@ -130,7 +130,7 @@ class CartScreenState extends State<CartScreen> with SuperBase {
               }).toList();
             });
           if (widget.user() != null) {
-            widget.user()?.cartCount = _list.length;
+            widget.user()?.cartCount = _list.fold(0, (previousValue, element) => previousValue+element.itemNum);
           }
           if (widget.product != null) {
             var cart = _list

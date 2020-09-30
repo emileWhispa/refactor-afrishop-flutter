@@ -25,7 +25,7 @@ class FlutterForm extends StatefulWidget {
   final double price;
   final User Function() user;
   final Flutterwave flutterwave;
-  const FlutterForm({Key key, @required this.email, this.price,@required this.user, this.flutterwave})
+  const FlutterForm({Key key, @required this.email,@required this.price,@required this.user, this.flutterwave})
       : super(key: key);
   @override
   _FlutterFormState createState() => _FlutterFormState();

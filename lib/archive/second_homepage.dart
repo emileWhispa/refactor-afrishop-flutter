@@ -178,8 +178,9 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
             onValue: (source, url) async {
               var map = json.decode(source);
               if (map != null && map['data'] != null) {
-                var pro = Product.fromJson(map['data']['itemInfo'],
-                    det: map['data']['optionList']);
+                var data = map['data'];
+                var pro = Product.fromJson(data['itemInfo'],
+                    options: data['optionList'],det: data['itemDetail'],params: data['itemParam'],desc: data['itemDesc']);
                 if( !_selected ) {
                   _selected = true;
                   link = null;
@@ -462,6 +463,7 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
 
   Future<void> _refreshList({bool inc: false}) async {
     _control.currentState?.show(atTop: true);
+    _carouselState.currentState?._loadImages();
     await _loadBrands();
     //await _loadCategories();
     await _loadItems(inc: inc);
@@ -469,10 +471,12 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
     return Future.value();
   }
 
+  var _carouselState = new GlobalKey<__CarouselState>();
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    var _len = _items.length + (_loading ? 13 : 13);
+    var _len = _items.length + 13;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -489,6 +493,7 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 15.0),
                             child: _Carousel(
+                              key: _carouselState,
                                 user: widget.user, callback: widget.callback,cartState: widget.cartState),
                           );
                         }
@@ -686,7 +691,7 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
               }),
           Positioned(
               child: Container(
-            margin: EdgeInsets.only(top: 25),
+            margin: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
             width: double.infinity,
             height: 52,
             child: Row(
@@ -835,7 +840,7 @@ class __CarouselState extends State<_Carousel> with SuperBase {
 
   void _loadImages() {
     this.ajax(
-        url: "startPage/img?version=1",
+        url: "startPage/img?version=$version",
         onValue: (source, url) {
           print(url);
           Iterable iterable = json.decode(source)['data'];

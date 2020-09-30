@@ -371,7 +371,7 @@ class _DescriptionState extends State<Description> with SuperBase {
           }
           platform.invokeMethod("toast", "Product added to cart");
           setState(() {
-            widget.user()?.cartCount++;
+            widget.user()?.cartCount += product.items;
           });
         } else {
           platform.invokeMethod("toast", "${map['message']}");

@@ -924,7 +924,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
             price: order.realityPay,
             addressEmail: _address.email,
             callback: widget.callback,
-            addToCart: (String url, String title) async {
+            addToCart: (String url, String title,bool isDpo) async {
               await Navigator.push(
                   context,
                   CupertinoPageRoute(
@@ -934,6 +934,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                             user: widget.user,
                             callback: widget.callback,
                             order: order,
+                        isDpo: isDpo,
                           )));
               return Future.value();
             },
@@ -1218,7 +1219,7 @@ class __ValidateBonusState extends State<_ValidateBonus> with SuperBase {
 }
 
 class PopPage extends StatefulWidget {
-  final Future<void> Function(String authUrl, String title) addToCart;
+  final Future<void> Function(String authUrl, String title,bool isDpo) addToCart;
   final double price;
   final Order order;
   final void Function(User user) callback;
@@ -1306,7 +1307,7 @@ class _PopPageState extends State<PopPage> with SuperBase {
                   var key = json.decode(source)['data']['public_key'];
                   await widget.addToCart(
                       "https://app.afrieshop.com/afrishop_flutterwave/flutterwave_test.html?email=${_controller.text}&amount=$price&publicKey=$key&orderId=${widget.order.orderId}",
-                      "Flutterwave payment");
+                      "Flutterwave payment",false);
                   verifyPay();
                 },
                 error: (s, v) {
@@ -1332,7 +1333,7 @@ class _PopPageState extends State<PopPage> with SuperBase {
 
   void flutterWave() async {
       _flutterwave = await Navigator.push(
-          context, CupertinoPageRoute(builder: (context) => FlutterForm(email: _controller.text,flutterwave: _flutterwave,user: widget.user,)));
+          context, CupertinoPageRoute(builder: (context) => FlutterForm(email: _controller.text,flutterwave: _flutterwave,user: widget.user,price: widget.order.realityPay,)));
     if (_flutterwave == null) {
       platform.invokeMethod("toast", "Required information missing");
       return;
@@ -1369,7 +1370,7 @@ class _PopPageState extends State<PopPage> with SuperBase {
               map['data']['data'] != null &&
               map['data']['data']['authurl'] != null) {
             var uri = map['data']['data']['authurl'];
-            await widget.addToCart(uri, "Flutterwave payment");
+            await widget.addToCart(uri, "Flutterwave payment",false);
             verifyPay();
           } else {
             platform.invokeMethod("toast", map['message']);
@@ -1403,7 +1404,7 @@ class _PopPageState extends State<PopPage> with SuperBase {
         onValue: (source, url) {
           var map = json.decode(source);
           print(source);
-          widget.addToCart(map['data']['paypalUrl'], "Paypal payment");
+          widget.addToCart(map['data']['paypalUrl'], "Paypal payment",false);
         },
         error: (s, v) {
           platform.invokeMethod("toast", s);
@@ -1450,7 +1451,7 @@ class _PopPageState extends State<PopPage> with SuperBase {
           print(source);
           var map = json.decode(source);
           var dt = map['data'];
-          if (dt != null) await widget.addToCart(dt['payUrl'], "DPO payment");
+          if (dt != null) await widget.addToCart(dt['payUrl'], "DPO payment",true);
           //print("To return $source");
         },
         error: (s, v) {

@@ -246,7 +246,7 @@ class __BodyStateState extends State<_BodyState> with SuperBase {
             order: order,
             price: order.realityPay,
             callback: widget.callback,
-            addToCart: (String url, String title) async {
+            addToCart: (String url, String title,bool isDpo) async {
               await Navigator.push(
                   context,
                   CupertinoPageRoute(
@@ -256,6 +256,7 @@ class __BodyStateState extends State<_BodyState> with SuperBase {
                             user: widget.user,
                             callback: widget.callback,
                             order: order,
+                        isDpo: isDpo,
                           )));
               return Future.value();
             },
