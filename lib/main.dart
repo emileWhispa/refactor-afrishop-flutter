@@ -107,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage>
 //            style: TextStyle(fontWeight: FontWeight.bold),
 //          ),
 //        ),
-        Discover(key: _discoverKey,user: ()=>_user,callback: _addUser,),
+        Discover(key: _discoverKey,user: ()=>_user,callback: _addUser,cartState: _cartState,),
         CartScreen(
           user: ()=>_user,
           key: _cartState,
@@ -122,6 +122,7 @@ class _MyHomePageState extends State<MyHomePage>
           key: _accountKey,
           user: ()=>_user,
           callback: _addUser,
+          cartState: _cartState,
           jumpTo: (index){
             setState(() {
               _currentTabIndex = index;
@@ -159,9 +160,6 @@ class _MyHomePageState extends State<MyHomePage>
         ),
         child: SafeArea(
           child: Container(
-            decoration: BoxDecoration(
-              border: Border(top: BorderSide(color: Colors.grey.shade300))
-            ),
             height: 49,
             child: BottomNavigationBar(
                 type: BottomNavigationBarType.fixed,
@@ -177,6 +175,24 @@ class _MyHomePageState extends State<MyHomePage>
                 onTap: (index) {
                   //_firebaseNotifications?.sendToToken();
                   setState(() {
+
+                    if( _currentTabIndex  == index){
+                      switch(index){
+                        case 0:{
+                          _homePageKey.currentState?.goToTop();
+                          break;
+                        }
+                        case 1:{
+                          _discoverKey.currentState?.goToTop();
+                          break;
+                        }
+                        case 2:{
+                          _cartState.currentState?.goToTop();
+                          break;
+                        }
+                      }
+                    }
+
                     _currentTabIndex = index;
                   });
                 },

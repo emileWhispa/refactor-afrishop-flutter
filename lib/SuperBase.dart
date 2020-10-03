@@ -567,10 +567,11 @@ class SuperBase {
     prefs.then((SharedPreferences val) => val.setString(key, value));
   }
 
-  void deletePost(Post post) {
+  void deletePost(Post post,String key) {
     this.ajax(
-      url: "http://165.22.82.105:8080/delete/post/${post.id}",
-      absolutePath: true,
+      url: "discover/post/delete/post/${post.id}",
+      authKey: key,
+      server: true,
       error: (s, v) => print(s),
       onValue: (s, v) => print(s),
     );

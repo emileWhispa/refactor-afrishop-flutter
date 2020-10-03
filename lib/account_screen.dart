@@ -54,7 +54,7 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
           setState(() {
             widget.callback(null);
           });
-    },callback: widget.callback,jumpTo: widget.jumpTo,)
+    },callback: widget.callback,jumpTo: widget.jumpTo,cartState: null,)
         : Scaffold(
             appBar: widget.partial ? null : AppBar(
               backgroundColor: color,

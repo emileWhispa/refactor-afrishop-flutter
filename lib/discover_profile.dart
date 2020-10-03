@@ -136,6 +136,7 @@ class _DiscoverProfileState extends State<DiscoverProfile> with SuperBase {
         url: "user/userById/${_user?.id}",
         authKey: widget.object()?.token,
         onValue: (source, url) {
+          print(source);
           var map = json.decode(source);
           if( map['code'] == 1) {
             var js = map['data'];
@@ -453,13 +454,16 @@ class _DiscoverProfileState extends State<DiscoverProfile> with SuperBase {
                         padding: EdgeInsets.only(top: 16),
                         child: InkWell(
                           onTap: isMe
-                              ? () {
-                                  Navigator.push(
+                              ? () async {
+                                 await Navigator.push(
                                       context,
                                       CupertinoPageRoute(
                                           builder: (context) => EditMaterial(
                                               object: widget.object,
                                               callback: widget.callback)));
+                                 setState(() {
+                                   _user?.slogan = widget.user()?.slogan;
+                                 });
                                 }
                               : null,
                           child: RichText(
@@ -802,7 +806,7 @@ class _DiscoverProfileState extends State<DiscoverProfile> with SuperBase {
                   _list.remove(post);
                 });
                 save(_currentUrl, _list);
-                deletePost(post);
+                deletePost(post,widget.object()?.token);
               },
               callback: widget.callback,
             );

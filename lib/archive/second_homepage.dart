@@ -75,6 +75,11 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
   bool _loading = false;
   ScrollController _controller = new ScrollController();
 
+
+  void goToTop() {
+    _controller.animateTo(0.0, duration: Duration(milliseconds: 600), curve: Curves.easeIn);
+  }
+
   Widget _row(Category category) {
     final style = TextStyle(
         color: Color(0xffe8c854),
@@ -203,7 +208,7 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
           absolutePath: true,
           server: true,
           error: (s,v)=> link = null,
-          onValue: (source, url) {
+          onValue: (source, url) async {
             var map = json.decode(source);
             if (map != null) {
               var post = Post.fromJson(map);
@@ -213,7 +218,7 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
               }
               _pop = false;
               link = null;
-              Navigator.pushReplacement(
+              await Navigator.pushReplacement(
                   context,
                   CupertinoPageRoute(
                       builder: (context) => DiscoverDescription(
@@ -222,7 +227,9 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
                           fromLink: true,
                           likePost: (x) {},
                           delete: () {},
+                          cartState: widget.cartState,
                           callback: widget.callback)));
+              widget.cartState?.currentState?.refresh();
             }
           });
     }

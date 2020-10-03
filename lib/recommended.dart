@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:afri_shop/Json/User.dart';
 import 'package:afri_shop/Json/hashtag.dart';
@@ -12,20 +13,22 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'Json/Post.dart';
 import 'SuperBase.dart';
 import 'account_screen.dart';
+import 'cart_page.dart';
 import 'view_tag_screen.dart';
 
 class Recommended extends StatefulWidget {
   final User Function() user;
   final void Function(User user) callback;
+  final GlobalKey<CartScreenState> cartState;
 
-  const Recommended({Key key, @required this.user, @required this.callback})
+  const Recommended({Key key, @required this.user, @required this.callback,@required this.cartState})
       : super(key: key);
 
   @override
-  _RecommendedState createState() => _RecommendedState();
+  RecommendedState createState() => RecommendedState();
 }
 
-class _RecommendedState extends State<Recommended> with SuperBase {
+class RecommendedState extends State<Recommended> with SuperBase {
   @override
   void initState() {
     super.initState();
@@ -33,7 +36,7 @@ class _RecommendedState extends State<Recommended> with SuperBase {
 
     _controller.addListener(() {
       if (_controller.position.pixels == _controller.position.maxScrollExtent) {
-        _refreshList(inc: true);
+        _refreshList(inc: true,willReset: false);
         print("reached bottom ($current)");
       }
     });
@@ -51,13 +54,23 @@ class _RecommendedState extends State<Recommended> with SuperBase {
     _control.currentState?.show(atTop: true);
   }
 
-  Future<void> loadPosts({bool inc: true}) {
+  void goToTop() {
+    _controller.animateTo(0.0, duration: Duration(milliseconds: 600), curve: Curves.easeIn);
+  }
+
+  Future<void> loadPosts({bool inc: true,bool willReset: true}) {
+    if (willReset) {
+      current = 0;
+    }
     return this.ajax(
         url:
             "home/listPosts/recommend?userId=${widget.user()?.id ?? 0}&pageNo=$current&pageSize=12",
         authKey: widget.user()?.token,
-        server: true,
         onValue: (source, url) {
+          if (willReset) {
+            _urls.clear();
+            _list.clear();
+          }
           if (_urls.contains(url)) {
             return;
           }
@@ -73,11 +86,13 @@ class _RecommendedState extends State<Recommended> with SuperBase {
 
   var _control = new GlobalKey<RefreshIndicatorState>();
 
-  Future<void> _refreshList({bool inc: true}) {
+
+
+  Future<void> _refreshList({bool inc: true,bool willReset: true}) {
     _control.currentState?.show(atTop: true);
 
     _loadItems(inc: inc);
-    return loadPosts();
+    return loadPosts(willReset: willReset);
   }
 
   var _currentUrl = "";
@@ -88,7 +103,6 @@ class _RecommendedState extends State<Recommended> with SuperBase {
     }
     return this.ajax(
         url: "home/listHashtags?pageNo=$current&pageSize=12",
-        server: true,
         onValue: (source, url) {
           //print("Whispa sent requests ($current): $url");
           Iterable _map = json.decode(source);
@@ -124,9 +138,9 @@ class _RecommendedState extends State<Recommended> with SuperBase {
             itemBuilder: (context, index) {
               return Center(
                   child: InkWell(
-                onTap: () {
+                onTap: () async {
                   if (widget.user() == null) return;
-                  Navigator.push(
+                  await Navigator.push(
                       context,
                       CupertinoPageRoute(
                           builder: (context) => ViewTagScreen(
@@ -134,8 +148,10 @@ class _RecommendedState extends State<Recommended> with SuperBase {
                                 callback: widget.callback,
                                 likePost: (p) {},
                                 delete: () {},
+                            cartState: widget.cartState,
                                 hashtag: _products[index],
                               )));
+                  widget.cartState?.currentState?.refresh();
                 },
                 child: Container(
                     padding: EdgeInsets.all(6),
@@ -159,18 +175,20 @@ class _RecommendedState extends State<Recommended> with SuperBase {
               controller: _controller,
               padding: EdgeInsets.all(5),
               crossAxisCount: 4,
+              staggeredTileBuilder: (int index) => new StaggeredTile.count((index+1) % 5 == 0  ? 4 : 2, (index+1) % 5 == 0  ? 4 : 3),
               itemCount: _list.length,
               itemBuilder: (BuildContext context, int index) {
                 var pst = _list[index];
                 return GestureDetector(
                   onTap: () async {
                     if (widget.user != null)
-                      Navigator.push(
+                      await Navigator.push(
                           context,
                           CupertinoPageRoute(
                               builder: (context) => DiscoverDescription(
                                     post: pst,
                                     user: widget.user,
+                                    cartState: widget.cartState,
                                     likePost: (status) {
                                       pst.liked = status.liked;
                                       pst.likes = status.likes;
@@ -181,16 +199,18 @@ class _RecommendedState extends State<Recommended> with SuperBase {
                                         _list.remove(pst);
                                       });
                                       save(_currentUrl, _list);
-                                      deletePost(pst);
+                                      deletePost(pst,widget.user()?.token);
                                     },
                                     callback: widget.callback,
                                     url: CachedNetworkImageProvider(
                                         pst.bigImage),
                                   )));
+                    widget.cartState?.currentState?.refresh();
                   },
                   child: ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
                       child: Container(
+                        width: double.infinity,
                           margin: EdgeInsets.all(2.0),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5.0),
@@ -206,16 +226,20 @@ class _RecommendedState extends State<Recommended> with SuperBase {
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.max,
                             children: <Widget>[
-                              ClipRRect(
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(5.0),
-                                    topRight: Radius.circular(5.0)),
-                                child: FadeInImage(
-                                    image: CachedNetworkImageProvider(
-                                        pst.bigImage),
-                                    fit: BoxFit.fitWidth,
-                                    placeholder: defLoader),
+                              Expanded(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(5.0),
+                                      topRight: Radius.circular(5.0)),
+                                  child: FadeInImage(
+                                      image: CachedNetworkImageProvider(
+                                          pst.bigImage),
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      placeholder: defLoader),
+                                ),
                               ),
                               Padding(
                                   padding: EdgeInsets.symmetric(
@@ -237,16 +261,19 @@ class _RecommendedState extends State<Recommended> with SuperBase {
                                             const EdgeInsets.only(right: 5.0),
                                         child: CircleAvatar(
                                           radius: 12,
-                                          backgroundImage: defLoader,
+                                          backgroundImage: pst.hasAvatar ? CachedNetworkImageProvider(pst.avatar) : defLoader,
                                         ),
                                       ),
-                                      Text(
-                                        '${pst.username}',
-                                        style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w700),
+                                      Expanded(
+                                        child: Text(
+                                          '${pst.username}',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w700),
+                                        ),
                                       ),
-                                      Spacer(),
                                       Image(
                                         image:
                                             AssetImage("assets/small_like.png"),
@@ -267,7 +294,6 @@ class _RecommendedState extends State<Recommended> with SuperBase {
                           ))),
                 );
               },
-              staggeredTileBuilder: (int index) => new StaggeredTile.fit(2),
               mainAxisSpacing: 2.0,
               crossAxisSpacing: 2.0,
             ),

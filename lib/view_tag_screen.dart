@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 
 import 'Json/Post.dart';
 import 'Json/User.dart';
+import 'cart_page.dart';
 
 class ViewTagScreen extends StatefulWidget {
   final Hashtag hashtag;
@@ -15,6 +16,7 @@ class ViewTagScreen extends StatefulWidget {
   final void Function(Post post) likePost;
   final void Function(User user) callback;
   final void Function() delete;
+  final GlobalKey<CartScreenState> cartState;
 
   const ViewTagScreen(
       {Key key,
@@ -22,7 +24,7 @@ class ViewTagScreen extends StatefulWidget {
       @required this.user,
       @required this.likePost,
       @required this.callback,
-      @required this.delete})
+      @required this.delete,@required this.cartState})
       : super(key: key);
 
   @override
@@ -125,6 +127,7 @@ class _ViewTagScreenState extends State<ViewTagScreen> with SuperBase {
                   user: widget.user,
                   likePost: widget.likePost,
                   delete: widget.delete,
+                  cartState: widget.cartState,
                   callback: widget.callback);
             }),
       ),

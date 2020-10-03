@@ -393,15 +393,17 @@ class __BodyStateState extends State<_BodyState> with SuperBase {
                                                               fontSize: 13,
                                                               color: Colors.grey),
                                                         ),
-                                                        Spacer(),
-                                                        Text("${f.itemSku}",
-                                                            maxLines: 1,
-                                                            overflow: TextOverflow
-                                                                .ellipsis,
-                                                            style: TextStyle(
-                                                                fontSize: 13,
-                                                                color:
-                                                                    Colors.grey))
+                                                        Expanded(
+                                                          child: Text("${f.itemSku}",
+                                                              maxLines: 1,
+                                                              textAlign: TextAlign.end,
+                                                              overflow: TextOverflow
+                                                                  .ellipsis,
+                                                              style: TextStyle(
+                                                                  fontSize: 13,
+                                                                  color:
+                                                                      Colors.grey)),
+                                                        )
                                                       ],
                                                     ),
                                                   ),

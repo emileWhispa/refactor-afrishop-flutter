@@ -681,7 +681,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
             child: CupertinoActivityIndicator(),
           )
               : deleteBtn
-              : null,
+              : SizedBox.shrink(),
         ),
       ),
     );

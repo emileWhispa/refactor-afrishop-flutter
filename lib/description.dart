@@ -191,7 +191,7 @@ class _DescriptionState extends State<Description> with SuperBase {
     if (_user == null) {
       _user = await Navigator.of(context).push(CupertinoPageRoute<User>(
           builder: (context) => AccountScreen(
-              canPop: true, user: widget.user, callback: widget.callback)));
+              canPop: true, user: widget.user, callback: widget.callback,cartState: null,)));
       if (widget.callback != null && _user != null) widget.callback(_user);
       setState(() {});
     }

@@ -34,6 +34,7 @@ class Sender {
         'your other channel id', text, text,
        // largeIconBitmapSource: BitmapSource.Drawable,
         vibrationPattern: vibrationPattern,
+        playSound: true,
         color: color);
     var iOSPlatformChannelSpecifics =
         new IOSNotificationDetails(sound: "slow_spring_board.aiff");

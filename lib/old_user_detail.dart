@@ -21,6 +21,7 @@ import 'package:share/share.dart';
 
 import 'SuperBase.dart';
 import 'Support.dart';
+import 'cart_page.dart';
 import 'old_authorization.dart';
 
 class OldUserDetail extends StatefulWidget {
@@ -29,13 +30,14 @@ class OldUserDetail extends StatefulWidget {
   final void Function(User user) callback;
   final void Function(int index) jumpTo;
   final bool isSigned;
+  final GlobalKey<CartScreenState> cartState;
 
   const OldUserDetail(
       {Key key,
       @required this.user,
       this.onLogOut,
       @required this.callback,
-      this.isSigned: false, this.jumpTo})
+      this.isSigned: false, this.jumpTo,@required this.cartState})
       : super(key: key);
 
   @override
@@ -122,7 +124,7 @@ class _OldUserDetailState extends State<OldUserDetail> with SuperBase {
   void _goProfile({bool likePage: false}) async {
     await waitUserCheck();
     if (widget.user() != null)
-      Navigator.push(
+     await Navigator.push(
           context,
           CupertinoPageRoute(
               builder: (context) => DiscoverProfile(
@@ -131,6 +133,7 @@ class _OldUserDetailState extends State<OldUserDetail> with SuperBase {
                     object: widget.user,
                     liked: likePage,
                   )));
+    widget.cartState?.currentState?.refresh();
   }
 
   Future<void> waitUserCheck() async {
@@ -620,14 +623,15 @@ class _OldUserDetailState extends State<OldUserDetail> with SuperBase {
                       children: <Widget>[
                         Expanded(
                           child: InkWell(
-                            onTap: () {
-                              Navigator.push(
+                            onTap: () async {
+                              await Navigator.push(
                                   context,
                                   CupertinoPageRoute(
                                       builder: (context) => Favorite(
                                             user: widget.user,
                                             callback: widget.callback,
                                           )));
+                              widget.cartState?.currentState?.refresh();
                             },
                             child: Column(
                               children: <Widget>[
@@ -826,14 +830,15 @@ class _OldUserDetailState extends State<OldUserDetail> with SuperBase {
                         children: <Widget>[
                           Expanded(
                             child: InkWell(
-                              onTap: () {
-                                Navigator.push(
+                              onTap: () async {
+                                await Navigator.push(
                                     context,
                                     CupertinoPageRoute(
                                         builder: (context) => DiscoverProfile(
                                             user: widget.user,
                                             object: widget.user,
                                             callback: widget.callback)));
+                                widget.cartState?.currentState?.refresh();
                               },
                               child: InkWell(
                                 onTap: _goProfile,
@@ -866,6 +871,7 @@ class _OldUserDetailState extends State<OldUserDetail> with SuperBase {
                                             user: widget.user,
                                             callback: widget.callback)));
                                 if (x != null) {
+                                  widget.cartState?.currentState?.refresh();
                                   _key.currentState?.show();
                                   if( widget.jumpTo != null ){
                                     widget.jumpTo(1);

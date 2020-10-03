@@ -14,14 +14,17 @@ import 'Authorization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'cart_page.dart';
+
 class AccountScreen extends StatefulWidget {
   final User Function() user;
   final void Function(User user) callback;
   final void Function(int index) jumpTo;
+  final GlobalKey<CartScreenState> cartState;
   final bool canPop;
   final bool partial;
 
-  const AccountScreen({Key key,@required this.user,@required this.callback, this.canPop:false, this.partial:false, this.jumpTo}) : super(key: key);
+  const AccountScreen({Key key,@required this.user,@required this.callback, this.canPop:false, this.partial:false, this.jumpTo,@required this.cartState}) : super(key: key);
   @override
   AccountScreenState createState() => AccountScreenState();
 }
@@ -136,6 +139,9 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
 
 
   Future<void> realSign(IdTokenResult tokenResult,FirebaseUser user)async{
+    var pic = "${user?.photoUrl}";
+    
+    pic = pic.replaceFirst("s96-c", "s400-c");
     var map = {
       "token":tokenResult?.token,
       "name":user?.displayName,
@@ -145,9 +151,11 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
       "fcm":globals.fcm,
       "password":user?.uid,
       "account":user?.uid ?? user?.email ?? user?.phoneNumber,
-      "avatar":user?.photoUrl,
+      "avatar":"$pic?height=500",
       "firebaseUid":user?.uid
     };
+
+    print(map['avatar']);
     printWrapped(jsonEncode(map));
     return this.ajax(
         url: "api/auth/register/user",
@@ -204,6 +212,7 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
         idToken: googleAuth.idToken,
       );
 
+
       print(googleAuth.accessToken);
 
 
@@ -246,7 +255,7 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
       setState(() {
         widget.callback(null);
       });
-    },callback: widget.callback,jumpTo: widget.jumpTo,)
+    },callback: widget.callback,jumpTo: widget.jumpTo,cartState: widget.cartState,)
         : Scaffold(
       appBar: widget.partial ? null : AppBar(
 

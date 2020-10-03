@@ -47,7 +47,7 @@ class Cart {
   double get total => itemPrice * itemNum;
 
 
-  Product get product =>Product(this.itemPrice, this.itemTitle, this.itemImg, this.itemNum,this.itemSku,this.shopId,this.itemPrice,this.itemNum);
+  Product get product =>Product(this.itemPrice, this.itemTitle, this.itemImg, this.itemNum,this.itemSku,this.shopId,this.itemPrice,this.itemNum,0);
 
   double get percent => 10;
   double get bonus => total * percent / 100;

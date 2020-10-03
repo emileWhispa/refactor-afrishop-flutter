@@ -37,6 +37,8 @@ class CartScreen extends StatefulWidget {
 class CartScreenState extends State<CartScreen> with SuperBase {
   List<Cart> _list = [];
 
+  ScrollController _controller = new ScrollController();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -51,6 +53,13 @@ class CartScreenState extends State<CartScreen> with SuperBase {
 
   void refresh() {
     _control.currentState?.show(atTop: true);
+    goToTop();
+  }
+
+
+  void goToTop() {
+    if(_controller.hasClients)
+    _controller.animateTo(0.0, duration: Duration(milliseconds: 600), curve: Curves.easeIn);
   }
 
   void showMd() async {
@@ -369,21 +378,22 @@ class CartScreenState extends State<CartScreen> with SuperBase {
             ));
   }
 
-  void _goPro(Cart cart) {
-    Navigator.push(
+  void _goPro(Cart cart) async {
+    await Navigator.push(
         context,
         CupertinoPageRoute(
             builder: (context) => Description(
                 product: cart.product,
                 user: widget.user,
                 callback: widget.callback)));
+    refresh();
   }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return widget.user() == null
-        ? AccountScreen(user: widget.user, callback: widget.callback)
+        ? AccountScreen(user: widget.user, callback: widget.callback,cartState: widget.key,)
         : Scaffold(
             backgroundColor: Colors.grey.shade200,
             appBar: AppBar(
@@ -443,6 +453,7 @@ class CartScreenState extends State<CartScreen> with SuperBase {
                         key: _control,
                         child: _list.isEmpty
                             ? ListView(
+                          controller: _controller,
                                 children: <Widget>[
                                   Padding(
                                     padding: const EdgeInsets.all(28.0),
@@ -494,6 +505,7 @@ class CartScreenState extends State<CartScreen> with SuperBase {
                               )
                             : Scrollbar(
                                 child: ListView.builder(
+                                  controller: _controller,
                                 itemCount: _list.length,
                                 itemBuilder: (context, index) {
                                   var _item = _list[index];
@@ -603,6 +615,7 @@ class CartScreenState extends State<CartScreen> with SuperBase {
                                                       Expanded(
                                                         child: Text("${_item.itemSku}",
                                                             maxLines:1,
+                                                            textAlign: TextAlign.end,
                                                             overflow:TextOverflow.ellipsis,
                                                             style: TextStyle(
                                                                 fontSize: 12,

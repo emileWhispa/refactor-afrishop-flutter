@@ -86,6 +86,11 @@ flutter:
     - assets/sending.png
     - assets/finished.png
     - assets/contact_us.png
+    - assets/payment_icon.png
+    - assets/mastercard.png
+    - assets/verve.png
+    - assets/visa.png
+    - assets/jcb.png
     - assets/feedback.png
     - assets/faq.png
     - assets/dollar.png

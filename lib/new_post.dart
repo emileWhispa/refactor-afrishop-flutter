@@ -188,6 +188,8 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
     setState(() {
       _sending = true;
     });
+
+    reqFocus(context);
     
     var data = new FormData();
 
@@ -412,6 +414,7 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
   }
 
   void _navToTag(Choice choice,index)async{
+    if( _sending ) return;
     var c = await Navigator.push(
         context,
         CupertinoPageRoute<Choice>(
@@ -422,9 +425,9 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
               callback: widget.callback,
             )));
     if (c != null) {
-      _list
-        ..removeAt(index)
-        ..add(c);
+      setState(() {
+
+      });
     }
   }
 
@@ -483,6 +486,9 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                       if (index == _list.length) {
                         return InkWell(
                             onTap: () async {
+
+                              if( _sending ) return;
+
                               if (_list.length > 8) {
                                 platform.invokeMethod(
                                     "toast", "Can't exceed 9 photos");
@@ -759,6 +765,10 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                                 side: BorderSide(color: Colors.grey.shade300),
                                 borderRadius: BorderRadius.circular(4)),
                             onPressed: () async {
+
+
+                              if( _sending ) return;
+
                               var ls = await Navigator.of(context)
                                   .push(CupertinoPageRoute<List<Hashtag>>(
                                       builder: (context) => NewTagScreen(

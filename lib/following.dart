@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:afri_shop/Json/Post.dart';
+import 'cart_page.dart';
 import 'new_account_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,9 +14,10 @@ class Following extends StatefulWidget {
   final bool wrap;
   final User Function() user;
   final void Function(User user) callback;
+  final GlobalKey<CartScreenState> cartState;
 
   const Following(
-      {Key key, this.wrap: false, @required this.user, @required this.callback})
+      {Key key, this.wrap: false, @required this.user, @required this.callback,@required this.cartState})
       : super(key: key);
 
   @override
@@ -28,6 +30,11 @@ class FollowingState extends State<Following> with SuperBase {
   ScrollController _controller = new ScrollController();
 
   bool _loadingMore = false;
+
+
+  void goToTop() {
+    _controller.animateTo(0.0, duration: Duration(milliseconds: 600), curve: Curves.easeIn);
+  }
 
   @override
   void initState() {
@@ -64,7 +71,6 @@ class FollowingState extends State<Following> with SuperBase {
     return this.ajax(
         url:
             "discover/post/listPosts?pageNo=$current&pageSize=12&${widget.user()?.id != null ? "userId=${widget.user()?.id}" : ""}",
-        server: true,
         authKey: widget.user()?.token,
         error: (s,v)=>print(s),
         onValue: (source, url) {
@@ -79,7 +85,8 @@ class FollowingState extends State<Following> with SuperBase {
           _urls.add(url);
           Iterable map = json.decode(source);
           setState(() {
-            _list.addAll(map.map((f) => Post.fromJson(f)).toList());
+            var ls = map.map((f) => Post.fromJson(f)).toList();
+            _list..removeWhere((element) => ls.any((el) => el.id == element.id))..addAll(ls);
           });
         });
   }
@@ -111,7 +118,7 @@ class FollowingState extends State<Following> with SuperBase {
                    var user = await Navigator.push<User>(
                         context,
                         CupertinoPageRoute(
-                            builder: (context) => AccountScreen(canPop: true,user: widget.user, callback: widget.callback)));
+                            builder: (context) => AccountScreen(canPop: true,user: widget.user, callback: widget.callback,cartState: widget.cartState,)));
                    if( user != null ){
                      setState(() {
                        widget.callback(user);
@@ -166,9 +173,10 @@ class FollowingState extends State<Following> with SuperBase {
                   _list.remove(pst);
                 });
                 save(_currentUrl, _list);
-                deletePost(pst);
+                deletePost(pst,widget.user()?.token);
               },
               callback: widget.callback,
+              cartState: widget.cartState,
             );
           }),
     );

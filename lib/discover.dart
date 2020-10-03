@@ -10,13 +10,15 @@ import 'package:flutter/material.dart';
 
 import 'Json/User.dart';
 import 'SuperBase.dart';
+import 'cart_page.dart';
 import 'discover_profile.dart';
 
 class Discover extends StatefulWidget {
   final User Function() user;
   final void Function(User user) callback;
+  final GlobalKey<CartScreenState> cartState;
 
-  const Discover({Key key, this.user, this.callback}) : super(key: key);
+  const Discover({Key key, this.user, this.callback, this.cartState}) : super(key: key);
 
   @override
   DiscoverState createState() => DiscoverState();
@@ -25,6 +27,7 @@ class Discover extends StatefulWidget {
 class DiscoverState extends State<Discover> with SuperBase {
   int _index = 0;
   var _followKey = new GlobalKey<FollowingState>();
+  var _recommendedKey = new GlobalKey<RecommendedState>();
 
   @override
   void initState() {
@@ -33,6 +36,14 @@ class DiscoverState extends State<Discover> with SuperBase {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       recheck();
     });
+  }
+
+
+  void goToTop(){
+    if( _index == 0 )
+    _followKey.currentState?.goToTop();
+    else
+    _recommendedKey.currentState?.goToTop();
   }
 
 
@@ -51,7 +62,7 @@ class DiscoverState extends State<Discover> with SuperBase {
     var _user = widget.user();
     if (_user == null) {
       _user = await Navigator.of(context).push(
-          CupertinoPageRoute<User>(builder: (context) => AccountScreen(canPop: true,user: widget.user, callback: widget.callback)));
+          CupertinoPageRoute<User>(builder: (context) => AccountScreen(canPop: true,user: widget.user, callback: widget.callback,cartState: widget.cartState,)));
       if (widget.callback != null && _user != null) widget.callback(_user);
       setState(() {});
     }
@@ -175,10 +186,13 @@ class DiscoverState extends State<Discover> with SuperBase {
           key: _followKey,
           user: widget.user,
           callback: widget.callback,
+          cartState: widget.cartState,
         ),
         Recommended(
+          key: _recommendedKey,
           user: widget.user,
           callback: widget.callback,
+          cartState: widget.cartState,
         ),
       ], index: _index),
       floatingActionButton: widget.user() == null
@@ -206,5 +220,6 @@ class DiscoverState extends State<Discover> with SuperBase {
 
   void refreshFollow(){
     _followKey.currentState?.refresh(reset: true);
+    _recommendedKey.currentState?.refresh();
   }
 }

@@ -47,7 +47,7 @@ class _EditMaterialState extends State<EditMaterial> with SuperBase {
         onValue: (source, url) {
           this.auth(jwt, jsonEncode(_user), _user.id);
           widget.callback(_user);
-          Navigator.pop(context,source);
+          Navigator.pop(context,_user?.slogan);
         },onEnd: (){
           setState(() {
             _saving = false;

@@ -8,7 +8,7 @@ class Product {
   final String title;
   final String url;
   double discountPrice;
-  int totalScore;
+  int totalScore = 0;
   double _price;
   String size;
   String itemSku;
@@ -24,7 +24,7 @@ class Product {
   String fromCode;
 
   Product(this._price, this.title, this.url, this.count, this.itemSku,
-      this.itemId, this.discountPrice,this.items);
+      this.itemId, this.discountPrice,this.items,this.totalScore);
 
   Product.fromJson(Map<String, dynamic> json, {Iterable det,Iterable options,Iterable params,Map<String, dynamic> desc})
       : title = json['itemName'],

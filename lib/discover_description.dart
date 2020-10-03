@@ -17,6 +17,7 @@ import 'Json/comment.dart';
 import 'Json/hashtag.dart';
 import 'Partial/comment_item.dart';
 import 'Partial/follow_button.dart';
+import 'cart_page.dart';
 import 'discover_profile.dart';
 
 class DiscoverDescription extends StatefulWidget {
@@ -25,6 +26,7 @@ class DiscoverDescription extends StatefulWidget {
   final User Function() user;
   final void Function(User user) callback;
   final void Function(Post post) likePost;
+  final GlobalKey<CartScreenState> cartState;
   final void Function() delete;
   final bool fromLink;
 
@@ -34,7 +36,7 @@ class DiscoverDescription extends StatefulWidget {
       @required this.post,
       @required this.user,
       @required this.callback,
-      this.fromLink: false,@required this.delete,@required this.likePost})
+      this.fromLink: false,@required this.delete,@required this.likePost,@required this.cartState})
       : super(key: key);
 
   @override
@@ -99,6 +101,7 @@ class _DiscoverDescriptionState extends State<DiscoverDescription>
             hashtag: hash,
             callback: widget.callback,
             delete: widget.delete,
+            cartState: widget.cartState,
             likePost: widget.likePost,
             user: widget.user,
           )));
@@ -111,15 +114,25 @@ class _DiscoverDescriptionState extends State<DiscoverDescription>
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_)async{ this.loadComments();
 
+    //if (!widget.fromLink) {
+    this.ajax(url: "community/${widget.post?.id}",onValue: (source,url){
+      if(canDecode(source)) {
+        var j = jsonDecode(source);
+        setState(() {
+          _post = Post.fromJson(j);
+        });
+      }
+    });
+    //}
     var list = await getPostsFav();
     setState(() {
       this._favorites = list;
     });
     });
-    if (!widget.fromLink) {
-      this.ajax(url: "visit/${widget.post?.id}", base2: true);
-    }
   }
+
+  Post _post;
+  Post get post => _post ?? widget.post;
 
   @override
   Widget build(BuildContext context) {
@@ -145,10 +158,11 @@ class _DiscoverDescriptionState extends State<DiscoverDescription>
               pinned: true,
               forceElevated: innerBoxIsScrolled,
               title: innerBoxIsScrolled
-                  ? Text(widget.post?.user?.username ?? " -- username --")
+                  ? Text(post?.username ?? " -- username --")
                   : null,
               flexibleSpace: PictureItem(
-                post: widget.post,
+                post: post,
+                cartState: widget.cartState,
                 callback: widget.callback,
                 user: widget.user,
               ),
@@ -174,7 +188,7 @@ class _DiscoverDescriptionState extends State<DiscoverDescription>
                       switch (string) {
                         case "Share":
                           {
-                            sharePost(widget.post, user: widget.user());
+                            sharePost(post, user: widget.user());
                             break;
                           }
                         case "Complain":
@@ -184,7 +198,7 @@ class _DiscoverDescriptionState extends State<DiscoverDescription>
                                 CupertinoPageRoute(
                                     builder: (context) => ComplainScreen(
                                         object: widget.user,
-                                        post: widget.post)));
+                                        post: post)));
                           }
                       }
                     })
@@ -203,26 +217,26 @@ class _DiscoverDescriptionState extends State<DiscoverDescription>
                     children: <Widget>[
                       ListTile(
                         onTap: () {
-                          if (widget.post != null &&
-                              widget.post.user != null &&
+                          if (post != null &&
+                              post.user != null &&
                               widget.user() != null)
                             Navigator.push(
                                 context,
                                 CupertinoPageRoute(
                                     builder: (context) => DiscoverProfile(
-                                          user: () => widget.post?.user,
+                                          user: () => post?.user,
                                           object: widget.user,
                                           callback: widget.callback,
                                         )));
                         },
                         leading: CircleAvatar(
                           backgroundImage: CachedNetworkImageProvider(
-                              widget.post?.user?.avatar ?? ""),
+                              post?.avatar ?? ""),
                         ),
-                        title: Text("${widget.post?.username}"),
+                        title: Text("${post?.username}"),
                         subtitle: Text("Personal signature"),
                         trailing: FollowButton(
-                            followed: widget.post.user,
+                            followed: post.user,
                             object: widget.user,
                             follower: widget.user()),
                       ),
@@ -230,9 +244,9 @@ class _DiscoverDescriptionState extends State<DiscoverDescription>
                         height: 100,
                         child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: widget.post.products.length,
+                            itemCount: post.products.length,
                             itemBuilder: (context, index) {
-                              var tag = widget.post.products[index];
+                              var tag = post.products[index];
                               return Card(
                                 child: InkWell(
                                   onTap: () {
@@ -306,14 +320,14 @@ class _DiscoverDescriptionState extends State<DiscoverDescription>
                       SizedBox(height: 10),
                       Padding(
                         padding: EdgeInsets.all(10),
-                        child: _convert(widget.post.title,style: TextStyle(
+                        child: _convert(post.title,style: TextStyle(
                           color: Colors.black87,
                           fontWeight: FontWeight.bold
                         )),
                       ),
                       Padding(
                         padding: EdgeInsets.all(10),
-                        child: _convert(widget.post.description,style: TextStyle(
+                        child: _convert(post.description,style: TextStyle(
                             color: Colors.black87,
                             fontWeight: FontWeight.bold
                         )),
@@ -322,7 +336,7 @@ class _DiscoverDescriptionState extends State<DiscoverDescription>
                         padding: EdgeInsets.all(10),
                         child: RichText(
                             text: TextSpan(
-                                children: widget.post.hashtags
+                                children: post.hashtags
                                     .map((f) => WidgetSpan(
                                             child: InkWell(
                                           onTap: () {
@@ -334,6 +348,7 @@ class _DiscoverDescriptionState extends State<DiscoverDescription>
                                                             hashtag: f,
                                                             user: widget.user,
                                                             likePost: (p) {},
+                                                            cartState: widget.cartState,
                                                             callback:
                                                                 widget.callback,
                                                             delete: () {})));
@@ -369,7 +384,7 @@ class _DiscoverDescriptionState extends State<DiscoverDescription>
                           physics: NeverScrollableScrollPhysics(),
                           itemCount: _list.length,
                           itemBuilder: (context, index)=>CommentItem(
-                              post: widget.post,
+                              post: post,
                               user: widget.user,
                               callback: widget.callback,
                               comment: _list[index]))
@@ -395,7 +410,7 @@ class _DiscoverDescriptionState extends State<DiscoverDescription>
                           CupertinoPageRoute(
                               builder: (context) => CommentSection(
                                 callback: widget.callback,
-                                  post: widget.post, user: widget.user)));
+                                  post: post, user: widget.user)));
                       loadComments();
                     },
                     color: Color(0xffffe707),

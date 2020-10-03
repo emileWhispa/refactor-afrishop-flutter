@@ -12,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../SuperBase.dart';
+import '../cart_page.dart';
 import '../comment_section.dart';
 import '../discover_description.dart';
 
@@ -21,6 +22,7 @@ class ListItem extends StatefulWidget {
   final void Function(Post post) likePost;
   final void Function(User user) callback;
   final void Function() delete;
+  final GlobalKey<CartScreenState> cartState;
 
   const ListItem(
       {Key key,
@@ -28,7 +30,7 @@ class ListItem extends StatefulWidget {
       @required this.user,
       @required this.likePost,
       @required this.delete,
-      @required this.callback})
+      @required this.callback,@required this.cartState})
       : super(key: key);
 
   @override
@@ -76,15 +78,17 @@ class _ListItemState extends State<ListItem> with SuperBase {
           platform.invokeMethod("toast", "Not signed in");
           return;
         }
-        Navigator.of(context).push(CupertinoPageRoute(
+        await Navigator.of(context).push(CupertinoPageRoute(
             builder: (context) => DiscoverDescription(
                   post: widget.post,
                   user: widget.user,
                   callback: widget.callback,
                   likePost: widget.likePost,
                   delete: widget.delete,
+                  cartState: widget.cartState,
                   url: CachedNetworkImageProvider(widget.post.bigImage),
                 )));
+        widget.cartState?.currentState?.refresh();
       },
       child: Container(
         decoration: BoxDecoration(color: Colors.white.withOpacity(0.8)),
@@ -93,20 +97,28 @@ class _ListItemState extends State<ListItem> with SuperBase {
             ListTile(
               contentPadding: EdgeInsets.all(5),
               leading: InkWell(
-                onTap: () {
-                  if (widget.user() != null && pst.user != null)
-                    Navigator.push(
+                onTap: () async {
+
+                  var user = pst.user;
+
+                  if( user == null && pst.hasUserId ){
+                    user = pst.getDynamicUser;
+                  }
+
+                  if (widget.user() != null && user != null)
+                   await Navigator.push(
                         context,
                         CupertinoPageRoute(
                             builder: (context) => DiscoverProfile(
-                                user: () => pst.user,
+                                user: () => user,
                                 object: widget.user,
                                 callback: widget.callback)));
+                  widget.cartState?.currentState?.refresh();
                 },
                 child: CircleAvatar(
-                  backgroundImage: pst?.user?.avatar == null
+                  backgroundImage: pst?.hasAvatar == false
                       ? defLoader
-                      : CachedNetworkImageProvider(pst.user.avatar),
+                      : CachedNetworkImageProvider(pst.avatar),
                 ),
               ),
               title: Text(
@@ -141,6 +153,7 @@ class _ListItemState extends State<ListItem> with SuperBase {
                 post: pst,
                 user: widget.user,
                 callback: widget.callback,
+                cartState: widget.cartState,
                 clickable: false,
               ),
             ),
@@ -214,17 +227,19 @@ class _ListItemState extends State<ListItem> with SuperBase {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: convertHashtag(pst.title, onTap: (s) {
+              child: convertHashtag(pst.title, onTap: (s) async {
                 var ls = widget.post.hashtags.where((f) => f.name == s);
                 var hash = ls.isEmpty ? Hashtag(s) : ls.first;
-                Navigator.of(context).push(CupertinoPageRoute(
+                await Navigator.of(context).push(CupertinoPageRoute(
                     builder: (context) => ViewTagScreen(
                           hashtag: hash,
                           callback: widget.callback,
                           delete: widget.delete,
+                          cartState: widget.cartState,
                           likePost: widget.likePost,
                           user: widget.user,
                         )));
+                widget.cartState?.currentState?.refresh();
               }),
             )
           ],
@@ -239,13 +254,14 @@ class PictureItem extends StatefulWidget {
   final User Function() user;
   final void Function(User user) callback;
   final bool clickable;
+  final GlobalKey<CartScreenState> cartState;
 
   const PictureItem(
       {Key key,
       @required this.post,
       @required this.user,
       @required this.callback,
-      this.clickable: true})
+      this.clickable: true,@required this.cartState})
       : super(key: key);
 
   @override
@@ -272,8 +288,8 @@ class _PictureItemState extends State<PictureItem> with SuperBase {
               var pic = pst.pictures[index];
               return GestureDetector(
                 onTap: widget.clickable
-                    ? () {
-                        Navigator.of(context).push(CupertinoPageRoute(
+                    ? ()async {
+                        await Navigator.of(context).push(CupertinoPageRoute(
                             builder: (context) => TagPreview(
                                   post: pst,
                                   user: widget.user,
@@ -281,6 +297,7 @@ class _PictureItemState extends State<PictureItem> with SuperBase {
                                   callback: widget.callback,
                                 ),
                             fullscreenDialog: true));
+                        widget.cartState?.currentState?.refresh();
                       }
                     : null,
                 child: pic.isImage
