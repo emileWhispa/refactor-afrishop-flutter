@@ -17,7 +17,11 @@ class Following extends StatefulWidget {
   final GlobalKey<CartScreenState> cartState;
 
   const Following(
-      {Key key, this.wrap: false, @required this.user, @required this.callback,@required this.cartState})
+      {Key key,
+      this.wrap: false,
+      @required this.user,
+      @required this.callback,
+      @required this.cartState})
       : super(key: key);
 
   @override
@@ -31,9 +35,9 @@ class FollowingState extends State<Following> with SuperBase {
 
   bool _loadingMore = false;
 
-
   void goToTop() {
-    _controller.animateTo(0.0, duration: Duration(milliseconds: 600), curve: Curves.easeIn);
+    _controller.animateTo(0.0,
+        duration: Duration(milliseconds: 600), curve: Curves.easeIn);
   }
 
   @override
@@ -64,15 +68,19 @@ class FollowingState extends State<Following> with SuperBase {
   int current = 0;
   List<String> _urls = [];
 
+  String get homeUrl => widget.user() == null
+      ? "home/listPosts/recommend"
+      : "discover/post/listPosts";
+
   Future<void> loadPosts({bool willReset: true}) {
     if (willReset) {
       current = 0;
     }
     return this.ajax(
         url:
-            "discover/post/listPosts?pageNo=$current&pageSize=12&${widget.user()?.id != null ? "userId=${widget.user()?.id}" : ""}",
+            "$homeUrl?pageNo=$current&pageSize=12&${widget.user()?.id != null ? "userId=${widget.user()?.id}" : ""}",
         authKey: widget.user()?.token,
-        error: (s,v)=>print(s),
+        error: (s, v) => print(s),
         onValue: (source, url) {
           if (willReset) {
             _urls.clear();
@@ -86,50 +94,16 @@ class FollowingState extends State<Following> with SuperBase {
           Iterable map = json.decode(source);
           setState(() {
             var ls = map.map((f) => Post.fromJson(f)).toList();
-            _list..removeWhere((element) => ls.any((el) => el.id == element.id))..addAll(ls);
+            _list
+              ..removeWhere((element) => ls.any((el) => el.id == element.id))
+              ..addAll(ls);
           });
         });
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.user() == null
-        ? Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical :32.0),
-                  child: Image.asset("assets/new_logo.png"),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("You are not logged in",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
-                ),
-                Text("Log in to your account to view the exciting content you care about",textAlign: TextAlign.center,style: TextStyle(
-                  color: Color(0xff666666),
-                  fontSize: 15
-                ),),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical:32.0),
-                  child: RaisedButton(onPressed: () async {
-                   var user = await Navigator.push<User>(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (context) => AccountScreen(canPop: true,user: widget.user, callback: widget.callback,cartState: widget.cartState,)));
-                   if( user != null ){
-                     setState(() {
-                       widget.callback(user);
-                     });
-                   }
-                  },child: Text("SIGN IN",style: TextStyle(fontWeight: FontWeight.bold),),color: color,elevation: 0.5,),
-                )
-              ],
-            ),
-        )
-        : buildPage;
+    return  buildPage;
   }
 
   Widget get buildPage {
@@ -173,7 +147,7 @@ class FollowingState extends State<Following> with SuperBase {
                   _list.remove(pst);
                 });
                 save(_currentUrl, _list);
-                deletePost(pst,widget.user()?.token);
+                deletePost(pst, widget.user()?.token);
               },
               callback: widget.callback,
               cartState: widget.cartState,

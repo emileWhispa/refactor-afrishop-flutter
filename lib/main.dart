@@ -66,6 +66,34 @@ class _MyHomePageState extends State<MyHomePage>
 
   FirebaseNotifications _firebaseNotifications;
 
+  Future<void> showLoginModel()async{
+   var user = await showModalBottomSheet<User>(context: context,shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(10),bottom: Radius.circular(10))
+    ),isScrollControlled: true, builder: (context){
+      return SingleChildScrollView(
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(topRight: Radius.circular(6),topLeft: Radius.circular(6))
+          ),
+          child: AccountScreen(
+            partial: true,
+            user: ()=>_user,
+            canPop: true,
+            callback: _addUser,
+            cartState: _cartState,
+          ),
+        ),
+      );
+    });
+
+   if( user != null ){
+     _addUser(user);
+   }
+
+    return Future.value();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -80,6 +108,10 @@ class _MyHomePageState extends State<MyHomePage>
   void _addUser(User user) {
     if( user != null && user.requestHomePage){
       user.requestHomePage = false;
+      setState(() {
+        _currentTabIndex = 0;
+      });
+    }else if( user == null ){
       setState(() {
         _currentTabIndex = 0;
       });
@@ -107,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage>
 //            style: TextStyle(fontWeight: FontWeight.bold),
 //          ),
 //        ),
-        Discover(key: _discoverKey,user: ()=>_user,callback: _addUser,cartState: _cartState,),
+        Discover(key: _discoverKey,user: ()=>_user,callback: _addUser,cartState: _cartState,showModal: showLoginModel,),
         CartScreen(
           user: ()=>_user,
           key: _cartState,
@@ -172,8 +204,17 @@ class _MyHomePageState extends State<MyHomePage>
                 selectedFontSize: 9.4,
                 elevation: 0.0,
                 currentIndex: _currentTabIndex,
-                onTap: (index) {
+                onTap: (index) async {
                   //_firebaseNotifications?.sendToToken();
+
+                  var cond = index == 2 || index == 3;
+
+                  if( cond && _user == null){
+                   await showLoginModel();
+                  }
+
+                  if( cond && _user == null ) return;
+
                   setState(() {
 
                     if( _currentTabIndex  == index){

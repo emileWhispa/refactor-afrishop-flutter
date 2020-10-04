@@ -16,9 +16,10 @@ import 'discover_profile.dart';
 class Discover extends StatefulWidget {
   final User Function() user;
   final void Function(User user) callback;
+  final Future<void> Function() showModal;
   final GlobalKey<CartScreenState> cartState;
 
-  const Discover({Key key, this.user, this.callback, this.cartState}) : super(key: key);
+  const Discover({Key key, this.user, this.callback, this.cartState, this.showModal}) : super(key: key);
 
   @override
   DiscoverState createState() => DiscoverState();
@@ -61,10 +62,7 @@ class DiscoverState extends State<Discover> with SuperBase {
   Future<void> waitUserCheck() async {
     var _user = widget.user();
     if (_user == null) {
-      _user = await Navigator.of(context).push(
-          CupertinoPageRoute<User>(builder: (context) => AccountScreen(canPop: true,user: widget.user, callback: widget.callback,cartState: widget.cartState,)));
-      if (widget.callback != null && _user != null) widget.callback(_user);
-      setState(() {});
+      if( widget.showModal != null) await widget.showModal();
     }
     return Future.value();
   }
@@ -93,7 +91,14 @@ class DiscoverState extends State<Discover> with SuperBase {
           )));
 
   Widget get following =>InkWell(
-      onTap: () {
+      onTap: () async {
+
+        if( widget.user() == null ){
+          if(widget.showModal != null) await widget.showModal();
+        }
+
+        if( widget.user() == null ) return;
+
         setState(() {
           _index = 0;
         });

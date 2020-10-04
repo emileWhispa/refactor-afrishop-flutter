@@ -66,7 +66,9 @@ class RecommendedState extends State<Recommended> with SuperBase {
         url:
             "home/listPosts/recommend?userId=${widget.user()?.id ?? 0}&pageNo=$current&pageSize=12",
         authKey: widget.user()?.token,
+        error: (s,v)=>print("$s$v"),
         onValue: (source, url) {
+          print(url);
           if (willReset) {
             _urls.clear();
             _list.clear();
@@ -89,7 +91,6 @@ class RecommendedState extends State<Recommended> with SuperBase {
 
 
   Future<void> _refreshList({bool inc: true,bool willReset: true}) {
-    _control.currentState?.show(atTop: true);
 
     _loadItems(inc: inc);
     return loadPosts(willReset: willReset);
@@ -176,6 +177,7 @@ class RecommendedState extends State<Recommended> with SuperBase {
               padding: EdgeInsets.all(5),
               crossAxisCount: 4,
               staggeredTileBuilder: (int index) => new StaggeredTile.count((index+1) % 5 == 0  ? 4 : 2, (index+1) % 5 == 0  ? 4 : 3),
+              //staggeredTileBuilder: (int index) => new StaggeredTile.fit((index+1) % 5 == 0  ? 4 : 2),
               itemCount: _list.length,
               itemBuilder: (BuildContext context, int index) {
                 var pst = _list[index];
