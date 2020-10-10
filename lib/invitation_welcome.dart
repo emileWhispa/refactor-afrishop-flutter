@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'Json/User.dart';
 import 'SuperBase.dart';
+import 'afrishop_code_page.dart';
 
 class InvitationWelcome extends StatefulWidget {
   final User Function() user;
@@ -84,7 +85,7 @@ class _InvitationWelcomeState extends State<InvitationWelcome> with SuperBase {
                         color: color,
                         elevation: 0.6,
                         child: Text(
-                          "My Invitation Code",
+                          "I have an invitation code",
                           style: TextStyle(fontWeight: FontWeight.w900),
                         ),
                       )),
@@ -94,12 +95,12 @@ class _InvitationWelcomeState extends State<InvitationWelcome> with SuperBase {
                       child: _saving
                           ? Center(child: CupertinoActivityIndicator())
                           : RaisedButton(
-                              onPressed: goSuccess,
+                              onPressed: goCheck,
                               elevation: 0.6,
                               child: Text(
-                                "Application for Membership",
+                                "I don't have an invitation code",
                                 style: TextStyle(
-                                    color: Color(0xff666666),
+                                    color: color,
                                     fontWeight: FontWeight.w900),
                               ),
                             )),
@@ -112,15 +113,23 @@ class _InvitationWelcomeState extends State<InvitationWelcome> with SuperBase {
     );
   }
 
+  void goCheck()async{
+    var d = await Navigator.push(context, CupertinoPageRoute(builder: (context)=>AfrishopCodePage(user: widget.user,callback: widget.callback,)));
+    if (d != null) {
+      Navigator.pop(context, d);
+    }
+  }
+
   void goSuccess() async {
     setState(() {
       _saving = true;
     });
     this.ajax(
-        url: "discover/invitation/saveInvitationRequest",
+        url: "saveInvitationRequest",
         method: "POST",
-        authKey: widget.user()?.token,
-        data: FormData.fromMap({"userInfo": widget.user()?.id}),
+        data: FormData.fromMap({"user": widget.user()?.discoverId}),
+        base2: true,
+        server: true,
         onValue: (source, url) async {
           var d = await Navigator.pushReplacement(
               context,

@@ -92,16 +92,18 @@ class DiscoverState extends State<Discover> with SuperBase {
 
   Widget get following =>InkWell(
       onTap: () async {
-
+        setState(() {
+          _index = 0;
+        });
         if( widget.user() == null ){
           if(widget.showModal != null) await widget.showModal();
         }
 
-        if( widget.user() == null ) return;
-
+        if( widget.user() == null )
         setState(() {
-          _index = 0;
+          _index = 1;
         });
+
       },
       child: Container(
         height: kToolbarHeight,

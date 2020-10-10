@@ -76,6 +76,170 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
   ScrollController _controller = new ScrollController();
 
 
+  Future<void> showNewCouponDialog({bool show: false}) async {
+    if (widget.user() == null) {
+      _showMyDialog();
+    }
+  }
+
+  Future<void> _showMyDialog() async {
+    return showDialog(
+      context: context,
+      builder: (_) => Material(
+        type: MaterialType.transparency,
+        child: Center(
+          // Aligns the container to center
+          child: Container(
+            // A simplified version of dialog.
+            width: 300.0,
+            height: 456.0,
+            child: Column(
+              children: [
+                Container(
+                  width: 300.0,
+                  height: 240.0,
+                  child: Stack(
+                    children: <Widget>[
+                      Container(
+                        height: 140,
+                        constraints: BoxConstraints(
+                            minHeight: 240, minWidth: double.infinity),
+                        margin: EdgeInsets.only(top: 130),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(6)),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            SizedBox(height: 30),
+                            Text(
+                              "Welcome to Afrishop!",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .title
+                                  .copyWith(fontWeight: FontWeight.w900),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              "Congratulations! You got \$100 coupon",
+                            )
+                          ],
+                        ),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage("assets/log_bg.png"),
+                                fit: BoxFit.fitWidth)),
+                        height: 150,
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 3.0),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Container(
+                            height: 120,
+                            width: 300.0,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    image:
+                                    AssetImage("assets/coupons-layer.png"),
+                                    fit: BoxFit.fitWidth)),
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                    child: Container(
+                                      decoration: BoxDecoration(),
+                                      padding: EdgeInsets.symmetric(vertical: 20),
+                                      child: Center(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 20.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Text(
+                                                "NEW REGISTERED USER",
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontFamily: 'SF UI Display',
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w800),
+                                              ),
+                                              Text(
+                                                "valide date. A Week",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12,
+                                                    height: 1.6,
+                                                    fontWeight: FontWeight.normal,
+                                                    fontFamily: 'SF UI Display'),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    )),
+                                Container(
+                                  padding:
+                                  EdgeInsets.all(10).copyWith(left: 65),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Text("\$100.0",
+                                          style: TextStyle(
+                                              fontSize: 22,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'SF UI Display')),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    )),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 15.0),
+                  child: Container(
+                    // width: 300.0,
+                      height: 37,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 1.0),
+                        child: RaisedButton(
+                          onPressed: () => Navigator.pop(context),
+                          color: color,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6)),
+                          elevation: 0.0,
+                          child: Text(
+                            "OK",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 15),
+                          ),
+                        ),
+                      )),
+                )
+              ],
+            ),
+            // ),
+          ),
+        ),
+      ),
+    );
+  }
+
   void goToTop() {
     _controller.animateTo(0.0, duration: Duration(milliseconds: 600), curve: Curves.easeIn);
   }

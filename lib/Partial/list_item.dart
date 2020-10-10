@@ -303,7 +303,7 @@ class _PictureItemState extends State<PictureItem> with SuperBase {
                 child: pic.isImage
                     ? FadeInImage(
                         height: 350,
-                        image: CachedNetworkImageProvider(pic.image),
+                        image: CachedNetworkImageProvider(pic.image ?? ""),
                         fit: BoxFit.cover,
                         placeholder: defLoader,
                         width: double.infinity,

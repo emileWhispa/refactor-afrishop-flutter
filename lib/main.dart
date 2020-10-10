@@ -1,11 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:package_info/package_info.dart';
 
 import 'Json/User.dart';
 import 'Json/globals.dart' as globals;
+import 'Json/version.dart';
 import 'Partial/Sender.dart';
 import 'SuperBase.dart';
+import 'about_information.dart';
 import 'new_account_screen.dart';
 //import 'archive/second_homepage.dart';
 import 'archive/second_homepage.dart';
@@ -101,7 +106,40 @@ class _MyHomePageState extends State<MyHomePage>
     //Sender.scheduleNotification(title: "top");
     _firebaseNotifications.setUpFirebase().then((value) => globals.fcm = value);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      this.signedIn((token, user) => this._addUser(user), () {});
+      this.signedIn((token, user) => this._addUser(user), () {
+        _homePageKey.currentState?.showNewCouponDialog(show: true);
+      });
+
+
+      PackageInfo.fromPlatform().then((value) {
+        setState(() {
+          _version = value.version;
+        });
+      });
+      _loadVersions();
+    });
+  }
+
+
+  String _version = "";
+
+  List<Version> _versions = [];
+
+  void _loadVersions(){
+    this.ajax(url: "version/getVersionCode",server: true,onValue: (source,url){
+      setState(() {
+        _versions = (json.decode(source) as Iterable).map((e) => Version.fromJson(e)).where((element) => element.versionSort == version).toList();
+        if( _list.isNotEmpty && _versions.first.versionCode != _version){
+
+          _homePageKey.currentState?.canPop();
+
+          showDialog(
+              context: context,
+              builder: (context) {
+                return UpdateDialog(version: _versions.first);
+              });
+        }
+      });
     });
   }
 
@@ -207,13 +245,6 @@ class _MyHomePageState extends State<MyHomePage>
                 onTap: (index) async {
                   //_firebaseNotifications?.sendToToken();
 
-                  var cond = index == 2 || index == 3;
-
-                  if( cond && _user == null){
-                   await showLoginModel();
-                  }
-
-                  if( cond && _user == null ) return;
 
                   setState(() {
 
@@ -236,6 +267,19 @@ class _MyHomePageState extends State<MyHomePage>
 
                     _currentTabIndex = index;
                   });
+
+
+                  var cond = index == 2 || index == 3;
+
+                  if( cond && _user == null){
+                    await showLoginModel();
+                  }
+
+                  if( cond && _user == null ) {
+                    setState(() {
+                      _currentTabIndex = 0;
+                    });
+                  }
                 },
                 items: [
                   BottomNavigationBarItem(

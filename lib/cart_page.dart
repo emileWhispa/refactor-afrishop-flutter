@@ -392,9 +392,7 @@ class CartScreenState extends State<CartScreen> with SuperBase {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return widget.user() == null
-        ? AccountScreen(user: widget.user, callback: widget.callback,cartState: widget.key,)
-        : Scaffold(
+    return Scaffold(
             backgroundColor: Colors.grey.shade200,
             appBar: AppBar(
               backgroundColor: color,
@@ -451,7 +449,7 @@ class CartScreenState extends State<CartScreen> with SuperBase {
                 Expanded(
                     child: RefreshIndicator(
                         key: _control,
-                        child: _list.isEmpty
+                        child: _list.isEmpty || widget.user() == null
                             ? ListView(
                           controller: _controller,
                                 children: <Widget>[

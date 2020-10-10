@@ -104,7 +104,11 @@ class _WebViewExampleState extends State<WebViewExample> with SuperBase {
                     CupertinoPageRoute(builder: (context) => PayFailure()));
             },
             error: (source, url) {
-              Navigator.pushReplacement(context,
+              Navigator.popUntil(context, (c) => c.isFirst);
+              setState(() {
+                _loading = true;
+              });
+              Navigator.push(context,
                   CupertinoPageRoute(builder: (context) => PayFailure()));
             });
       }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:afri_shop/old_authorization.dart';
 import 'package:afri_shop/old_user_detail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
@@ -9,11 +10,13 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import 'Json/User.dart';
 import 'SuperBase.dart';
-import 'Authorization.dart';
+import 'Authorization.dart' as new_auth;
+import 'old_authorization.dart' as old_auth;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'cart_page.dart';
+import 'empty_account_detail.dart';
 
 class AccountScreen extends StatefulWidget {
   final User Function() user;
@@ -141,7 +144,6 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
 
     pic = pic.replaceFirst("s96-c", "s400-c");
     var map = {
-      "token": tokenResult?.token,
       "name": user?.displayName,
       "nick": user?.displayName,
       "email": user?.email,
@@ -150,7 +152,8 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
       "password": user?.uid,
       "account": user?.uid ?? user?.email ?? user?.phoneNumber,
       "avatar": "$pic?height=500",
-      "firebaseUid": user?.uid
+      "firebaseUid": user?.uid,
+      "token": tokenResult?.token,
     };
 
     print(map['avatar']);
@@ -163,6 +166,7 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
         noOptions: true,
         map: map,
         onValue: (map, url) {
+          print(url);
           if (map['data'] != null && map['code'] == 1) {
             User user = User.fromJson(map['data']);
             print(user.toServerModel());
@@ -250,6 +254,11 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
         ),
       );
     }
+
+    if( widget.user() == null && !widget.canPop ){
+      return EmptyAccountDetail();
+    }
+
     return widget.user() != null
         ? OldUserDetail(
             user: widget.user,
@@ -485,7 +494,7 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
             onPressed: () async {
               var str = await Navigator.of(context)
                   .push(CupertinoPageRoute<FirebaseUser>(
-                      builder: (context) => Authorization(
+                      builder: (context) => new_auth.Authorization(
                             pop: true,
                           )));
 
@@ -524,7 +533,10 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
               ],
             ),
             onPressed: () async {
-
+             var user = await Navigator.of(context).push<User>(CupertinoPageRoute(builder: (context)=>old_auth.Authorization(login:true)));
+             if( user != null && widget.canPop){
+               Navigator.pop(context,user);
+             }
             },
             color: Colors.white,
           ),

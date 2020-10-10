@@ -9,8 +9,9 @@ import 'SuperBase.dart';
 class InvitationCode extends StatefulWidget {
   final User Function() user;
   final void Function(User user) callback;
+  final String code;
 
-  const InvitationCode({Key key, @required this.user, @required this.callback})
+  const InvitationCode({Key key, @required this.user, @required this.callback, this.code})
       : super(key: key);
 
   @override
@@ -22,11 +23,26 @@ class _InvitationCodeState extends State<InvitationCode> with SuperBase {
   TextEditingController _controller = new TextEditingController();
   bool _sending = false;
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if( widget.code != null){
+      _controller = new TextEditingController(text: widget.code);
+      _valid = true;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if( widget.code != null){
+        _doFind();
+      }
+    });
+  }
+
   void _doFind() {
     setState(() {
       _sending = true;
     });
-    reqFocus(context);
     this.ajax(
         url: "user/userByCode/${Uri.encodeComponent(_controller.text)}",
         server: true,

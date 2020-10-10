@@ -66,7 +66,7 @@ class _NowBuilderState extends State<NowBuilder> {
                   ? "dy"
                   : _weeks < 4 ? "wk" : _months < 12 ? 'mnth' : 'yr';
 
-  int get _months => _dur.inDays ~/ 30;
+  int get _months => _weeks ~/ 4;
 
   int get _weeks => _dur.inDays ~/ 7;
 

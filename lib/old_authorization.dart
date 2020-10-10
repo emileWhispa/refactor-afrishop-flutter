@@ -10,6 +10,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'Json/globals.dart' as globals;
 //import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 //import 'package:google_sign_in/google_sign_in.dart';
 
@@ -121,18 +122,39 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
         ? _emailRegController.text
         : "${_country2?.dialingCode ?? "250"}${_phoneRegController.text}";
 
-    User code = await Navigator.of(context).push(CupertinoPageRoute(
-        builder: (context) => VerificationCodeReg(
-              phone: phone,
-              isEmail: _isEmail2,
-              password: _passwordRegController.text,
-            )));
-    setState(() {
-      _sending2 = false;
-    });
-    if (code != null) {
-      Navigator.of(context).pop(code);
-    }
+    var map = {
+      "email":phone,
+      "account":phone,
+      "password":_passwordRegController.text,
+      "fcm": globals.fcm,
+    };
+    print(map);
+    this.ajax(
+        url: "api/auth/signup",
+        method: "POST",
+        server: true,
+        auth: false,
+        noOptions: true,
+        map: map,
+        onValue: (map, url) {
+          if (map['data'] != null && map['code'] == 1) {
+            User user = User.fromJson(map['data']);
+            platform.invokeMethod("toast", "Login Success");
+            this.auth(jwt, jsonEncode(user), user.id);
+            Navigator.of(context).pop(user);
+          } else {
+            _showSnack(map['message']);
+            setState(() {
+              _sending2 = false;
+            });
+          }
+        },
+        error: (source, url) {
+          setState(() {
+            _sending2 = false;
+          });
+          _showSnack('Connection error');
+        });
   }
 
 //  void _faceBook() async {
@@ -225,40 +247,22 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
           ? _emailController.text
           : "${_country?.dialingCode ?? "250"}${_phoneController.text}";
       this.ajax(
-          url: "login?account=$account&password=${_passwordController.text}",
+          url: "api/auth/signin",
           method: "POST",
           server: true,
           auth: false,
           noOptions: true,
+          map: {
+            "account":account,
+            "password":_passwordController.text,
+            "fcm": globals.fcm,
+          },
           onValue: (map, url) {
             if (map['data'] != null && map['code'] == 1) {
               User user = User.fromJson(map['data']);
-              this.ajax(
-                  url: "registerUser",
-                  base2: true,
-                  method: "POST",
-                  server: true,
-                  data: FormData.fromMap(user.toServerModel()),
-                  onValue: (source, url) {
-                    var map = jsonDecode(source);
-                    user.code = map['code'];
-                    user.slogan = map['slogan'];
-                    user.invited = map['invited'];
-                    platform.invokeMethod("toast", "Login Success");
-                    this.auth(jwt, jsonEncode(user), user.id);
-                    Navigator.of(context).pop(user);
-                  },
-                  onEnd: () {
-                    setState(() {
-                      _sending = false;
-                    });
-                  },
-                  error: (s, v) {
-                    setState(() {
-                      _sending = false;
-                    });
-                    _showSnack(s);
-                  });
+              platform.invokeMethod("toast", "Login Success");
+              this.auth(jwt, jsonEncode(user), user.id);
+              Navigator.of(context).pop(user);
             } else {
               _showSnack(map['message']);
               setState(() {
@@ -270,7 +274,7 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
             setState(() {
               _sending = false;
             });
-            _showSnack('Connection error');
+            _showSnack('Connection error or invalid username or password');
           });
     }
   }
@@ -443,7 +447,7 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
                                 },
                                 validator: (s) => s.length < 2
                                     ? "Email address is required"
-                                    : null,
+                                    : emailExp.hasMatch(s) ? null : "Valid email is required",
                                 decoration: InputDecoration(
                                     errorBorder: OutlineInputBorder(
                                         borderSide:
@@ -571,22 +575,22 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
                                     )),
                               )),
                         ),
-                        Align(
-                            alignment: Alignment.centerRight,
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.of(context).push(CupertinoPageRoute(
-                                    builder: (context) => ForgotPassword()));
-                              },
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12.0),
-                                child: Text(
-                                  "Forgot Password?",
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                              ),
-                            )),
+//                        Align(
+//                            alignment: Alignment.centerRight,
+//                            child: InkWell(
+//                              onTap: () {
+//                                Navigator.of(context).push(CupertinoPageRoute(
+//                                    builder: (context) => ForgotPassword()));
+//                              },
+//                              child: Padding(
+//                                padding:
+//                                    const EdgeInsets.symmetric(vertical: 12.0),
+//                                child: Text(
+//                                  "Forgot Password?",
+//                                  style: TextStyle(color: Colors.grey),
+//                                ),
+//                              ),
+//                            )),
                         SizedBox(
                           height: 75,
                         ),
@@ -615,55 +619,55 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
                                 ),
                               ),
                         SizedBox(height: 15),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                                child: Container(
-                              decoration: BoxDecoration(
-                                  border: Border(
-                                      top: BorderSide(
-                                          color: Colors.grey.shade300))),
-                            )),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-                              child: Text(
-                                "OR",
-                                style: TextStyle(
-                                    color: Colors.black26, fontSize: 14),
-                              ),
-                            ),
-                            Expanded(
-                                child: Container(
-                              decoration: BoxDecoration(
-                                  border: Border(
-                                      top: BorderSide(
-                                          color: Colors.grey.shade300))),
-                            )),
-                          ],
-                        ),
-                        SizedBox(height: 15),
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              _isEmail = !_isEmail;
-                            });
-                          },
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text("Use your"),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0),
-                                  child: Text(
-                                    "${!_isEmail ? "Email" : "Phone"}",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Text("to sign in"),
-                              ]),
-                        ),
+//                        Row(
+//                          children: <Widget>[
+//                            Expanded(
+//                                child: Container(
+//                              decoration: BoxDecoration(
+//                                  border: Border(
+//                                      top: BorderSide(
+//                                          color: Colors.grey.shade300))),
+//                            )),
+//                            Padding(
+//                              padding: EdgeInsets.symmetric(horizontal: 10),
+//                              child: Text(
+//                                "OR",
+//                                style: TextStyle(
+//                                    color: Colors.black26, fontSize: 14),
+//                              ),
+//                            ),
+//                            Expanded(
+//                                child: Container(
+//                              decoration: BoxDecoration(
+//                                  border: Border(
+//                                      top: BorderSide(
+//                                          color: Colors.grey.shade300))),
+//                            )),
+//                          ],
+//                        ),
+//                        SizedBox(height: 15),
+//                        InkWell(
+//                          onTap: () {
+//                            setState(() {
+//                              _isEmail = !_isEmail;
+//                            });
+//                          },
+//                          child: Row(
+//                              mainAxisAlignment: MainAxisAlignment.center,
+//                              children: [
+//                                Text("Use your"),
+//                                Padding(
+//                                  padding: const EdgeInsets.symmetric(
+//                                      horizontal: 8.0),
+//                                  child: Text(
+//                                    "${!_isEmail ? "Email" : "Phone"}",
+//                                    style:
+//                                        TextStyle(fontWeight: FontWeight.bold),
+//                                  ),
+//                                ),
+//                                Text("to sign in"),
+//                              ]),
+//                        ),
 //                        Padding(
 //                          padding: const EdgeInsets.all(8.0),
 //                          child: Row(
@@ -706,9 +710,9 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
                                   _registerKey.currentState?.validate();
                                 },
                                 focusNode: email2Node,
-                                validator: (s) => s.length < 2
-                                    ? "Email address is required"
-                                    : null,
+                          validator: (s) => s.length < 2
+                              ? "Email address is required"
+                              : emailExp.hasMatch(s) ? null : "Valid email is required",
                                 decoration: InputDecoration(
                                     errorBorder: OutlineInputBorder(
                                         borderSide:
@@ -929,55 +933,55 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
                                 ),
                               ),
                         SizedBox(height: 12),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                                child: Container(
-                              decoration: BoxDecoration(
-                                  border: Border(
-                                      top: BorderSide(
-                                          color: Colors.grey.shade300))),
-                            )),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-                              child: Text(
-                                "OR",
-                                style: TextStyle(
-                                    color: Colors.black26, fontSize: 14),
-                              ),
-                            ),
-                            Expanded(
-                                child: Container(
-                              decoration: BoxDecoration(
-                                  border: Border(
-                                      top: BorderSide(
-                                          color: Colors.grey.shade300))),
-                            )),
-                          ],
-                        ),
-                        SizedBox(height: 12),
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              _isEmail2 = !_isEmail2;
-                            });
-                          },
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text("Use your"),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0),
-                                  child: Text(
-                                    "${!_isEmail2 ? "Email" : "Phone"}",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Text("to register"),
-                              ]),
-                        )
+//                        Row(
+//                          children: <Widget>[
+//                            Expanded(
+//                                child: Container(
+//                              decoration: BoxDecoration(
+//                                  border: Border(
+//                                      top: BorderSide(
+//                                          color: Colors.grey.shade300))),
+//                            )),
+//                            Padding(
+//                              padding: EdgeInsets.symmetric(horizontal: 10),
+//                              child: Text(
+//                                "OR",
+//                                style: TextStyle(
+//                                    color: Colors.black26, fontSize: 14),
+//                              ),
+//                            ),
+//                            Expanded(
+//                                child: Container(
+//                              decoration: BoxDecoration(
+//                                  border: Border(
+//                                      top: BorderSide(
+//                                          color: Colors.grey.shade300))),
+//                            )),
+//                          ],
+//                        ),
+//                        SizedBox(height: 12),
+//                        InkWell(
+//                          onTap: () {
+//                            setState(() {
+//                              _isEmail2 = !_isEmail2;
+//                            });
+//                          },
+//                          child: Row(
+//                              mainAxisAlignment: MainAxisAlignment.center,
+//                              children: [
+//                                Text("Use your"),
+//                                Padding(
+//                                  padding: const EdgeInsets.symmetric(
+//                                      horizontal: 8.0),
+//                                  child: Text(
+//                                    "${!_isEmail2 ? "Email" : "Phone"}",
+//                                    style:
+//                                        TextStyle(fontWeight: FontWeight.bold),
+//                                  ),
+//                                ),
+//                                Text("to register"),
+//                              ]),
+//                        )
                       ],
                     ),
                   ),
