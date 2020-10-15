@@ -72,21 +72,30 @@ class _MyHomePageState extends State<MyHomePage>
   FirebaseNotifications _firebaseNotifications;
 
   Future<void> showLoginModel()async{
-   var user = await showModalBottomSheet<User>(context: context,shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(10),bottom: Radius.circular(10))
-    ),isScrollControlled: true, builder: (context){
-      return SingleChildScrollView(
-        child: Container(
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(topRight: Radius.circular(6),topLeft: Radius.circular(6))
-          ),
-          child: AccountScreen(
-            partial: true,
-            user: ()=>_user,
-            canPop: true,
-            callback: _addUser,
-            cartState: _cartState,
+   var user = await showModalBottomSheet<User>(context: context,shape:
+    RoundedRectangleBorder(
+   borderRadius: BorderRadius.vertical(top: Radius.circular(15.0))),isScrollControlled: true, builder: (context){
+      return Container(
+        width: double.infinity,
+        constraints:
+        BoxConstraints(maxHeight: MediaQuery.of(context).size.height - 100),
+        padding: EdgeInsets.all(7),
+        decoration: BoxDecoration(color: Colors.grey.shade100,borderRadius: BorderRadius.vertical(top: Radius.circular(15.0))),
+        child: SingleChildScrollView(
+          child: Container(
+            decoration: BoxDecoration(
+                color:Colors.grey.shade100,
+                borderRadius: BorderRadius.only(topRight: Radius.circular(6),topLeft: Radius.circular(6))
+            ),
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: AccountScreen(
+              partial: true,
+              user: ()=>_user,
+              canPop: true,
+              callback: _addUser,
+              cartState: _cartState,
+            ),
           ),
         ),
       );

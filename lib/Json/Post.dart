@@ -74,7 +74,7 @@ class Post {
     return map != null && map.isNotEmpty
         ? map.map((f) => Picture.fromJson(f)).toList()
         : iterable != null
-            ? iterable.map((e) => Picture.fromJson({'content': e})).toList()
+            ? iterable.map((e) => Picture.fromJson({'content': e['content'],'image':e['image']})).toList()
             : [];
   }
 

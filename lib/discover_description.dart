@@ -129,7 +129,22 @@ class _DiscoverDescriptionState extends State<DiscoverDescription>
       this._favorites = list;
     });
     });
+
+    _controller.addListener(() {
+      if(_controller.position.pixels >=70 && fit != BoxFit.cover ){
+        setState(() {
+          fit = BoxFit.cover;
+        });
+      }else if(_controller.position.pixels < 70 && fit != BoxFit.fitHeight ){
+        setState(() {
+          fit = BoxFit.fitHeight;
+        });
+      }
+    });
   }
+
+
+  BoxFit fit = BoxFit.fitHeight;
 
   Post _post;
   Post get post => _post ?? widget.post;
@@ -165,6 +180,7 @@ class _DiscoverDescriptionState extends State<DiscoverDescription>
                 cartState: widget.cartState,
                 callback: widget.callback,
                 user: widget.user,
+                fit: fit,
               ),
               actions: <Widget>[
                 PopupMenuButton(

@@ -4,6 +4,7 @@ import 'package:afri_shop/old_authorization.dart';
 import 'package:afri_shop/old_user_detail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'Json/globals.dart' as globals;
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -171,7 +172,7 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
             User user = User.fromJson(map['data']);
             print(user.toServerModel());
 
-            user.requestInvitation = !user.invited;
+           // user.requestInvitation = !user.invited;
 
             platform.invokeMethod("toast", "Login Success");
             this.auth(jwt, jsonEncode(user), user.id);
@@ -464,8 +465,8 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
             color: Color(0xff0b5fcc),
           ),
         ),
-        SizedBox(height: 20),
-        Container(
+    _phoneLogin ? SizedBox.shrink()  : Container(
+      margin: EdgeInsets.only(top: 20),
           height: 45,
           child: RaisedButton(
             padding: EdgeInsets.symmetric(horizontal: 10),
@@ -492,22 +493,16 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
               ],
             ),
             onPressed: () async {
-              var str = await Navigator.of(context)
-                  .push(CupertinoPageRoute<FirebaseUser>(
-                      builder: (context) => new_auth.Authorization(
-                            pop: true,
-                          )));
-
-              if (str != null) {
-                showMd();
-                this.realSign(await str.getIdToken(), str);
-              }
+              setState(() {
+                _phoneLogin = !_phoneLogin;
+                _emailLogin = !_phoneLogin;
+              });
             },
             color: Colors.black,
           ),
         ),
-        SizedBox(height: 17),
-        Container(
+        _emailLogin ? SizedBox.shrink()  : Container(
+          margin: EdgeInsets.only(top: 20),
           height: 45,
           child: RaisedButton(
             padding: EdgeInsets.symmetric(horizontal: 10),
@@ -533,13 +528,62 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
               ],
             ),
             onPressed: () async {
-             var user = await Navigator.of(context).push<User>(CupertinoPageRoute(builder: (context)=>old_auth.Authorization(login:true)));
-             if( user != null && widget.canPop){
-               Navigator.pop(context,user);
-             }
+              setState(() {
+                _emailLogin = !_emailLogin;
+                _phoneLogin = !_emailLogin;
+              });
             },
             color: Colors.white,
           ),
         ),
+    _phoneLogin || _emailLogin ? orRow : SizedBox.shrink(),
+    _emailLogin ? old_auth.Authorization(login:true) : SizedBox.shrink(),
+    _phoneLogin ? new_auth.Authorization(
+      onLog: (user) async {
+        showMd();
+        this.realSign(await user.getIdToken(), user);
+      },
+      pop: false,
+    ) : SizedBox.shrink(),
+    SizedBox(height: 10,),
+    InkWell(
+      onTap: () async {
+        var link = "https://afrishop.rw/privacy-policy/index.html";
+        if( await canLaunch(link) ){
+          await launch(link);
+        }
+      },
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("By continuing you agree to the "),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 4.0),
+              child: Text(
+                "Policies and Rules",
+                style:
+                TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ]),
+    ),
       ];
+
+  Widget get orRow=>Container(
+    margin: EdgeInsets.symmetric(vertical: 15),
+    child: Row(
+      children: [
+        Expanded(child: Container(height: 1,color: Colors.grey.shade300,)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal:8.0),
+          child: Text("OR",style: TextStyle(color: Colors.grey.shade400,fontWeight: FontWeight.bold,fontSize: 21),),
+        ),
+        Expanded(child: Container(height: 1,color: Colors.grey.shade300,)),
+      ],
+    ),
+  );
+
+  bool _emailLogin = false;
+  bool _phoneLogin = false;
 }

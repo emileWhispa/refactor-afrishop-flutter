@@ -31,19 +31,10 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Scaffold(
-      key: _scaffoldKey,
-      body: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-              Color(0xffd8c400),
-              Color(0xfffdec4c),
-              Color(0xfffdf287)
-            ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
-        child: PhoneAuthExample(
+    return Container(
+      child: PhoneAuthExample(
         scaffoldKey: _scaffoldKey,
-          onLog: widget.pop ? (user)=> Navigator.of(context).pop(user) : widget.onLog,
-      ),),
-    );
+        onLog: widget.pop ? (user)=> Navigator.of(context).pop(user) : widget.onLog,
+      ),);
   }
 }

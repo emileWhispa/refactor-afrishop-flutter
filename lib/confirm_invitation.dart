@@ -141,24 +141,6 @@ class _ConfirmInvitationState extends State<ConfirmInvitation> with SuperBase {
                       ),
               ),
               SizedBox(height: 20),
-              Container(
-                width: double.infinity,
-                child: RaisedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  padding: EdgeInsets.all(16),
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      //side: BorderSide(color: Colors.grey.shade100,width: 1),
-                      borderRadius: BorderRadius.circular(3)),
-                  elevation: 0.6,
-                  child: Text(
-                    "Error",
-                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
-                  ),
-                ),
-              ),
             ],
           ),
         ),

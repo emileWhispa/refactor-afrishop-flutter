@@ -6,8 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_code_text_field/pin_code_text_field.dart';
-import 'Json/country.dart';
-import 'country_picker.dart';
+import 'package:flutter_country_picker/flutter_country_picker.dart';
 
 import 'SuperBase.dart';
 
@@ -166,7 +165,7 @@ class _PhoneAuthExampleState extends State<PhoneAuthExample> with SuperBase {
     widget.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text(snackBar)));
   }
 
-  Country _selected;
+  Country _selected = Country.RW;
 
   var _formKey = new GlobalKey<FormState>();
 
@@ -176,10 +175,9 @@ class _PhoneAuthExampleState extends State<PhoneAuthExample> with SuperBase {
     return Form(
         key: _formKey,
         child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: ListView(
+          padding: const EdgeInsets.symmetric(vertical:15.0),
+          child: Column(
             children: <Widget>[
-              SizedBox(height: MediaQuery.of(context).size.height / 3.5),
               Center(
                 child: CircleAvatar(
                   radius: 40,
@@ -201,6 +199,7 @@ class _PhoneAuthExampleState extends State<PhoneAuthExample> with SuperBase {
                     child: CountryPicker(
                       showFlag: true,
                       showName: false,
+                      showDialingCode: true,
                       //displays country name, true by default
                       onChanged: (Country country) =>
                           setState(() => _selected = country),
@@ -270,23 +269,29 @@ class _PhoneAuthExampleState extends State<PhoneAuthExample> with SuperBase {
                 ],
               )
                   : SizedBox.shrink(),
-              SizedBox(height: 15),
-              _loading
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : RaisedButton(
-                      color: color,
-                      padding: EdgeInsets.all(15),
-                      child: Text(widget.login
-                          ? "SIGN IN"
-                          : _verify ? "VERIFY" : "SEND CODE"),
-                      onPressed: _verify
-                          ? _inputCode
-                          : () => _verifyPhoneNumber(context),
-                    ),
-              SizedBox(height: 20),
-              FlatButton(onPressed: ()=>Navigator.pop(context), child: Text("CANCEL"))
+              SizedBox(height: 13),
+             _loading ? Center(
+               child: CircularProgressIndicator(),
+             ) : SizedBox(
+                height: 42,
+                width: double.infinity,
+                child: CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  child: Text(
+                    widget.login
+                        ? "SIGN IN"
+                        : _verify ? "VERIFY" : "SEND CODE",
+                    style: TextStyle(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  borderRadius: BorderRadius.circular(4),
+                  onPressed: _verify
+                      ? _inputCode
+                      : () => _verifyPhoneNumber(context),
+                  color: color,
+                ),
+              ),
             ], // Widget
           ),
         ));

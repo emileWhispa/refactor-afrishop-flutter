@@ -96,11 +96,11 @@ class _InvitationWelcomeState extends State<InvitationWelcome> with SuperBase {
                           ? Center(child: CupertinoActivityIndicator())
                           : RaisedButton(
                               onPressed: goCheck,
+                        color: color,
                               elevation: 0.6,
                               child: Text(
                                 "I don't have an invitation code",
                                 style: TextStyle(
-                                    color: color,
                                     fontWeight: FontWeight.w900),
                               ),
                             )),

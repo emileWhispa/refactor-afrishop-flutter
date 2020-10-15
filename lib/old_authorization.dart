@@ -280,6 +280,7 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
   }
 
   void _showSnack(String text) {
+    platform.invokeMethod("toast", text);
     _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(text)));
   }
 
@@ -335,246 +336,153 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: Color(0xffFAFAFA),
-      appBar: AppBar(
-        leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
-        elevation: 0.0,
-      ),
-      body: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          Container(
-            height: 130,
-            width: double.infinity,
-            decoration: new BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage("assets/sign_bg.png"),
-                  fit: BoxFit.fitWidth),
-              boxShadow: [
-                new BoxShadow(blurRadius: 4.0, color: Colors.grey.shade300)
-              ],
-              borderRadius: new BorderRadius.vertical(
-                  bottom: new Radius.elliptical(
-                      MediaQuery.of(context).size.width, 73.0)),
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Row(
-            children: <Widget>[
-              Spacer(),
-              Container(
-                height: 50,
-                child: Column(
-                  children: <Widget>[
-                    Expanded(
-                      child: FlatButton(
-                        onPressed: () {
-                          setState(() {
-                            _isLogin = true;
-                          });
-                        },
-                        child: Text(
-                          "SIGN IN",
-                          style: TextStyle(
-                              fontFamily: 'SF UI Display',
-                              fontWeight: _isLogin
-                                  ? FontWeight.w900
-                                  : FontWeight.normal),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      height: 3,
-                      color: _isLogin ? color : Colors.transparent,
-                      width: 40,
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                height: 50,
-                child: Column(
-                  children: <Widget>[
-                    Expanded(
-                      child: FlatButton(
-                        onPressed: () {
-                          setState(() {
-                            _isLogin = false;
-                          });
-                        },
-                        child: Text(
-                          "SIGN UP",
-                          style: TextStyle(
-                              fontFamily: 'SF UI Display',
-                              fontWeight: !_isLogin
-                                  ? FontWeight.w900
-                                  : FontWeight.normal),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      height: 3,
-                      color: !_isLogin ? color : Colors.transparent,
-                      width: 40,
-                    )
-                  ],
-                ),
-              ),
-              Spacer(),
-            ],
-          ),
+    return
+      Column(
+        children: [
           _isLogin
               ? Form(
-                  key: _loginKey,
-                  child: Container(
-                    padding: EdgeInsets.all(20),
-                    child: Column(
-                      children: <Widget>[
-                        _isEmail
-                            ? TextFormField(
-                                controller: _emailController,
-                                focusNode: emailNode,
-                                onEditingComplete: () {
-                                  _loginKey.currentState?.validate();
-                                },
-                                validator: (s) => s.length < 2
-                                    ? "Email address is required"
-                                    : emailExp.hasMatch(s) ? null : "Valid email is required",
-                                decoration: InputDecoration(
-                                    errorBorder: OutlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.red)),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.red)),
-                                    hintStyle:
-                                        TextStyle(color: Color(0xff999999)),
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 15, horizontal: 15),
-                                    border: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius: BorderRadius.circular(5)),
-                                    hintText: "Email address",
-                                    filled: true,
-                                    fillColor: Colors.white),
-                              )
-                            : Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(5)),
-                                      height: 48,
-                                      child: CountryPicker(
-                                        onChanged: (c) {
-                                          setState(() {
-                                            _country = c;
-                                          });
-                                        },
-                                        showFlag: false,
-                                        showName: false,
-                                        showDialingCode: true,
-                                        selectedCountry: _country,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: TextFormField(
-                                      controller: _phoneController,
-                                      focusNode: phoneNode,
-                                      inputFormatters: [
-                                        WhitelistingTextInputFormatter
-                                            .digitsOnly
-                                      ],
-                                      onEditingComplete: () {
-                                        _loginKey.currentState?.validate();
-                                      },
-                                      keyboardType: TextInputType.number,
-                                      validator: (s) => s.length < 2
-                                          ? "Phone is required"
-                                          : null,
-                                      decoration: InputDecoration(
-                                          focusedErrorBorder:
-                                              OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.red)),
-                                          errorBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.red)),
-                                          hintStyle: TextStyle(
-                                              color: Color(0xff999999)),
-                                          contentPadding: EdgeInsets.symmetric(
-                                              vertical: 15, horizontal: 15),
-                                          border: OutlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                              borderRadius:
-                                                  BorderRadius.circular(5)),
-                                          hintText: "Phone number",
-                                          filled: true,
-                                          fillColor: Colors.white),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                        SizedBox(
-                          height: 15,
+            key: _loginKey,
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                children: <Widget>[
+                  _isEmail
+                      ? TextFormField(
+                    controller: _emailController,
+                    focusNode: emailNode,
+                    onEditingComplete: () {
+                      _loginKey.currentState?.validate();
+                    },
+                    validator: (s) => s.length < 2
+                        ? "Email address is required"
+                        : emailExp.hasMatch(s) ? null : "Valid email is required",
+                    decoration: InputDecoration(
+                        errorBorder: OutlineInputBorder(
+                            borderSide:
+                            BorderSide(color: Colors.red)),
+                        focusedErrorBorder: OutlineInputBorder(
+                            borderSide:
+                            BorderSide(color: Colors.red)),
+                        hintStyle:
+                        TextStyle(color: Color(0xff999999)),
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 15),
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.circular(5)),
+                        hintText: "Email address",
+                        filled: true,
+                        fillColor: Colors.white),
+                  )
+                      : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius:
+                              BorderRadius.circular(5)),
+                          height: 48,
+                          child: CountryPicker(
+                            onChanged: (c) {
+                              setState(() {
+                                _country = c;
+                              });
+                            },
+                            showFlag: false,
+                            showName: false,
+                            showDialingCode: true,
+                            selectedCountry: _country,
+                          ),
                         ),
-                        TextFormField(
-                          obscureText: _obSecure,
-                          controller: _passwordController,
-                          focusNode: passNode,
+                      ),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _phoneController,
+                          focusNode: phoneNode,
+                          inputFormatters: [
+                            WhitelistingTextInputFormatter
+                                .digitsOnly
+                          ],
                           onEditingComplete: () {
-                            loginValid = _loginKey.currentState?.validate() ??
-                                _loginValid;
+                            _loginKey.currentState?.validate();
                           },
-                          onChanged: (s) {
-                            loginValid = _loginKey.currentState?.validate() ??
-                                _loginValid;
-                          },
+                          keyboardType: TextInputType.number,
                           validator: (s) => s.length < 2
-                              ? "8 characters minimum required"
+                              ? "Phone is required"
                               : null,
                           decoration: InputDecoration(
+                              focusedErrorBorder:
+                              OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.red)),
                               errorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red)),
+                              hintStyle: TextStyle(
+                                  color: Color(0xff999999)),
                               contentPadding: EdgeInsets.symmetric(
                                   vertical: 15, horizontal: 15),
                               border: OutlineInputBorder(
                                   borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.circular(5)),
-                              hintText: "Password",
+                                  borderRadius:
+                                  BorderRadius.circular(5)),
+                              hintText: "Phone number",
                               filled: true,
-                              hintStyle: TextStyle(color: Color(0xff999999)),
-                              fillColor: Colors.white,
-                              suffixIcon: Container(
-                                height: 20,
-                                padding: const EdgeInsets.all(8.0),
-                                child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        _obSecure = !_obSecure;
-                                      });
-                                    },
-                                    child: Image.asset(
-                                      "assets/${!_obSecure ? 'eye_closed.png' : 'openeye.png'}",
-                                      fit: BoxFit.fitWidth,
-                                    )),
-                              )),
+                              fillColor: Colors.white),
                         ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  TextFormField(
+                    obscureText: _obSecure,
+                    controller: _passwordController,
+                    focusNode: passNode,
+                    onEditingComplete: () {
+                      loginValid = _loginKey.currentState?.validate() ??
+                          _loginValid;
+                    },
+                    onChanged: (s) {
+                      loginValid = _loginKey.currentState?.validate() ??
+                          _loginValid;
+                    },
+                    validator: (s) => s.length < 2
+                        ? "8 characters minimum required"
+                        : null,
+                    decoration: InputDecoration(
+                        errorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red)),
+                        focusedErrorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red)),
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 15),
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.circular(5)),
+                        hintText: "Password",
+                        filled: true,
+                        hintStyle: TextStyle(color: Color(0xff999999)),
+                        fillColor: Colors.white,
+                        suffixIcon: Container(
+                          height: 20,
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _obSecure = !_obSecure;
+                                });
+                              },
+                              child: Image.asset(
+                                "assets/${!_obSecure ? 'eye_closed.png' : 'openeye.png'}",
+                                fit: BoxFit.fitWidth,
+                              )),
+                        )),
+                  ),
 //                        Align(
 //                            alignment: Alignment.centerRight,
 //                            child: InkWell(
@@ -591,403 +499,239 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
 //                                ),
 //                              ),
 //                            )),
-                        SizedBox(
-                          height: 75,
-                        ),
-                        _sending
-                            ? Center(
-                                child: CircularProgressIndicator(),
-                              )
-                            : SizedBox(
-                                height: 42,
-                                width: double.infinity,
-                                child: CupertinoButton(
-                                  padding: EdgeInsets.zero,
-                                  child: Text(
-                                    "Sign In",
-                                    style: TextStyle(
-                                        color: _loginValid
-                                            ? Colors.black87
-                                            : Color(0xff272626)
-                                                .withOpacity(0.2),
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  borderRadius: BorderRadius.circular(4),
-                                  onPressed: _signIn,
-                                  color:
-                                      _loginValid ? color : Color(0xffCCCCCC),
-                                ),
-                              ),
-                        SizedBox(height: 15),
-//                        Row(
-//                          children: <Widget>[
-//                            Expanded(
-//                                child: Container(
-//                              decoration: BoxDecoration(
-//                                  border: Border(
-//                                      top: BorderSide(
-//                                          color: Colors.grey.shade300))),
-//                            )),
-//                            Padding(
-//                              padding: EdgeInsets.symmetric(horizontal: 10),
-//                              child: Text(
-//                                "OR",
-//                                style: TextStyle(
-//                                    color: Colors.black26, fontSize: 14),
-//                              ),
-//                            ),
-//                            Expanded(
-//                                child: Container(
-//                              decoration: BoxDecoration(
-//                                  border: Border(
-//                                      top: BorderSide(
-//                                          color: Colors.grey.shade300))),
-//                            )),
-//                          ],
-//                        ),
-//                        SizedBox(height: 15),
-//                        InkWell(
-//                          onTap: () {
-//                            setState(() {
-//                              _isEmail = !_isEmail;
-//                            });
-//                          },
-//                          child: Row(
-//                              mainAxisAlignment: MainAxisAlignment.center,
-//                              children: [
-//                                Text("Use your"),
-//                                Padding(
-//                                  padding: const EdgeInsets.symmetric(
-//                                      horizontal: 8.0),
-//                                  child: Text(
-//                                    "${!_isEmail ? "Email" : "Phone"}",
-//                                    style:
-//                                        TextStyle(fontWeight: FontWeight.bold),
-//                                  ),
-//                                ),
-//                                Text("to sign in"),
-//                              ]),
-//                        ),
-//                        Padding(
-//                          padding: const EdgeInsets.all(8.0),
-//                          child: Row(
-//                            children: <Widget>[
-//                              Spacer(),
-//                              IconButton(
-//                                onPressed: _faceBook,
-//                                icon: Image.asset(
-//                                  "assets/facebook.png",
-//                                  height: 25,
-//                                  width: 25,
-//                                ),
-//                              ),
-//                              IconButton(
-//                                onPressed: _handleGoogleSignIn,
-//                                icon: Image.asset(
-//                                  "assets/google.png",
-//                                  height: 25,
-//                                  width: 25,
-//                                ),
-//                              ),
-//                              Spacer(),
-//                            ],
-//                          ),
-//                        )
-                      ],
+                  SizedBox(
+                    height: 30,
+                  ),
+                  _sending
+                      ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                      : SizedBox(
+                    height: 42,
+                    width: double.infinity,
+                    child: CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      child: Text(
+                        "Sign In",
+                        style: TextStyle(
+                            color: _loginValid
+                                ? Colors.black87
+                                : Color(0xff272626)
+                                .withOpacity(0.2),
+                            fontWeight: FontWeight.bold),
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                      onPressed: _signIn,
+                      color:
+                      _loginValid ? color : Color(0xffCCCCCC),
                     ),
                   ),
-                )
+                  SizedBox(height: 15),
+
+                ],
+              ),
+            ),
+          )
               : Form(
-                  key: _registerKey,
-                  child: Container(
-                    padding: EdgeInsets.all(20),
-                    child: Column(
-                      children: <Widget>[
-                        _isEmail2
-                            ? TextFormField(
-                                controller: _emailRegController,
-                                onEditingComplete: () {
-                                  _registerKey.currentState?.validate();
-                                },
-                                focusNode: email2Node,
-                          validator: (s) => s.length < 2
-                              ? "Email address is required"
-                              : emailExp.hasMatch(s) ? null : "Valid email is required",
-                                decoration: InputDecoration(
-                                    errorBorder: OutlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.red)),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.red)),
-                                    hintStyle: TextStyle(
-                                        color: Color(0xff999999), fontSize: 14),
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 15, horizontal: 15),
-                                    border: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius: BorderRadius.circular(5)),
-                                    hintText: "Email address",
-                                    filled: true,
-                                    fillColor: Colors.white),
-                              )
-                            : Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(5)),
-                                      height: 48,
-                                      child: CountryPicker(
-                                        onChanged: (c) {
-                                          setState(() {
-                                            _country2 = c;
-                                          });
-                                        },
-                                        showFlag: false,
-                                        showName: false,
-                                        showDialingCode: true,
-                                        selectedCountry: _country2,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: TextFormField(
-                                      controller: _phoneRegController,
-                                      inputFormatters: [
-                                        WhitelistingTextInputFormatter
-                                            .digitsOnly
-                                      ],
-                                      onEditingComplete: () {
-                                        _registerKey.currentState?.validate();
-                                      },
-                                      focusNode: phone2Node,
-                                      keyboardType: TextInputType.number,
-                                      validator: (s) => s.length < 2
-                                          ? "Phone is required"
-                                          : null,
-                                      decoration: InputDecoration(
-                                          errorBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
-                                                  color: Colors.red)),
-                                          focusedErrorBorder:
-                                              OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                      color: Colors.red)),
-                                          hintStyle: TextStyle(
-                                              color: Color(0xff999999),
-                                              fontSize: 14),
-                                          contentPadding: EdgeInsets.symmetric(
-                                              vertical: 5, horizontal: 15),
-                                          border: OutlineInputBorder(
-                                              borderSide: BorderSide.none,
-                                              borderRadius:
-                                                  BorderRadius.circular(5)),
-                                          hintText: "Phone number",
-                                          filled: true,
-                                          fillColor: Colors.white),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                        SizedBox(
-                          height: 20,
+            key: _registerKey,
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                children: <Widget>[
+                  _isEmail2
+                      ? TextFormField(
+                    controller: _emailRegController,
+                    onEditingComplete: () {
+                      _registerKey.currentState?.validate();
+                    },
+                    focusNode: email2Node,
+                    validator: (s) => s.length < 2
+                        ? "Email address is required"
+                        : emailExp.hasMatch(s) ? null : "Valid email is required",
+                    decoration: InputDecoration(
+                        errorBorder: OutlineInputBorder(
+                            borderSide:
+                            BorderSide(color: Colors.red)),
+                        focusedErrorBorder: OutlineInputBorder(
+                            borderSide:
+                            BorderSide(color: Colors.red)),
+                        hintStyle: TextStyle(
+                            color: Color(0xff999999), fontSize: 14),
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 15),
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.circular(5)),
+                        hintText: "Email address",
+                        filled: true,
+                        fillColor: Colors.white),
+                  )
+                      : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius:
+                              BorderRadius.circular(5)),
+                          height: 48,
+                          child: CountryPicker(
+                            onChanged: (c) {
+                              setState(() {
+                                _country2 = c;
+                              });
+                            },
+                            showFlag: false,
+                            showName: false,
+                            showDialingCode: true,
+                            selectedCountry: _country2,
+                          ),
                         ),
-                        TextFormField(
-                          controller: _passwordRegController,
-                          obscureText: _obSecure,
-                          focusNode: pass2Node,
+                      ),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _phoneRegController,
+                          inputFormatters: [
+                            WhitelistingTextInputFormatter
+                                .digitsOnly
+                          ],
                           onEditingComplete: () {
-                            registerValid =
-                                _registerKey.currentState?.validate() ??
-                                    _registerValid;
+                            _registerKey.currentState?.validate();
                           },
-                          onChanged: (s) {
-                            registerValid =
-                                _registerKey.currentState?.validate() ??
-                                    _registerValid;
-                          },
+                          focusNode: phone2Node,
+                          keyboardType: TextInputType.number,
                           validator: (s) => s.length < 2
-                              ? "8 characters minimum required"
+                              ? "Phone is required"
                               : null,
                           decoration: InputDecoration(
                               errorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red)),
+                              focusedErrorBorder:
+                              OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.red)),
+                              hintStyle: TextStyle(
+                                  color: Color(0xff999999),
+                                  fontSize: 14),
                               contentPadding: EdgeInsets.symmetric(
-                                  vertical: 15, horizontal: 15),
+                                  vertical: 5, horizontal: 15),
                               border: OutlineInputBorder(
                                   borderSide: BorderSide.none,
-                                  borderRadius: BorderRadius.circular(5)),
-                              hintText: "Password",
+                                  borderRadius:
+                                  BorderRadius.circular(5)),
+                              hintText: "Phone number",
                               filled: true,
-                              hintStyle: TextStyle(
-                                  color: Color(0xff999999), fontSize: 14),
-                              fillColor: Colors.white,
-                              suffixIcon: Container(
-                                height: 20,
-                                padding: const EdgeInsets.all(8.0),
-                                child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        _obSecure = !_obSecure;
-                                      });
-                                    },
-                                    child: Image.asset(
-                                      "assets/${!_obSecure ? 'eye_closed.png' : 'openeye.png'}",
-                                      fit: BoxFit.fitWidth,
-                                    )),
+                              fillColor: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextFormField(
+                    controller: _passwordRegController,
+                    obscureText: _obSecure,
+                    focusNode: pass2Node,
+                    onEditingComplete: () {
+                      registerValid =
+                          _registerKey.currentState?.validate() ??
+                              _registerValid;
+                    },
+                    onChanged: (s) {
+                      registerValid =
+                          _registerKey.currentState?.validate() ??
+                              _registerValid;
+                    },
+                    validator: (s) => s.length < 2
+                        ? "8 characters minimum required"
+                        : null,
+                    decoration: InputDecoration(
+                        errorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red)),
+                        focusedErrorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red)),
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 15),
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.circular(5)),
+                        hintText: "Password",
+                        filled: true,
+                        hintStyle: TextStyle(
+                            color: Color(0xff999999), fontSize: 14),
+                        fillColor: Colors.white,
+                        suffixIcon: Container(
+                          height: 20,
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _obSecure = !_obSecure;
+                                });
+                              },
+                              child: Image.asset(
+                                "assets/${!_obSecure ? 'eye_closed.png' : 'openeye.png'}",
+                                fit: BoxFit.fitWidth,
                               )),
-                        ),
-                        SizedBox(
-                          height: 100,
-                        ),
-//                        Padding(
-//                          padding: const EdgeInsets.symmetric(horizontal: 40.0),
-//                          child: Row(
-//                            crossAxisAlignment: CrossAxisAlignment.center,
-//                            mainAxisAlignment: MainAxisAlignment.center,
-//                            children: <Widget>[
-//                              InkWell(
-//                                onTap: () {
-//                                  setState(() {
-//                                    _checked = !_checked;
-//                                  });
-//                                },
-//                                child: Container(
-//                                  margin: EdgeInsets.only(right: 10),
-//                                  decoration: BoxDecoration(
-//                                      border: _checked
-//                                          ? null
-//                                          : Border.all(color: Colors.grey),
-//                                      shape: BoxShape.circle,
-//                                      color: _checked ? color : Colors.white),
-//                                  child: Padding(
-//                                    padding:
-//                                        EdgeInsets.all(_checked ? 2.0 : 11),
-//                                    child: _checked
-//                                        ? Icon(
-//                                            Icons.check,
-//                                            size: 20.0,
-//                                            color: Colors.black,
-//                                          )
-//                                        : SizedBox.shrink(),
-//                                  ),
-//                                ),
-//                              ),
-//                              Expanded(
-//                                child: RichText(
-//                                  text: TextSpan(
-//                                    style: TextStyle(
-//                                        color: Color(0xff999999),
-//                                        fontSize: 12.5),
-//                                    children: [
-//                                      TextSpan(
-//                                        text: "I agree to  Afrishop ",
-//                                      ),
-//                                      TextSpan(
-//                                          text: "Privacy policy ",
-//                                          style:
-//                                              TextStyle(color: Colors.orange)),
-//                                      TextSpan(
-//                                          text: "and ", style: TextStyle()),
-//                                      TextSpan(
-//                                          text: "Terms and Conditions ",
-//                                          style:
-//                                              TextStyle(color: Colors.orange)),
-//                                    ],
-//                                  ),
-//                                ),
-//                              )
-//                            ],
-//                          ),
-//                        ),
-                        SizedBox(height: 15),
-                        _sending2
-                            ? Center(
-                                child: CircularProgressIndicator(),
-                              )
-                            : SizedBox(
-                                width: double.infinity,
-                                height: 42,
-                                child: CupertinoButton(
-                                  padding: EdgeInsets.zero,
-                                  child: Text(
-                                    "Create Your Account",
-                                    style: TextStyle(
-                                        color: _registerValid
-                                            ? Colors.black87
-                                            : Color(0xff272626)
-                                                .withOpacity(0.2)),
-                                  ),
-                                  borderRadius: BorderRadius.circular(4),
-                                  onPressed: _register,
-                                  color: _registerValid
-                                      ? color
-                                      : Color(0xffCCCCCC),
-                                ),
-                              ),
-                        SizedBox(height: 12),
-//                        Row(
-//                          children: <Widget>[
-//                            Expanded(
-//                                child: Container(
-//                              decoration: BoxDecoration(
-//                                  border: Border(
-//                                      top: BorderSide(
-//                                          color: Colors.grey.shade300))),
-//                            )),
-//                            Padding(
-//                              padding: EdgeInsets.symmetric(horizontal: 10),
-//                              child: Text(
-//                                "OR",
-//                                style: TextStyle(
-//                                    color: Colors.black26, fontSize: 14),
-//                              ),
-//                            ),
-//                            Expanded(
-//                                child: Container(
-//                              decoration: BoxDecoration(
-//                                  border: Border(
-//                                      top: BorderSide(
-//                                          color: Colors.grey.shade300))),
-//                            )),
-//                          ],
-//                        ),
-//                        SizedBox(height: 12),
-//                        InkWell(
-//                          onTap: () {
-//                            setState(() {
-//                              _isEmail2 = !_isEmail2;
-//                            });
-//                          },
-//                          child: Row(
-//                              mainAxisAlignment: MainAxisAlignment.center,
-//                              children: [
-//                                Text("Use your"),
-//                                Padding(
-//                                  padding: const EdgeInsets.symmetric(
-//                                      horizontal: 8.0),
-//                                  child: Text(
-//                                    "${!_isEmail2 ? "Email" : "Phone"}",
-//                                    style:
-//                                        TextStyle(fontWeight: FontWeight.bold),
-//                                  ),
-//                                ),
-//                                Text("to register"),
-//                              ]),
-//                        )
-                      ],
+                        )),
+                  ),
+                  SizedBox(height: 30),
+                  _sending2
+                      ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                      : SizedBox(
+                    width: double.infinity,
+                    height: 42,
+                    child: CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      child: Text(
+                        "Create Your Account",
+                        style: TextStyle(
+                            color: _registerValid
+                                ? Colors.black87
+                                : Color(0xff272626)
+                                .withOpacity(0.2)),
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                      onPressed: _register,
+                      color: _registerValid
+                          ? color
+                          : Color(0xffCCCCCC),
                     ),
                   ),
-                ),
+                  SizedBox(height: 12),
+                ],
+              ),
+            ),
+          ),
+
+          InkWell(
+            onTap: () {
+              setState(() {
+                _isLogin = !_isLogin;
+              });
+            },
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Don't have account ?"),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0),
+                    child: Text(
+                      "${!_isLogin ? "Sign In" : "Sign up"}",
+                      style:
+                      TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ]),
+          ),
         ],
-      ),
-    );
+      );
   }
 }

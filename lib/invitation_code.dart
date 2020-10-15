@@ -129,11 +129,11 @@ class _InvitationCodeState extends State<InvitationCode> with SuperBase {
               TextFormField(
                 controller: _controller,
                 onChanged: (s) {
-                  if (_valid && s.length != 6) {
+                  if (_valid && s.length < 6) {
                     setState(() {
                       _valid = false;
                     });
-                  } else if (!_valid && s.length == 6) {
+                  } else if (!_valid && s.length >= 6) {
                     setState(() {
                       _valid = true;
                     });

@@ -3,8 +3,10 @@ import 'package:video_player/video_player.dart';
 
 class VideoApp extends StatefulWidget {
   final String url;
+  final String thumb;
 
-  const VideoApp({Key key,@required this.url}) : super(key: key);
+
+  const VideoApp({Key key,@required this.url, this.thumb}) : super(key: key);
   @override
   _VideoAppState createState() => _VideoAppState();
 }

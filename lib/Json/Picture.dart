@@ -4,6 +4,7 @@ import 'package:afri_shop/Json/position.dart';
 class Picture {
   String id;
   String image;
+  String thumb;
   bool isImage = true;
   int size;
   var _tagList;
@@ -12,6 +13,7 @@ class Picture {
   Picture.fromJson(Map<String, dynamic> json)
       : image = json['content'],
         id = json['id'],
+        thumb = json['thumbnail'],
   isImage = json['image'] ?? true,
         _products = _productList(json['contentTags']),
         _tagList = json['tagList'],

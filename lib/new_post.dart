@@ -154,13 +154,13 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
     return true;
   }
 
-  Future<File> writeToFile(ByteData data) async {
+  Future<File> writeToFile(ByteData data,{String extension:""}) async {
     final buffer = data.buffer;
 
     final directory = await getApplicationDocumentsDirectory();
     final myImagePath = '${directory.path}/afri_shop';
     final myImgDir = await new Directory(myImagePath).create();
-    var _file = new File("${myImgDir.path}/$unique");
+    var _file = new File("${myImgDir.path}/$unique$extension");
     _file.createSync();
     _file.writeAsBytesSync(
         buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
@@ -578,8 +578,15 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                                 return;
                               }
 
-                              var file = await ImagePicker.pickVideo(
-                                  source: ImageSource.gallery);
+
+                              var filePath = await ImagePicker().getVideo(
+                                source: ImageSource.gallery,
+                                maxDuration: Duration(seconds: 300),);
+                              var x = await filePath.readAsBytes();
+
+
+                              var file = await writeToFile(x.buffer.asByteData(),extension: ".mp4");
+
                               if (file == null) return;
                               var choice = Choice(null, file, source);
                               if (!source) {

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:afri_shop/Json/Post.dart';
 import 'package:afri_shop/Json/User.dart';
 import 'package:afri_shop/Json/hashtag.dart';
@@ -30,7 +32,8 @@ class ListItem extends StatefulWidget {
       @required this.user,
       @required this.likePost,
       @required this.delete,
-      @required this.callback,@required this.cartState})
+      @required this.callback,
+      @required this.cartState})
       : super(key: key);
 
   @override
@@ -98,15 +101,14 @@ class _ListItemState extends State<ListItem> with SuperBase {
               contentPadding: EdgeInsets.all(5),
               leading: InkWell(
                 onTap: () async {
-
                   var user = pst.user;
 
-                  if( user == null && pst.hasUserId ){
+                  if (user == null && pst.hasUserId) {
                     user = pst.getDynamicUser;
                   }
 
                   if (widget.user() != null && user != null)
-                   await Navigator.push(
+                    await Navigator.push(
                         context,
                         CupertinoPageRoute(
                             builder: (context) => DiscoverProfile(
@@ -168,7 +170,7 @@ class _ListItemState extends State<ListItem> with SuperBase {
                             builder: (context) => CommentSection(
                                   post: widget.post,
                                   user: widget.user,
-                              callback: widget.callback,
+                                  callback: widget.callback,
                                 )));
                   },
                   child: Padding(
@@ -255,13 +257,15 @@ class PictureItem extends StatefulWidget {
   final void Function(User user) callback;
   final bool clickable;
   final GlobalKey<CartScreenState> cartState;
+  final BoxFit fit;
 
   const PictureItem(
       {Key key,
       @required this.post,
       @required this.user,
       @required this.callback,
-      this.clickable: true,@required this.cartState})
+      this.clickable: true,
+      @required this.cartState, this.fit})
       : super(key: key);
 
   @override
@@ -288,7 +292,7 @@ class _PictureItemState extends State<PictureItem> with SuperBase {
               var pic = pst.pictures[index];
               return GestureDetector(
                 onTap: widget.clickable
-                    ? ()async {
+                    ? () async {
                         await Navigator.of(context).push(CupertinoPageRoute(
                             builder: (context) => TagPreview(
                                   post: pst,
@@ -300,15 +304,29 @@ class _PictureItemState extends State<PictureItem> with SuperBase {
                         widget.cartState?.currentState?.refresh();
                       }
                     : null,
-                child: pic.isImage
-                    ? FadeInImage(
-                        height: 350,
-                        image: CachedNetworkImageProvider(pic.image ?? ""),
-                        fit: BoxFit.cover,
-                        placeholder: defLoader,
-                        width: double.infinity,
-                      )
-                    : VideoApp(url: pic.image),
+                child: Container(
+                  decoration: new BoxDecoration(
+                    image: new DecorationImage(
+                      image: CachedNetworkImageProvider(pic.image),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  child: BackdropFilter(
+                    filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                    child: pic.isImage
+                        ? FadeInImage(
+                            height: 350,
+                            image: CachedNetworkImageProvider(pic.image),
+                            fit: widget.fit ?? BoxFit.cover,
+                            placeholder: defLoader,
+                            width: double.infinity,
+                          )
+                        : VideoApp(
+                            url: pic.image,
+                            thumb: pic.thumb,
+                          ),
+                  ),
+                ),
               );
             }),
         Positioned(
@@ -369,7 +387,7 @@ class __RepostState extends State<_Repost> with SuperBase {
           platform.invokeMethod("toast", "reposted successfully");
           Navigator.pop(context);
         },
-        error: (s,v)=>print(s),
+        error: (s, v) => print(s),
         onEnd: () {
           setState(() {
             _sending = false;
@@ -385,10 +403,13 @@ class __RepostState extends State<_Repost> with SuperBase {
       content: _sending
           ? Column(
               mainAxisSize: MainAxisSize.min,
-              children: <Widget>[Center(child: Padding(
-                padding: const EdgeInsets.all(40.0),
-                child: CupertinoActivityIndicator(),
-              ))],
+              children: <Widget>[
+                Center(
+                    child: Padding(
+                  padding: const EdgeInsets.all(40.0),
+                  child: CupertinoActivityIndicator(),
+                ))
+              ],
             )
           : Column(
               mainAxisSize: MainAxisSize.min,
