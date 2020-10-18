@@ -827,6 +827,7 @@ class __CupertinoPickerState extends State<_CupertinoPicker> {
             minuteInterval: 1,
             mode: CupertinoDatePickerMode.date,
             initialDateTime: DateTime.now(),
+            maximumDate: DateTime.now(),
             onDateTimeChanged: (DateTime dateTime) {
               setState(() {
                 _dateTime = dateTime;

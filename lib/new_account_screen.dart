@@ -308,7 +308,7 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
             backgroundColor: widget.partial ? Colors.transparent : null,
             body: widget.partial
                 ? Padding(
-                    padding: const EdgeInsets.all(14.0),
+                    padding: const EdgeInsets.all(14.0).copyWith(bottom: 30),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: widgets,
@@ -381,13 +381,16 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Image.asset(
-                  "assets/google.png",
-                  height: 25,
-                  width: 25,
+                Padding(
+                  padding: const EdgeInsets.only(right:5.0),
+                  child: Image.asset(
+                    "assets/google.png",
+                    height: 25,
+                    width: 25,
+                  ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left:8.0),
+                  padding: const EdgeInsets.only(right: 14),
                   child: Text(
                     "Sign in with Google",
                     textAlign: TextAlign.center,
@@ -404,37 +407,37 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
             color: Colors.white,
           ),
         ),
-        SizedBox(height: widget.partial ? 0 : 25),
-        widget.partial ? SizedBox.shrink() : Row(
-          children: <Widget>[
-            Expanded(
-                child: Container(
-              decoration: BoxDecoration(
-                  border: Border(
-                      top: BorderSide(
-                          width:  widget.partial ? 2 : 1,
-                          color: Colors.grey.shade300))),
-            )),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child: Text(
-                "OR",
-                style: TextStyle(
-                    color: Colors.black26,
-                    fontSize: widget.partial ? 18 : 14,fontWeight:  widget.partial ? FontWeight.bold : null ),
-              ),
-            ),
-            Expanded(
-                child: Container(
-              decoration: BoxDecoration(
-                  border: Border(
-                      top: BorderSide(
-                        width:  widget.partial ? 2 : 1,
-                          color: Colors.grey.shade300))),
-            )),
-          ],
-        ),
-        SizedBox(height: 20),
+ //       SizedBox(height: widget.partial ? 0 : 25),
+//        widget.partial ? SizedBox.shrink() : Row(
+//          children: <Widget>[
+//            Expanded(
+//                child: Container(
+//              decoration: BoxDecoration(
+//                  border: Border(
+//                      top: BorderSide(
+//                          width:  widget.partial ? 2 : 1,
+//                          color: Colors.grey.shade300))),
+//            )),
+//            Padding(
+//              padding: EdgeInsets.symmetric(horizontal: 10),
+//              child: Text(
+//                "OR",
+//                style: TextStyle(
+//                    color: Colors.black26,
+//                    fontSize: widget.partial ? 18 : 14,fontWeight:  widget.partial ? FontWeight.bold : null ),
+//              ),
+//            ),
+//            Expanded(
+//                child: Container(
+//              decoration: BoxDecoration(
+//                  border: Border(
+//                      top: BorderSide(
+//                        width:  widget.partial ? 2 : 1,
+//                          color: Colors.grey.shade300))),
+//            )),
+//          ],
+//        ),
+        SizedBox(height: 12),
         Container(
           height: 45,
           child: RaisedButton(
@@ -448,7 +451,7 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
                   width: 25,
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left:8.0),
+                  padding: const EdgeInsets.only(left:10.0),
                   child: Text(
                     "Sign in with Facebook",
                     textAlign: TextAlign.center,
@@ -466,20 +469,23 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
           ),
         ),
     _phoneLogin ? SizedBox.shrink()  : Container(
-      margin: EdgeInsets.only(top: 20),
+      margin: EdgeInsets.only(top: 12),
           height: 45,
           child: RaisedButton(
             padding: EdgeInsets.symmetric(horizontal: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Icon(
-                  Icons.phone_iphone,
-                  color: Colors.white,
-                  size: 25,
+                Padding(
+                  padding: const EdgeInsets.only(right:8.0),
+                  child: Icon(
+                    Icons.phone_iphone,
+                    color: Colors.white,
+                    size: 25,
+                  ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left:8.0),
+                  padding: const EdgeInsets.only(right:18.0),
                   child: Text(
                     "Sign in with Phone",
                     textAlign: TextAlign.center,
@@ -502,19 +508,22 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
           ),
         ),
         _emailLogin ? SizedBox.shrink()  : Container(
-          margin: EdgeInsets.only(top: 20),
+          margin: EdgeInsets.only(top: 12),
           height: 45,
           child: RaisedButton(
             padding: EdgeInsets.symmetric(horizontal: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Icon(
-                  Icons.email,
-                  size: 25,
+                Padding(
+                  padding: const EdgeInsets.only(right:9.0),
+                  child: Icon(
+                    Icons.email,
+                    size: 25,
+                  ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left:8.0),
+                  padding: const EdgeInsets.only(right:22.0),
                   child: Text(
                     "Sign in with Email",
                     textAlign: TextAlign.center,
@@ -577,7 +586,7 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
         Expanded(child: Container(height: 1,color: Colors.grey.shade300,)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal:8.0),
-          child: Text("OR",style: TextStyle(color: Colors.grey.shade400,fontWeight: FontWeight.bold,fontSize: 21),),
+          child: Icon( _emailLogin ? Icons.mail : Icons.phone,color: Colors.grey.shade400,size: 30,),
         ),
         Expanded(child: Container(height: 1,color: Colors.grey.shade300,)),
       ],

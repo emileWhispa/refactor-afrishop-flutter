@@ -29,7 +29,7 @@ class _FavoriteState extends State<Favorite> with SuperBase {
   var _refreshKey = new GlobalKey<RefreshIndicatorState>();
 
   bool _select = false;
-  bool _selectAll = false;
+  bool get _selectAll => _list.every((element) => element.selected);
 
 
   Future<void> _loadItems()async{
@@ -230,7 +230,7 @@ class _FavoriteState extends State<Favorite> with SuperBase {
           InkWell(
             onTap: () {
               setState(() {
-                _selectAll = !_selectAll;
+                bool _selectAll = !this._selectAll;
                 _list.forEach((f)=>f.selected = _selectAll);
               });
             },

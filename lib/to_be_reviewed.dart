@@ -29,6 +29,20 @@ class _ReviewListState extends State<ReviewList> with SuperBase {
   List<Cart> get _list =>
       widget.order.itemList.where((element) => !element.commented).toList();
 
+  void goReview(Cart pro){
+
+    Navigator.push(
+        context,
+        CupertinoPageRoute(
+            builder: (context) => ReviewScreen(
+              callback: widget.callback,
+              list: [],
+              user: widget.user,
+              product: pro.product,
+              order: widget.order,
+            )));
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -53,18 +67,7 @@ class _ReviewListState extends State<ReviewList> with SuperBase {
             return Container(
               margin: EdgeInsets.symmetric(vertical: 6),
               child: InkWell(
-                onTap: () async {
-                  Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                          builder: (context) => ReviewScreen(
-                                callback: widget.callback,
-                                list: [],
-                                user: widget.user,
-                                product: pro.product,
-                                order: widget.order,
-                              )));
-                },
+                onTap: ()=>this.goReview(pro),
                 child: Container(
                   decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.8),
@@ -121,9 +124,7 @@ class _ReviewListState extends State<ReviewList> with SuperBase {
                                                             widget.callback,
                                                         cart: pro)));
                                         if (dx != null) {
-                                          setState(() {
-                                            pro.commented = true;
-                                          });
+                                          this.goReview(pro);
                                         }
                                       },
                                       color: color,

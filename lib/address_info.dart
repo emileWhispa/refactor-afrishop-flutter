@@ -313,39 +313,39 @@ class _AddressInfoState extends State<AddressInfo> with SuperBase {
                             ),
                           );
 
-                          return InkWell(
-                            onTap: () async {
-                              setState(() {
-                                _selected = index;
-                              });
-                              _setDefault(ad);
-                              return;
-                            },
-                            child: Container(
-                              margin: EdgeInsets.only(bottom: 10),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(6),
-                                  color: Colors.white.withOpacity(0.4)),
-                              child: _address?.addressId == ad.addressId ? cont : Column(
-                                children: <Widget>[
-                                  cont,
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0).copyWith(left: 13),
-                                    child: Row(
-                                      children: <Widget>[
-                                        ad.sending ? CupertinoActivityIndicator() : Container(height: 24,width: 24,decoration: BoxDecoration(
+                          return Container(
+                            margin: EdgeInsets.only(bottom: 10),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                color: Colors.white.withOpacity(0.4)),
+                            child: _address?.addressId == ad.addressId ? cont : Column(
+                              children: <Widget>[
+                                cont,
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0).copyWith(left: 13),
+                                  child: Row(
+                                    children: <Widget>[
+                                      ad.sending ? CupertinoActivityIndicator() : InkWell(
+                                        onTap: () async {
+                                          setState(() {
+                                            _selected = index;
+                                          });
+                                          _setDefault(ad);
+                                          return;
+                                        },
+                                        child: Container(height: 24,width: 24,decoration: BoxDecoration(
                                           shape: BoxShape.circle,
                                           border: Border.all(color: Colors.grey.shade400)
                                         ),),
-                                        Padding(
-                                          padding: const EdgeInsets.only(left:8.0),
-                                          child: Text("Set to the default address"),
-                                        )
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left:8.0),
+                                        child: Text("Set to the default address"),
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
                             ),
                           );
                         },

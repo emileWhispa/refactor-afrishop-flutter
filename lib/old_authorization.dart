@@ -451,9 +451,7 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
                       loginValid = _loginKey.currentState?.validate() ??
                           _loginValid;
                     },
-                    validator: (s) => s.length < 2
-                        ? "8 characters minimum required"
-                        : null,
+                    validator: (s)=>s.trim().isEmpty ? "Password is required" : null,
                     decoration: InputDecoration(
                         errorBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.red)),
@@ -500,7 +498,7 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
 //                              ),
 //                            )),
                   SizedBox(
-                    height: 30,
+                    height: 35,
                   ),
                   _sending
                       ? Center(
@@ -526,7 +524,6 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
                       _loginValid ? color : Color(0xffCCCCCC),
                     ),
                   ),
-                  SizedBox(height: 15),
 
                 ],
               ),
@@ -594,8 +591,7 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
                         child: TextFormField(
                           controller: _phoneRegController,
                           inputFormatters: [
-                            WhitelistingTextInputFormatter
-                                .digitsOnly
+                            FilteringTextInputFormatter.digitsOnly
                           ],
                           onEditingComplete: () {
                             _registerKey.currentState?.validate();
@@ -646,9 +642,7 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
                           _registerKey.currentState?.validate() ??
                               _registerValid;
                     },
-                    validator: (s) => s.length < 2
-                        ? "8 characters minimum required"
-                        : null,
+                    validator: validatePassword,
                     decoration: InputDecoration(
                         errorBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.red)),

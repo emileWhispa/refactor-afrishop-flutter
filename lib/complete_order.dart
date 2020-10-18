@@ -5,6 +5,7 @@ import 'package:afri_shop/Json/Address.dart';
 import 'package:afri_shop/Json/Cart.dart';
 import 'package:afri_shop/Json/Logistic.dart';
 import 'package:afri_shop/Json/coupon.dart';
+import 'package:afri_shop/description.dart';
 import 'package:afri_shop/failure.dart';
 import 'package:afri_shop/select_coupon.dart';
 import 'package:afri_shop/webview_example.dart';
@@ -53,10 +54,7 @@ class CompleteOrder extends StatefulWidget {
 class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
   var _addingToCart = false;
   Timer _timer;
-  var _diffDt;
   Duration _duration;
-  var _addDt;
-  var _subDt;
   List<Cart> products = [];
   List<Post> posts = [];
 
@@ -121,13 +119,14 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
       if (widget.continueToPayment && widget.completedOrder != null) {
         goCheckOut(widget.completedOrder);
       }
-      DateFormat format = new DateFormat("MMM dd, yyyy hh:mm:ss");
-      var formattedDate = DateTime.tryParse('${order?.orderTime}')?? DateTime.now();
+      //DateFormat format = new DateFormat("MMM dd, yyyy hh:mm:ss");
+     // print(order?.orderTime);
+      var formattedDate =
+          DateTime.tryParse('${order?.orderTime}') ?? DateTime.now();
       var addedTime = formattedDate.add(Duration(hours: 24));
       setState(() {
-        _addDt = DateTime.now();
-        _diffDt = addedTime.difference(_addDt);
-        _duration = Duration(hours: _diffDt.inHours);
+       // _diffDt = addedTime.difference(_addDt);
+        _duration = addedTime.difference(DateTime.now());
       });
       _timer = Timer.periodic(Duration(seconds: 1), (t) {
         setState(() {
@@ -180,7 +179,9 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                       children: List.generate(products.length, (index) {
                         var post = posts.length > index
                             ? posts[index]
-                            : posts.isNotEmpty ? posts.first : null;
+                            : posts.isNotEmpty
+                                ? posts.first
+                                : null;
                         var product = products[index];
 
                         if (post == null) return SizedBox.shrink();
@@ -299,7 +300,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                 )
               : SizedBox.shrink(),
           InkWell(
-            onTap: canCheckOut
+            onTap: _order == null
                 ? () async {
                     Address address = await Navigator.of(context).push(
                         CupertinoPageRoute(
@@ -378,7 +379,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                             ],
                           ),
                   ),
-                  canCheckOut
+                  _order == null
                       ? Icon(
                           Icons.arrow_forward_ios,
                           color: Colors.grey,
@@ -394,56 +395,68 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
               itemCount: widget.list.length,
               itemBuilder: (context, index) {
                 var pro = widget.list[index];
-                return Container(
-                  margin: EdgeInsets.symmetric(vertical: 6),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(5)),
-                  padding: EdgeInsets.all(20),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Image(
-                        image: CachedNetworkImageProvider(pro.itemImg),
-                        height: 60,
-                        width: 60,
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                "${pro.itemTitle}",
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(height: 5),
-                              Text("${pro.itemSku}"),
-                              SizedBox(height: 5),
-                              Row(
-                                children: <Widget>[
-                                  Container(
-                                    padding: EdgeInsets.all(5),
-                                    decoration: BoxDecoration(
-                                        color: Color(0xffffe707),
-                                        borderRadius: BorderRadius.circular(5)),
-                                    child: Text(
-                                      '\$${pro.itemPrice?.toStringAsFixed(2) ?? 0.0}',
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold),
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) => Description(
+                                product: pro.product,
+                                user: widget.user,
+                                callback: widget.callback)));
+                  },
+                  child: Container(
+                    margin: EdgeInsets.symmetric(vertical: 6),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5)),
+                    padding: EdgeInsets.all(20),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Image(
+                          image: CachedNetworkImageProvider(pro.itemImg),
+                          height: 60,
+                          width: 60,
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  "${pro.itemTitle}",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(height: 5),
+                                Text("${pro.itemSku}"),
+                                SizedBox(height: 5),
+                                Row(
+                                  children: <Widget>[
+                                    Container(
+                                      padding: EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                          color: Color(0xffffe707),
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                      child: Text(
+                                        '\$${pro.itemPrice?.toStringAsFixed(2) ?? 0.0}',
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold),
+                                      ),
                                     ),
-                                  ),
-                                  Spacer(),
-                                  Text("x${pro.itemNum}")
-                                ],
-                              ),
-                            ],
+                                    Spacer(),
+                                    Text("x${pro.itemNum}")
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               }),
@@ -489,13 +502,14 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                           bottomRight: Radius.circular(4.5))),
                   child: ListTile(
                     onTap: () async {
-                      if (canCheckOut) {
+                      if (_order == null) {
                         var order1 = await Navigator.push(
                             context,
                             CupertinoPageRoute<Order>(
                                 builder: (context) => SelectCouponScreen(
                                     user: widget.user,
                                     payNowParams: widget.payNowParams,
+                                    coupon: order?.couponId,
                                     order: order)));
                         if (order1 != null) {
                           setState(() {
@@ -589,7 +603,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                   ),
                 ),
           order?.isPending == true || _order == null
-              ? SizedBox.shrink() 
+              ? SizedBox.shrink()
               : Container(
                   decoration: BoxDecoration(
                       color: Colors.white,
@@ -621,7 +635,6 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                 )
         ],
       ),
-
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -635,53 +648,58 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
         child: SafeArea(
           child: canCheckOut
               ? Container(
-            padding: EdgeInsets.all(10),
-            child: _addingToCart
-                ? CupertinoActivityIndicator()
-                : Row(
-              children: <Widget>[
-                pending ? SizedBox.shrink() : Text("Subtotal:"),
-                pending
-                    ? InkWell(
-                  child: Container(
-                    child: Text(
-                      "Cancel Order",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
-                          color: Color(0xff272626)),
-                    ),
-                    decoration: BoxDecoration(
-                        color: Color(0xffffe707).withOpacity(0.2),
-                        border: Border.all(
-                            color: Color(0xffffe707), width: 1.5),
-                        borderRadius: BorderRadius.circular(5)),
-                    padding: EdgeInsets.all(7),
-                    margin: EdgeInsets.symmetric(horizontal: 6),
-                  ),
-                  onTap: _cancelOrder,
+                  padding: EdgeInsets.all(10),
+                  child: _addingToCart
+                      ? CupertinoActivityIndicator()
+                      : Row(
+                          children: <Widget>[
+                            pending ? SizedBox.shrink() : Text("Subtotal:"),
+                            pending
+                                ? InkWell(
+                                    child: Container(
+                                      child: Text(
+                                        "Cancel Order",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 13,
+                                            color: Color(0xff272626)),
+                                      ),
+                                      decoration: BoxDecoration(
+                                          color: Color(0xffffe707)
+                                              .withOpacity(0.2),
+                                          border: Border.all(
+                                              color: Color(0xffffe707),
+                                              width: 1.5),
+                                          borderRadius:
+                                              BorderRadius.circular(5)),
+                                      padding: EdgeInsets.all(7),
+                                      margin:
+                                          EdgeInsets.symmetric(horizontal: 6),
+                                    ),
+                                    onTap: _cancelOrder,
+                                  )
+                                : Text(
+                                    "\$$total",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                            pending ? SizedBox.shrink() : Spacer(),
+                            pending
+                                ? Expanded(
+                                    child: proceed,
+                                  )
+                                : proceed
+                          ],
+                        ),
                 )
-                    : Text(
-                  "\$$total",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                pending ? SizedBox.shrink() : Spacer(),
-                pending
-                    ? Expanded(
-                  child: proceed,
-                )
-                    : proceed
-              ],
-            ),
-          )
               : order?.isClosed == true
-              ? _deleting
-              ? Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: CupertinoActivityIndicator(),
-          )
-              : deleteBtn
-              : SizedBox.shrink(),
+                  ? _deleting
+                      ? Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: CupertinoActivityIndicator(),
+                        )
+                      : deleteBtn
+                  : SizedBox.shrink(),
         ),
       ),
     );
@@ -695,7 +713,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
             child: Text(
-              "Proceed to Checkout",
+              _order == null ? "Proceed to Checkout" : "Pay",
               style: TextStyle(fontWeight: FontWeight.w300),
             ),
             onPressed: _address == null ? null : requestOrder),
@@ -868,9 +886,10 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
 
     showMd();
 
-    var map = {"deliveryAddressId": _address.addressId,"ids":widget.list.map((e) => e.id).toList()};
-
-
+    var map = {
+      "deliveryAddressId": _address.addressId,
+      "ids": widget.list.map((e) => e.id).toList()
+    };
 
     var notNull = widget.payNowParams != null;
 
@@ -884,8 +903,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
     print(widget.payNowParams);
 
     this.ajax(
-        url:
-            "order/place?${notNull ? widget.payNowParams : ""}$iterable",
+        url: "order/place?${notNull ? widget.payNowParams : ""}$iterable",
         method: "POST",
         server: true,
         auth: true,
@@ -924,7 +942,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
             price: order.realityPay,
             addressEmail: _address.email,
             callback: widget.callback,
-            addToCart: (String url, String title,bool isDpo) async {
+            addToCart: (String url, String title, bool isDpo) async {
               await Navigator.push(
                   context,
                   CupertinoPageRoute(
@@ -934,7 +952,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                             user: widget.user,
                             callback: widget.callback,
                             order: order,
-                        isDpo: isDpo,
+                            isDpo: isDpo,
                           )));
               return Future.value();
             },
@@ -1219,7 +1237,8 @@ class __ValidateBonusState extends State<_ValidateBonus> with SuperBase {
 }
 
 class PopPage extends StatefulWidget {
-  final Future<void> Function(String authUrl, String title,bool isDpo) addToCart;
+  final Future<void> Function(String authUrl, String title, bool isDpo)
+      addToCart;
   final double price;
   final Order order;
   final void Function(User user) callback;
@@ -1307,7 +1326,8 @@ class _PopPageState extends State<PopPage> with SuperBase {
                   var key = json.decode(source)['data']['public_key'];
                   await widget.addToCart(
                       "https://app.afrieshop.com/afrishop_flutterwave/flutterwave_test.html?email=${_controller.text}&amount=$price&publicKey=$key&orderId=${widget.order.orderId}",
-                      "Flutterwave payment",false);
+                      "Flutterwave payment",
+                      false);
                   verifyPay();
                 },
                 error: (s, v) {
@@ -1332,16 +1352,23 @@ class _PopPageState extends State<PopPage> with SuperBase {
   }
 
   void flutterWave() async {
-      _flutterwave = await Navigator.push(
-          context, CupertinoPageRoute(builder: (context) => FlutterForm(email: _controller.text,flutterwave: _flutterwave,user: widget.user,price: widget.order.realityPay,)));
+    _flutterwave = await Navigator.push(
+        context,
+        CupertinoPageRoute(
+            builder: (context) => FlutterForm(
+                  email: _controller.text,
+                  flutterwave: _flutterwave,
+                  user: widget.user,
+                  price: widget.order.realityPay,
+                )));
     if (_flutterwave == null) {
       platform.invokeMethod("toast", "Required information missing");
       return;
     }
 
-      setState(() {
-        _sending = true;
-      });
+    setState(() {
+      _sending = true;
+    });
 
     this.ajax(
         url: "flutterwave/pay?orderId=${widget.order.orderId}",
@@ -1365,12 +1392,12 @@ class _PopPageState extends State<PopPage> with SuperBase {
         onValue: (source, url) async {
           var map = json.decode(source);
           print(source);
-          if ( map != null &&
+          if (map != null &&
               map['data'] != null &&
               map['data']['data'] != null &&
               map['data']['data']['authurl'] != null) {
             var uri = map['data']['data']['authurl'];
-            await widget.addToCart(uri, "Flutterwave payment",false);
+            await widget.addToCart(uri, "Flutterwave payment", false);
             verifyPay();
           } else {
             platform.invokeMethod("toast", map['message']);
@@ -1404,7 +1431,7 @@ class _PopPageState extends State<PopPage> with SuperBase {
         onValue: (source, url) {
           var map = json.decode(source);
           print(source);
-          widget.addToCart(map['data']['paypalUrl'], "Paypal payment",false);
+          widget.addToCart(map['data']['paypalUrl'], "Paypal payment", false);
         },
         error: (s, v) {
           platform.invokeMethod("toast", s);
@@ -1451,7 +1478,8 @@ class _PopPageState extends State<PopPage> with SuperBase {
           print(source);
           var map = json.decode(source);
           var dt = map['data'];
-          if (dt != null) await widget.addToCart(dt['payUrl'], "DPO payment",true);
+          if (dt != null)
+            await widget.addToCart(dt['payUrl'], "DPO payment", true);
           //print("To return $source");
         },
         error: (s, v) {
@@ -1642,7 +1670,9 @@ class _PopPageState extends State<PopPage> with SuperBase {
                                   _controller.text.isNotEmpty &&
                                   emailExp.hasMatch(_controller.text)
                               ? flutterWave
-                              : _selected == 0 ? dpoPayment : null,
+                              : _selected == 0
+                                  ? dpoPayment
+                                  : null,
                           color: color,
                           elevation: 0.0,
                           shape: RoundedRectangleBorder(

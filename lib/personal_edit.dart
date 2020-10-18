@@ -33,6 +33,8 @@ class PersonalEditState extends State<PersonalEdit> with SuperBase {
     }
   }
 
+  var _formKey = new GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -45,42 +47,47 @@ class PersonalEditState extends State<PersonalEdit> with SuperBase {
         title: Text("Personal Information"),
         centerTitle: true,
       ),
-      body: ListView(
-        children: <Widget>[
-          TextFormField(
-            controller: _controller,
-            decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(20),
-                border: UnderlineInputBorder(
-                    borderSide: BorderSide.none),
-                hintText: "Username",
-                filled: true,
-                fillColor: Colors.white),
-          ),
-          SizedBox(
-            height: 40,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(30.0),
-            child: _saving ? CupertinoActivityIndicator() : CupertinoButton(
-              child: Text(
-                "SAVE",
-                style:
-                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-              ),
-              onPressed: () async {
-                setState(() {
-                  _saving = true;
-                });
-                await widget.saveName(_controller.text);
-                setState(() {
-                  _saving = false;
-                });
-              },
-              color: color,
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          children: <Widget>[
+            TextFormField(
+              controller: _controller,
+              validator: (s)=>s.length > 1 && s.length <= 25 ? null : "Username vary between 2-25",
+              decoration: InputDecoration(
+                  contentPadding: EdgeInsets.all(20),
+                  border: UnderlineInputBorder(
+                      borderSide: BorderSide.none),
+                  hintText: "Username",
+                  filled: true,
+                  fillColor: Colors.white),
             ),
-          )
-        ],
+            SizedBox(
+              height: 40,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: _saving ? CupertinoActivityIndicator() : CupertinoButton(
+                child: Text(
+                  "SAVE",
+                  style:
+                      TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                ),
+                onPressed: () async {
+                  if( !(_formKey.currentState?.validate() ?? false) ) return;
+                  setState(() {
+                    _saving = true;
+                  });
+                  await widget.saveName(_controller.text);
+                  setState(() {
+                    _saving = false;
+                  });
+                },
+                color: color,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

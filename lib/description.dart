@@ -438,7 +438,7 @@ class _DescriptionState extends State<Description> with SuperBase {
   Future<User> awaitUser() async {
     User user = await Navigator.of(context).push<User>(CupertinoPageRoute(
         builder: (context) => AccountScreen(
-            canPop: true, user: widget.user, callback: widget.callback)));
+            canPop: true, user: widget.user, callback: widget.callback,cartState: null,)));
     return user;
   }
 
@@ -675,47 +675,8 @@ class _DescriptionState extends State<Description> with SuperBase {
               ),
             ),
             Container(
-              margin: EdgeInsets.symmetric(vertical: 5),
-              padding: EdgeInsets.all(15),
-              decoration: BoxDecoration(color: Colors.white),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(children: [
-                    Text("Shipping To",
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w900,
-                            fontFamily: 'SF UI Text')),
-                    Spacer(),
-                    Text(
-                      "",
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
-                    ),
-                  ]),
-                  SizedBox(
-                    height: 40,
-                  ),
-                  Row(children: [
-                    Text(
-                      "Shipping Fee",
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w900,
-                          fontFamily: 'SF UI Text'),
-                    ),
-                    Spacer(),
-                    Text(
-                      "\$0",
-                      style: TextStyle(color: Colors.grey, fontSize: 14),
-                    ),
-                  ]),
-                ],
-              ),
-            ),
-            Container(
               key: _reviewKey,
-              margin: EdgeInsets.symmetric(vertical: 5),
+              margin: EdgeInsets.symmetric(vertical: 5).copyWith(bottom: 10),
               padding: EdgeInsets.all(15),
               decoration: BoxDecoration(color: Colors.white),
               child: Column(
@@ -858,29 +819,29 @@ class _DescriptionState extends State<Description> with SuperBase {
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     )),
-                                Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 5),
-                                    child: Text(
-                                      '\$${_pro.price}',
-                                      style: TextStyle(
-                                          fontSize: 13,
-                                          color: Color(0xff4D4D4D).withOpacity(0.5),
-                                          fontFamily: 'DIN Alternate Bold'),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    )),
-                                Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 5),
-                                    child: Text(
-                                      '',
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          decoration: TextDecoration.lineThrough,
-                                          color: Color(0xff4D4D4D).withOpacity(0.5),
-                                          fontFamily: 'DIN Alternate Bold'),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ))
+
+                                Text(
+                                  '\$${_pro.price}',
+                                  style: TextStyle(
+                                      color: _pro.hasOldPrice
+                                          ? Color(0xffFE8206)
+                                          : Color(0xffA9A9A9),
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.w900),
+                                ),
+
+                                _pro.hasOldPrice
+                                    ? Padding(
+                                  padding: const EdgeInsets.only(top:3.0),
+                                  child: Text(
+                                    '\$${_pro.oldPrice}',
+                                    style: TextStyle(
+                                        color: Color(0xffA9A9A9),
+                                        fontSize: 11,
+                                        decoration: TextDecoration.lineThrough),
+                                  ),
+                                )
+                                    : SizedBox.shrink(),
                               ],
                             ),
                           ),
@@ -1067,7 +1028,7 @@ class DescState extends StatefulWidget {
         @required this.skus,
         this.size,
         this.continueToCart: false,
-        @required this.options, this.joiner:" "})
+        @required this.options, this.joiner:";"})
       : super(key: key);
 
   @override

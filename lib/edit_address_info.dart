@@ -4,8 +4,7 @@ import 'package:afri_shop/Json/Address.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'Json/country.dart';
-import 'country_picker.dart';
+import 'package:flutter_country_picker/flutter_country_picker.dart';
 
 import 'Json/User.dart';
 import 'SuperBase.dart';
@@ -28,7 +27,7 @@ class _EditAddressInfoState extends State<EditAddressInfo> with SuperBase {
   TextEditingController _email;
   var formKey = new GlobalKey<FormState>();
   var _saving = false;
-  Country _country;
+  Country _country = Country.RW;
 
   String get phone => "${_country?.dialingCode??"250"}${_phone.text}";
 
@@ -131,7 +130,7 @@ class _EditAddressInfoState extends State<EditAddressInfo> with SuperBase {
             ),
             TextFormField(
               controller: _delivery,
-              validator: (s) => s.isEmpty ? "Field required !!" : null,
+              validator: (s) => s.trim().isEmpty ? "Field required !!" : null,
               decoration: InputDecoration(
                   hintText: "Delivery name",
                   fillColor: Colors.white,
@@ -157,14 +156,14 @@ class _EditAddressInfoState extends State<EditAddressInfo> with SuperBase {
                       },
                       showDialingCode: true,
                       showName: false,
-                      showFlag: false,
+                      showFlag: true,
                       selectedCountry: _country,
                     ),
                   ),
                   Expanded(
                     child: TextFormField(
                       controller: _phone,
-                      validator: (s) => s.isEmpty ? "Field required !!" : null,
+                      validator: validateMobile,
                       keyboardType: TextInputType.phone,
                       inputFormatters: [
                         WhitelistingTextInputFormatter.digitsOnly
@@ -185,6 +184,7 @@ class _EditAddressInfoState extends State<EditAddressInfo> with SuperBase {
             ),
             TextFormField(
               controller: _email,
+              validator: (s)=>s.isEmpty ? null : emailExp.hasMatch(s) ? null : "Valid email is required",
               decoration: InputDecoration(
                   hintText: "Email",
                   fillColor: Colors.white,

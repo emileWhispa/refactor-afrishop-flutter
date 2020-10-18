@@ -14,6 +14,7 @@ import 'Json/User.dart';
 import 'SuperBase.dart';
 import 'description.dart';
 import 'authorization.dart';
+import 'new_account_screen.dart';
 
 const String kNavigationExamplePage = '''
 <!DOCTYPE html><html>
@@ -349,6 +350,14 @@ class _CrawlScreenState extends State<CrawlScreen> with SuperBase {
     });
   }
 
+
+  Future<User> awaitUser() async {
+    User user = await Navigator.of(context).push<User>(CupertinoPageRoute(
+        builder: (context) => AccountScreen(
+          canPop: true, user: widget.user, callback: widget.callback,cartState: null,)));
+    return user;
+  }
+
   void addToCart() async {
     if( _cart == null ) {
       await loadCrawl(webUrl);
@@ -362,8 +371,7 @@ class _CrawlScreenState extends State<CrawlScreen> with SuperBase {
     var user = widget.user();
     if (user == null) {
       platform.invokeMethod("toast", "Not signed in, sign in to continue");
-      user = await Navigator.of(context)
-          .push(CupertinoPageRoute(builder: (context) => Authorization(pop: true)));
+      user = await awaitUser();
       if (widget.callback != null) {
         widget.callback(user);
       }

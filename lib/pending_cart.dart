@@ -56,7 +56,7 @@ class _PendingCartState extends State<PendingCart> with SuperBase {
   Future<void> _loadItems() {
     refreshKey.currentState?.show(atTop: true);
     return this.ajax(
-        url: "order",
+        url: "order?size=1000",
         auth: true,
         authKey: widget.user()?.token,
         onValue: (source, url) {

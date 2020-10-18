@@ -178,13 +178,13 @@ class _PhoneAuthExampleState extends State<PhoneAuthExample> with SuperBase {
           padding: const EdgeInsets.symmetric(vertical:15.0),
           child: Column(
             children: <Widget>[
-              Center(
-                child: CircleAvatar(
-                  radius: 40,
-                  backgroundImage: AssetImage("assets/boys.jpg"),
-                ),
-              ),
-              SizedBox(height: 25),
+//              Center(
+//                child: CircleAvatar(
+//                  radius: 35,
+//                  backgroundImage: AssetImage("assets/boys.jpg"),
+//                ),
+//              ),
+//              SizedBox(height: 25),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -232,39 +232,43 @@ class _PhoneAuthExampleState extends State<PhoneAuthExample> with SuperBase {
               _verify
                   ? Row(
                 children: <Widget>[
-                  Expanded(
-                      child: PinCodeTextField(
-                        maxLength: 6,
-                        pinBoxOuterPadding:
-                        EdgeInsets.all(4),
-                        pinBoxColor: Colors.black12,
-                        pinBoxRadius: 50,
-                        pinBoxBorderWidth: 1.2,
-                        defaultBorderColor:
-                        Colors.black12,
-                        wrapAlignment:
-                        WrapAlignment.spaceBetween,
-                        pinBoxHeight: 30,
-                        pinBoxWidth: 30,
-                        onDone: (s) => this._inputCode(),
-                        onTextChanged: (text) {
-                          setState(() {
-                            _code = text;
-                          });
-                        },
-                      )),
+                  PinCodeTextField(
+                    maxLength: 6,
+                    pinBoxOuterPadding:
+                    EdgeInsets.all(4),
+                    pinBoxColor: Colors.black12,
+                    pinBoxRadius: 0,
+                    pinBoxBorderWidth: 1.2,
+                    defaultBorderColor:
+                    Colors.black12,
+                    wrapAlignment:
+                    WrapAlignment.spaceBetween,
+                    pinBoxHeight: 30,
+                    pinBoxWidth: 30,
+                    onDone: (s) => this._inputCode(),
+                    onTextChanged: (text) {
+                      setState(() {
+                        _code = text;
+                      });
+                    },
+                  ),
                   _count > 0
-                      ? Padding(
+                      ? Expanded(
+                        child: Padding(
                     padding:
-                    EdgeInsets.symmetric(
-                        horizontal: 15),
+                    EdgeInsets.only(
+                          left: 5),
                     child: Text(
-                      "$_count seconds",
-                      style: Theme.of(context)
-                          .textTheme
-                          .subtitle,
+                        "$_count seconds",
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.end,
+                        style: Theme.of(context)
+                            .textTheme
+                            .subtitle,
                     ),
-                  )
+                  ),
+                      )
                       : SizedBox.shrink(),
                 ],
               )

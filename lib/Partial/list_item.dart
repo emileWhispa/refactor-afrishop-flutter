@@ -5,6 +5,7 @@ import 'package:afri_shop/Json/User.dart';
 import 'package:afri_shop/Json/hashtag.dart';
 import 'package:afri_shop/Partial/NowBuilder.dart';
 import 'package:afri_shop/Partial/video_app.dart';
+import 'package:afri_shop/complain_screen.dart';
 import 'package:afri_shop/discover_profile.dart';
 import 'package:afri_shop/tag_preview.dart';
 import 'package:afri_shop/view_tag_screen.dart';
@@ -428,7 +429,12 @@ class __RepostState extends State<_Repost> with SuperBase {
                     : SizedBox.shrink(),
                 widget.user()?.id == widget.post.userId
                     ? SizedBox.shrink()
-                    : FlatButton(onPressed: rePost, child: Text("REPORT POST")),
+                    : FlatButton(onPressed: rePost, child: Text("RESHARE POST")),
+                widget.user()?.id == widget.post.userId
+                    ? SizedBox.shrink()
+                    : FlatButton(onPressed: (){
+                      Navigator.push(context, CupertinoPageRoute(builder: (context)=>ComplainScreen(object: widget.user, post: widget.post)));
+                }, child: Text("REPORT POST")),
                 FlatButton(
                     onPressed: () {
                       Navigator.pop(context);

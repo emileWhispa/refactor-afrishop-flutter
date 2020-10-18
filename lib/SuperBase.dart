@@ -58,6 +58,33 @@ class SuperBase {
   RegExp phoneExp = RegExp(r'^(?:[+0]9)?[0-9]{10}$');
   final amountValidator = RegExInputFormatter.withRegex('^\$|^(0|([1-9][0-9]{0,}))(\\.[0-9]{0,})?\$');
 
+
+
+  String validatePassword(String value) {
+    if (value.isEmpty) {
+      return "Password can not be empty";
+    } else if (value.length <= 7) {
+      return "8 characters minimum required";
+    } else if (!value.contains(new RegExp(r'[a-z]')) &&
+        !value.contains(new RegExp(r'[A-Z]'))) {
+      return "Password must contain at least a letter";
+    } else {
+      return null;
+    }
+  }
+
+  String validateMobile(String value) {
+    String pattern = r'(^(?:[+0]9)?[0-9]{9,15}$)';
+    RegExp regExp = new RegExp(pattern);
+    if (value.length == 0) {
+      return "Phone number can not be empty";
+    } else if (!regExp.hasMatch(value)) {
+      return "Please input a valid phone number";
+    } else {
+      return null;
+    }
+  }
+
   String get historyLink => "Get-history-link";
   String get historyLinkDiscover => "Get-history-link-discover";
   Function mathFunc = (Match match) => '${match[1]},';

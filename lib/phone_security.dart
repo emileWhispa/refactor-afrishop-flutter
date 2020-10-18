@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:afri_shop/Json/country.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_country_picker/flutter_country_picker.dart';
 import 'Json/User.dart';
-import 'country_picker.dart';
 
 import 'SuperBase.dart';
 
@@ -21,7 +20,7 @@ class PhoneSecurity extends StatefulWidget {
 }
 
 class _PhoneSecurityState extends State<PhoneSecurity> with SuperBase {
-    Country _country;
+    Country _country = Country.RW;
     Duration _duration = new Duration(seconds: 0);
     Timer _timer;
     bool _valid = false;
@@ -56,6 +55,14 @@ class _PhoneSecurityState extends State<PhoneSecurity> with SuperBase {
     }
 
     void _change() {
+
+
+
+        if( !(_formKey.currentState?.validate() ?? false) ) return;
+
+
+        phone = phone == null ? sendPhone : phone;
+
         setState(() {
             _sending2 = true;
         });
@@ -86,9 +93,13 @@ class _PhoneSecurityState extends State<PhoneSecurity> with SuperBase {
         });
     }
 
+
     String get sendPhone => "${_country?.dialingCode ?? "250"}${_phoneController.text}";
 
     void _getTheCode() {
+
+        if( !(_formKey.currentState?.validate() ?? false) ) return;
+
         setState(() {
             _sending = true;
         });
@@ -133,6 +144,9 @@ class _PhoneSecurityState extends State<PhoneSecurity> with SuperBase {
         _timer?.cancel();
     }
 
+
+    var _formKey = new GlobalKey<FormState>();
+
     @override
     Widget build(BuildContext context) {
         // TODO: implement build
@@ -151,113 +165,117 @@ class _PhoneSecurityState extends State<PhoneSecurity> with SuperBase {
                 ),
                 centerTitle: true,
             ),
-            body: ListView(
-                padding: EdgeInsets.all(15),
-                children: <Widget>[
-                    Row(
-                        children: <Widget>[
-                            Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(3),
-                                    color: Colors.white,
-                                ),
-                                padding: EdgeInsets.all(4),
-                                margin: EdgeInsets.only(right: 6),
-                                child: CountryPicker(
-                                    onChanged: (c) {
-                                        setState(() {
-                                            _country = c;
-                                        });
-                                    },
-                                    showFlag: false,
-                                    showName: false,
-                                    showDialingCode: true,
-                                    selectedCountry: _country,
-                                )),
-                            Expanded(
-                                child: Container(
-                                    height: 43,
-                                    child: TextFormField(
-                                        controller: _phoneController,
-                                        inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-                                        keyboardType: TextInputType.phone,
-                                        decoration: InputDecoration(
-                                            filled: true,
-                                            hintText: "Phone number",
-                                            contentPadding: EdgeInsets.only(left: 7),
-                                            fillColor: Colors.white,
-                                            border: OutlineInputBorder(
-                                                borderSide: BorderSide.none,
-                                                borderRadius: BorderRadius.circular(5))),
-                                    )),
-                            ),
-                        ],
-                    ),
-                    SizedBox(height: 10),
-                    Container(
-                        height: 45,
-                        child: TextFormField(
-                            controller: _controller,
-                            onChanged: (string) {
-                                if (string.length == 6) {
-                                    setState(() {
-                                        _valid = true;
-                                    });
-                                } else if (_valid) {
-                                    setState(() {
-                                        _valid = false;
-                                    });
-                                }
-                            },
-                            inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                                hintText: "Code",
-                                fillColor: Colors.white,
-                                filled: true,
-                                contentPadding: EdgeInsets.only(left: 10),
-                                suffixIcon: _sending
-                                    ? CupertinoActivityIndicator()
-                                    : Container(
-                                    height: 40,
-                                    padding: EdgeInsets.all(7),
-                                    child: RaisedButton(
-                                        onPressed:
-                                        _duration.inSeconds > 0 ? () {} : _getTheCode,
-                                        color: color.withOpacity(0.2),
-                                        padding: EdgeInsets.all(0),
-                                        shape: RoundedRectangleBorder(
-                                            side: BorderSide(
-                                                color: color,
-                                            ),
-                                            borderRadius: BorderRadius.circular(6)),
-                                        elevation: 0.0,
-                                        child: Text(
-                                            _duration.inSeconds > 0
-                                                ? "${_duration.inSeconds}"
-                                                : "Get the code",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold, fontSize: 14),
-                                        ),
-                                    ),
-                                ),
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(6),
-                                    borderSide: BorderSide.none)),
-                        ),
-                    ),
-                    SizedBox(height: 90),
-                    _sending2 ? CupertinoActivityIndicator() : RaisedButton(
-                        elevation: 0.0,
-                        child: Text(
-                            "Submit",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        padding: EdgeInsets.zero,
-                        onPressed: _change,
-                        color: color,
-                    )
-                ],
+            body: Form(
+                key: _formKey,
+              child: ListView(
+                  padding: EdgeInsets.all(15),
+                  children: <Widget>[
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                              Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(3),
+                                      color: Colors.white,
+                                  ),
+                                  padding: EdgeInsets.all(8),
+                                  margin: EdgeInsets.only(right: 6),
+                                  child: CountryPicker(
+                                      onChanged: (c) {
+                                          setState(() {
+                                              _country = c;
+                                          });
+                                      },
+                                      showFlag: true,
+                                      showName: false,
+                                      showDialingCode: true,
+                                      selectedCountry: _country,
+                                  )),
+                              Expanded(
+                                  child: Container(
+                                      child: TextFormField(
+                                          controller: _phoneController,
+                                          inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                                          validator: validateMobile,
+                                          keyboardType: TextInputType.phone,
+                                          decoration: InputDecoration(
+                                              filled: true,
+                                              hintText: "Phone number",
+                                              contentPadding: EdgeInsets.only(left: 7),
+                                              fillColor: Colors.white,
+                                              border: OutlineInputBorder(
+                                                  borderSide: BorderSide.none,
+                                                  borderRadius: BorderRadius.circular(5))),
+                                      )),
+                              ),
+                          ],
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                          height: 45,
+                          child: TextFormField(
+                              controller: _controller,
+                              onChanged: (string) {
+                                  if (string.length == 6) {
+                                      setState(() {
+                                          _valid = true;
+                                      });
+                                  } else if (_valid) {
+                                      setState(() {
+                                          _valid = false;
+                                      });
+                                  }
+                              },
+                              inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                  hintText: "Code",
+                                  fillColor: Colors.white,
+                                  filled: true,
+                                  contentPadding: EdgeInsets.only(left: 10),
+                                  suffixIcon: _sending
+                                      ? CupertinoActivityIndicator()
+                                      : Container(
+                                      height: 40,
+                                      padding: EdgeInsets.all(7),
+                                      child: RaisedButton(
+                                          onPressed:
+                                          _duration.inSeconds > 0 ? () {} : _getTheCode,
+                                          color: color.withOpacity(0.2),
+                                          padding: EdgeInsets.all(0),
+                                          shape: RoundedRectangleBorder(
+                                              side: BorderSide(
+                                                  color: color,
+                                              ),
+                                              borderRadius: BorderRadius.circular(6)),
+                                          elevation: 0.0,
+                                          child: Text(
+                                              _duration.inSeconds > 0
+                                                  ? "${_duration.inSeconds}"
+                                                  : "Get the code",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold, fontSize: 14),
+                                          ),
+                                      ),
+                                  ),
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(6),
+                                      borderSide: BorderSide.none)),
+                          ),
+                      ),
+                      SizedBox(height: 90),
+                      _sending2 ? CupertinoActivityIndicator() : RaisedButton(
+                          elevation: 0.0,
+                          child: Text(
+                              "Submit",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          padding: EdgeInsets.zero,
+                          onPressed: _change,
+                          color: color,
+                      )
+                  ],
+              ),
             ),
         );
     }

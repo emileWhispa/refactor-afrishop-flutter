@@ -61,7 +61,7 @@ class _FeedbackListState extends State<FeedbackList> with SuperBase {
                 itemCount: _list.length, itemBuilder: (context, index) {
                   return ListTile(
                     title: Text("${_list[index].question}"),
-                    subtitle: Text("${_list[index].createTime}"),
+                    subtitle: Text("${_list[index].formatted}"),
                   );
             })),
       ),

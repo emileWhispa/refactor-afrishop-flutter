@@ -52,7 +52,13 @@ class _EmailSecurityState extends State<EmailSecurity> with SuperBase {
     Navigator.of(context).pop();
   }
 
+  var _formKey = new GlobalKey<FormState>();
+
   void _change() {
+
+
+    if( !(_formKey.currentState?.validate() ?? false) ) return;
+
     setState(() {
       _sending2 = true;
     });
@@ -147,22 +153,24 @@ class _EmailSecurityState extends State<EmailSecurity> with SuperBase {
         ),
         centerTitle: true,
       ),
-      body: ListView(
-        padding: EdgeInsets.all(15),
-        children: <Widget>[
-          Container(
-              height: 45,
-              child: TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                    filled: true,
-                    hintText: "Email",
-                    fillColor: Colors.white,
-                    contentPadding: EdgeInsets.only(left: 7),
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(5))),
-              )),
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: EdgeInsets.all(15),
+          children: <Widget>[
+            Container(
+                child: TextFormField(
+                  controller: _emailController,
+                  validator: (s)=>emailExp.hasMatch(s) ? null : "Valid email is required",
+                  decoration: InputDecoration(
+                      filled: true,
+                      hintText: "Email",
+                      fillColor: Colors.white,
+                      contentPadding: EdgeInsets.only(left: 7),
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(5))),
+                )),
 //          SizedBox(height: 10),
 //          Container(
 //            height: 45,
@@ -216,18 +224,19 @@ class _EmailSecurityState extends State<EmailSecurity> with SuperBase {
 //                      borderSide: BorderSide.none)),
 //            ),
 //          ),
-          SizedBox(height: 90),
-          _sending2 ? CupertinoActivityIndicator() : RaisedButton(
-            elevation: 0.0,
-            child: Text(
-              "Submit",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            padding: EdgeInsets.zero,
-            onPressed: _change,
-            color: color,
-          )
-        ],
+            SizedBox(height: 90),
+            _sending2 ? CupertinoActivityIndicator() : RaisedButton(
+              elevation: 0.0,
+              child: Text(
+                "Submit",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              padding: EdgeInsets.zero,
+              onPressed: _change,
+              color: color,
+            )
+          ],
+        ),
       ),
     );
   }

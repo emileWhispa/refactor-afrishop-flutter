@@ -12,8 +12,9 @@ class SelectCouponScreen extends StatefulWidget {
   final User Function() user;
   final String payNowParams;
   final Order order;
+  final String coupon;
 
-  const SelectCouponScreen({Key key, @required this.user, this.payNowParams,@required this.order}) : super(key: key);
+  const SelectCouponScreen({Key key, @required this.user, this.payNowParams,@required this.order, this.coupon}) : super(key: key);
 
   @override
   _SelectCouponScreenState createState() => _SelectCouponScreenState();
@@ -95,8 +96,12 @@ class _SelectCouponScreenState extends State<SelectCouponScreen>
           if (_map == null) return;
           Iterable map = _map['validCouponList'];
           setState(() {
-            if (map != null)
+            if (map != null) {
               _validList = map.map((f) => Coupon.fromJson(f)).toList();
+              if( _validList.any((element) => element.toitableId == widget.coupon) ){
+                _coupon = _validList.firstWhere((element) => element.toitableId == widget.coupon);
+              }
+            }
           });
         });
   }
@@ -245,18 +250,18 @@ class _SelectCouponScreenState extends State<SelectCouponScreen>
                                       child: Container(
                                         margin: EdgeInsets.only(right: 10),
                                         decoration: BoxDecoration(
-                                            border: _coupon == coupon
+                                            border: _coupon?.id == coupon?.id
                                                 ? null
                                                 : Border.all(
                                                     color: Colors.grey),
                                             shape: BoxShape.circle,
-                                            color: _coupon == coupon
+                                            color: _coupon?.id == coupon?.id
                                                 ? color
                                                 : Colors.white),
                                         child: Padding(
                                           padding: EdgeInsets.all(
-                                              _coupon == coupon ? 2.0 : 11),
-                                          child: _coupon == coupon
+                                              _coupon?.id == coupon?.id ? 2.0 : 11),
+                                          child: _coupon?.id == coupon?.id
                                               ? Icon(
                                                   Icons.check,
                                                   size: 20.0,
