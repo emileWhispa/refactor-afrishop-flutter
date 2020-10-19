@@ -617,7 +617,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                     ],
                   ),
                 ),
-          order?.isPending == true || _order == null
+             widget.order.status == 'Pending'
               ? SizedBox.shrink()
               : Container(
                   decoration: BoxDecoration(
