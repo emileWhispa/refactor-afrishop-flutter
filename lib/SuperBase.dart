@@ -75,7 +75,7 @@ class SuperBase {
   }
 
   String validateMobile(String value) {
-    String pattern = r'(^(?:[+0]9)?[0-9]{8,10}$)';
+    String pattern = r'(^(?:[+0]9)?[0-9]{8,14}$)';
     RegExp regExp = new RegExp(pattern);
     if (value.length == 0) {
       return "Phone number can not be empty";

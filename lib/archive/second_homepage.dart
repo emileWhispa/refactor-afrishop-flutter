@@ -929,7 +929,7 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
                       )));
               widget.cartState.currentState?.refresh();
             },
-            child: Container(
+             child: Container(
               height: 170,
               child: Column(
                 mainAxisSize: MainAxisSize.max,
@@ -957,28 +957,46 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       )),
-                  Text(
-                    '\$${_items[index].price}',
-                    style: TextStyle(
-                        color: _items[index].hasOldPrice
-                            ? Color(0xffFE8206)
-                            : Color(0xffA9A9A9),
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w900),
-                  ),
-
-                  _items[index].hasOldPrice
-                      ? Padding(
-                    padding: const EdgeInsets.only(top:3.0),
-                    child: Text(
-                      '\$${_items[index].oldPrice}',
-                      style: TextStyle(
-                          color: Color(0xffA9A9A9),
-                          fontSize: 11,
-                          decoration: TextDecoration.lineThrough),
+                  Padding(
+                    padding: EdgeInsets.all(5),
+                    child: Row(
+                      children: <Widget>[
+                        Text(
+                          '\$${_items[index].price}',
+                          style: TextStyle(
+                              color: _items[index].hasOldPrice
+                                  ? Color(0xffFE8206)
+                                  : Color(0xffA9A9A9),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w900),
+                        ),
+                        _items[index].hasOldPrice
+                            ? Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: Text(
+                                  '\$${_items[index].oldPrice}',
+                                  style: TextStyle(
+                                      color: Color(0xffA9A9A9),
+                                      fontSize: 11,
+                                      decoration: TextDecoration.lineThrough),
+                                ),
+                              )
+                            : SizedBox.shrink()
+                      ],
                     ),
-                  )
-                      : SizedBox.shrink(),
+                  ),
+                  Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      child: Text(
+                        '',
+                        style: TextStyle(
+                            fontSize: 10,
+                            decoration: TextDecoration.lineThrough,
+                            color: Color(0xff4D4D4D).withOpacity(0.5),
+                            fontFamily: 'DIN Alternate Bold'),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ))
                 ],
               ),
             ),
