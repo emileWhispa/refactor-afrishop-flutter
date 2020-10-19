@@ -18,6 +18,10 @@ class UserProfile extends StatefulWidget {
   final String mobile;
   final User Function() user;
   final void Function(User user) callback;
+    final void Function(User user) saveNickName;
+
+
+  final isDiscover;
 
   const UserProfile(
       {Key key,
@@ -25,7 +29,10 @@ class UserProfile extends StatefulWidget {
       this.country,
       this.mobile,
       this.user,
-      @required this.callback})
+      @required this.callback,
+      this.isDiscover,
+      this.saveNickName
+    })
       : super(key: key);
 
   @override
@@ -117,6 +124,9 @@ class _UserProfileState extends State<UserProfile> with SuperBase {
             platform.invokeMethod("toast","Modify Success");
             widget.callback(user);
             if (pKey.currentState == null) Navigator.pop(context);
+            if( widget.isDiscover && widget.saveNickName != null){
+              widget.saveNickName(user);
+            }
           } else {
             _showSnack(map['message']);
           }

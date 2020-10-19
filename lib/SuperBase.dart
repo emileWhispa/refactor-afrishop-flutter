@@ -14,6 +14,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:email_validator/email_validator.dart';
 
 import 'Json/Post.dart';
 import 'Json/Product.dart';
@@ -74,7 +75,7 @@ class SuperBase {
   }
 
   String validateMobile(String value) {
-    String pattern = r'(^(?:[+0]9)?[0-9]{9,15}$)';
+    String pattern = r'(^(?:[+0]9)?[0-9]{8,10}$)';
     RegExp regExp = new RegExp(pattern);
     if (value.length == 0) {
       return "Phone number can not be empty";
@@ -82,6 +83,30 @@ class SuperBase {
       return "Please input a valid phone number";
     } else {
       return null;
+    }
+  }
+  String validateEmail(String value) {
+    Pattern pattern =
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regex = new RegExp(pattern);
+    if (value.isEmpty) {
+
+        return "Email can not be empty";
+    
+    } else {
+      if (!regex.hasMatch(value)) {
+       return "Enter a valid email.";
+    
+      }
+      {
+        final bool isValid = EmailValidator.validate(value);
+        if (isValid) {
+         return null;
+        } else {
+          return "Enter a valid email.";
+         
+        }
+      }
     }
   }
 

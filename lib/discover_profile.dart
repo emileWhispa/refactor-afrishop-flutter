@@ -8,6 +8,7 @@ import 'package:afri_shop/edit_material.dart';
 import 'package:afri_shop/follow_management.dart';
 import 'package:afri_shop/user_profile.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bezier_chart/bezier_chart.dart';
@@ -44,6 +45,15 @@ class _DiscoverProfileState extends State<DiscoverProfile> with SuperBase {
 
   List<Bonus> _bonusList = [];
   List<Bonus> _bonusSmallList = [];
+  String _mobile;
+  String _email;
+  String _avatar;
+  String _nickname;
+  String _gender;
+  String _date;
+  String _genderName;
+  bool _saving = false;
+  bool isDiscover = true;
 
   var global = new GlobalKey<RefreshIndicatorState>();
 
@@ -58,7 +68,12 @@ class _DiscoverProfileState extends State<DiscoverProfile> with SuperBase {
   }
 
   var _currentUrl = "";
+  void saveUser(User user) {
+    setState(() {
+      _user = user;
+    });
 
+  }
   Widget sample2(BuildContext context) {
     return Center(
       child: Container(
@@ -433,7 +448,10 @@ class _DiscoverProfileState extends State<DiscoverProfile> with SuperBase {
                                               CupertinoPageRoute(
                                                   fullscreenDialog: true,
                                                   builder: (context) =>
-                                                      UserProfile(
+                                                     UserProfile(                                                                                                                  
+                                                          saveNickName: saveUser,
+                                                          isDiscover:
+                                                              isDiscover,
                                                           callback:
                                                               widget.callback,
                                                           user:

@@ -431,7 +431,7 @@ class CartScreenState extends State<CartScreen> with SuperBase {
                             _select = !_select;
                           });
                         },
-                        child: Text("Management"))
+                        child: Text("Edit"))
                     : FlatButton(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 22.0),
@@ -576,9 +576,7 @@ class CartScreenState extends State<CartScreen> with SuperBase {
                                             ),
                                           ),
                                         ),
-                                        Expanded(
-                                            child: InkWell(
-                                          onTap: () => _goPro(_item),
+                                         Expanded(
                                           child: Container(
                                             height: 90,
                                             padding: EdgeInsets.symmetric(
@@ -587,40 +585,40 @@ class CartScreenState extends State<CartScreen> with SuperBase {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: <Widget>[
-                                                Text(
-                                                  _item.itemTitle ?? "",
-                                                  maxLines: 2,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                      fontSize: 12.6,
-                                                      fontWeight:
-                                                          FontWeight.w500),
+                                                InkWell(
+                                                  onTap: () => _goPro(_item),
+                                                  child: Text(
+                                                    _item.itemTitle ?? '',
+                                                    maxLines: 2,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                        fontSize: 12.6,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
                                                 ),
                                                 Expanded(
-                                                  child: Row(
-                                                    children: <Widget>[
-                                                      Padding(
-                                                        padding: const EdgeInsets.only(right:2.0),
-                                                        child: Text(
+                                                  child: InkWell(
+                                                    onTap: () => _goPro(_item),
+                                                    child: Row(
+                                                      children: <Widget>[
+                                                        Text(
                                                           "${_item.shopName}",
                                                           style: TextStyle(
                                                               fontSize: 12,
-                                                              color: Colors
-                                                                  .grey.shade400),
+                                                              color: Colors.grey
+                                                                  .shade400),
                                                         ),
-                                                      ),
-                                                      Expanded(
-                                                        child: Text("${_item.itemSku}",
-                                                            maxLines:1,
-                                                            textAlign: TextAlign.end,
-                                                            overflow:TextOverflow.ellipsis,
+                                                        Spacer(),
+                                                        Text("${_item.itemSku}",
                                                             style: TextStyle(
                                                                 fontSize: 12,
-                                                                color: Colors.grey
-                                                                    .shade400)),
-                                                      )
-                                                    ],
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade400))
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
                                                 SizedBox(height: 5),
@@ -733,7 +731,8 @@ class CartScreenState extends State<CartScreen> with SuperBase {
                                               ],
                                             ),
                                           ),
-                                        ))
+                                          // )
+                                        )
                                       ],
                                     ),
                                   );

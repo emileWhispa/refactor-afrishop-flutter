@@ -184,7 +184,7 @@ class _EditAddressInfoState extends State<EditAddressInfo> with SuperBase {
             ),
             TextFormField(
               controller: _email,
-              validator: (s)=>s.isEmpty ? null : emailExp.hasMatch(s) ? null : "Valid email is required",
+              validator: validateEmail,
               decoration: InputDecoration(
                   hintText: "Email",
                   fillColor: Colors.white,

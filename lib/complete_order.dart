@@ -129,9 +129,18 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
         _duration = addedTime.difference(DateTime.now());
       });
       _timer = Timer.periodic(Duration(seconds: 1), (t) {
-        setState(() {
-          _duration = Duration(seconds: _duration.inSeconds - 1);
-        });
+     if (_duration == Duration(hours: 0)) {
+          setState(() {
+            _duration = Duration(hours: 0);
+          });
+        } else {
+          setState(() {
+            _duration = Duration(seconds: _duration.inSeconds - 1);
+          });
+        }
+        // setState(() {
+        //   _duration = Duration(seconds: _duration.inSeconds - 1);
+        // });
       });
     });
   }
@@ -482,17 +491,19 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                 ListTile(
                   onTap: () {},
                   title: Text("Shipping Fee"),
-                  trailing: Text("\$${order?.expressCost ?? 0}"),
+                  trailing: Text(order?.expressCost == 0
+                      ? "\$${0}"
+                      : "${order?.expressCost}")
                 ),
                 ListTile(
                   onTap: () {},
                   title: Text("Handling Fee"),
-                  trailing: Text("\$${order?.fee ?? 0}"),
+                  trailing: Text(order?.fee == 0 ? "\$${0}" : "${order?.fee}"),
                 ),
                 ListTile(
                   onTap: () {},
                   title: Text("Duty Fee"),
-                  trailing: Text("\$${order?.tax ?? 0}"),
+                  trailing: Text(order?.tax == 0 ? "\$${0}" : "${order?.tax}"),
                 ),
                 Container(
                   decoration: BoxDecoration(
@@ -526,7 +537,9 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                         ? Row(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
-                              Text("-\$${order?.couponPrice ?? 0}",
+                              Text(order?.couponPrice == null
+                                      ? "-\$${0}"
+                                      : "${order?.couponPrice}",
                                   style: TextStyle(
                                       color: canCoupon ? Colors.orange : null)),
                               Icon(Icons.arrow_forward_ios,
@@ -534,7 +547,9 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                                   color: canCoupon ? Colors.orange : null)
                             ],
                           )
-                        : Text("-\$${order?.couponPrice ?? 0}",
+                        : Text(order?.couponPrice == null
+                                ? "-\$${0}"
+                                : "${order?.couponPrice}",
                             style: TextStyle(
                                 color: canCoupon ? Colors.orange : null)),
                   ),
