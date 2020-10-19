@@ -41,7 +41,7 @@ class SuperBase {
   String server005 = "http://www.afrishop.rw/";
   String server006 = "http://afrieshop.com/";
   String server007 = "http://www.afrieshop.com/";
-  String server000 = "https://m.afrieshop.com/";
+  String server000 = "https://afrieshop.com/";
 
 
   String socket = "ws://dev.diaosaas.com/zion/";

@@ -474,7 +474,7 @@ class _DescriptionState extends State<Description> with SuperBase {
                 height: 24, width: 24, color: Colors.black),
             onPressed: () {
               Share.share(
-                  '${server000}home/product?id=$itemId${widget.user() != null ? "&code=${widget.user().code}" : ""}');
+                  '${server000}product_detail?pid=$itemId${widget.user() != null ? "&code=${widget.user().code}" : ""}');
             })
       ],
     ),
