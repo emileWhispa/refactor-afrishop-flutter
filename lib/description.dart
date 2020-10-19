@@ -90,6 +90,7 @@ class _DescriptionState extends State<Description> with SuperBase {
   Product _newProduct;
   int _current = 0;
   ScrollController _controller = new ScrollController();
+  int score = 5;
 
 
   @override
@@ -213,6 +214,7 @@ class _DescriptionState extends State<Description> with SuperBase {
           if (map != null && map['data'] != null) {
             var data = map['data'];
             setState(() {
+              score = (data['score'] as double).toInt();
               _newProduct = Product.fromJson(data['itemInfo'],
                   options: data['optionList'],det: data['itemDetail'],params: data['itemParam'],desc: data['itemDesc']);
             });
@@ -607,7 +609,7 @@ class _DescriptionState extends State<Description> with SuperBase {
                       children: List.generate(
                           5,
                           (index) => Image.asset(
-                                'assets/${index <= product.totalScore ? 'star' : 'star_border'}.png',
+                                      'assets/${index <= score ? 'star' : 'star_border'}.png',
                                 height: 24,
                                 width: 24,
                               )).toList(),

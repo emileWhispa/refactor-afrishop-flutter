@@ -13,7 +13,7 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'Json/User.dart';
 import 'SuperBase.dart';
 import 'description.dart';
-import 'authorization.dart';
+import 'Authorization.dart';
 import 'new_account_screen.dart';
 
 const String kNavigationExamplePage = '''
