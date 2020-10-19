@@ -278,7 +278,7 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       this._loadBrands();
       navLink(show: true);
-      this._refreshList(inc: true);
+      _control.currentState?.show(atTop: true);
     });
 
     focusNode.addListener(() async {
@@ -603,7 +603,6 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
     if (max != null && current > max) {
       return Future.value();
     }
-    current += inc ? 1 : 0;
     setState(() {
       _loading = true;
     });
@@ -614,12 +613,14 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
           if (_urls.contains(url)) {
             return;
           }
+          current += inc ? 1 : 0;
           _urls.add(url);
           Map<String, dynamic> _data = json.decode(source)['data'];
           Iterable _map = _data['content'];
           max = _data['totalPages'];
           setState(() {
-            _items.addAll(_map.map((f) => Product.fromJson(f)).toList());
+            var lst = _map.map((f) => Product.fromJson(f)).toList();
+            _items..removeWhere((element) => lst.any((x) => x.itemId == element.itemId))..addAll(lst);
           });
         },
         onEnd: () {
@@ -632,8 +633,7 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
 
   List<Brand> _brands = [];
 
-  Future<void> _refreshList({bool inc: false}) async {
-    _control.currentState?.show(atTop: true);
+  Future<void> _refreshList({bool inc: true}) async {
     _carouselState.currentState?._loadImages();
     await _loadBrands();
     //await _loadCategories();

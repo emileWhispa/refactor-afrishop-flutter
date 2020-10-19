@@ -56,7 +56,6 @@ class _InsideCategoryState extends State<InsideCategory> with SuperBase {
     if (max != null && current > max) {
       return Future.value();
     }
-    current += inc ? 1 : 0;
     setState(() {
       _loading = true;
     });
@@ -64,18 +63,21 @@ class _InsideCategoryState extends State<InsideCategory> with SuperBase {
         url:
             "${widget.prefix}=${widget.category?.id}&pageNum=$current&pageSize=12",
         auth: false,
-        server: true,
         onValue: (source, url) {
           if (_urls.contains(url)) {
             return;
           }
+          current += inc ? 1 : 0;
           _urls.add(url);
+          print(source);
+          print(url);
           //print("Whispa sent requests ($current): $url");
           Map<String, dynamic> _data = json.decode(source)['data'];
           Iterable _map = _data['content'];
           max = _data['totalPages'];
           setState(() {
-            _items.addAll(_map.map((f) => Product.fromJson(f)).toList());
+            var lst = _map.map((f) => Product.fromJson(f)).toList();
+            _items..removeWhere((element) => lst.any((x) => x.itemId == element.itemId))..addAll(lst);
             _itemsUp = _items.toList();
             _itemsDown = _items.toList();
             _itemsUp.sort((f,c)=>c.price.compareTo(f.price));

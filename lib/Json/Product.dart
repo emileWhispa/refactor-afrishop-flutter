@@ -63,7 +63,7 @@ class Product {
 
   double get total => items * price;
 
-  double get price => discountPrice ?? _price;
+  double get price => discountPrice ?? _price ?? 0.0;
 
   set price(double price){
     this.discountPrice = price;
