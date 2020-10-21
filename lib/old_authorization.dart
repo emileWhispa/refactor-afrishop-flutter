@@ -139,7 +139,10 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
         onValue: (map, url) {
           if (map['data'] != null && map['code'] == 1) {
             User user = User.fromJson(map['data']);
-            platform.invokeMethod("toast", "Login Success");
+          platform.invokeMethod('logSignupEvent', <Object, dynamic>{
+      'email':'${phone}'
+    });
+            platform.invokeMethod("toast", "Signup Success");
             this.auth(jwt, jsonEncode(user), user.id);
             Navigator.of(context).pop(user);
           } else {

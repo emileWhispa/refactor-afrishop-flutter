@@ -214,7 +214,7 @@ class _DescriptionState extends State<Description> with SuperBase {
           if (map != null && map['data'] != null) {
             var data = map['data'];
             setState(() {
-              score = (data['score'] as double).toInt();
+              score = data['score'] is int ? data['score'] : data['score'] is double ? (data['score'] as double).toInt() : 0;
               _newProduct = Product.fromJson(data['itemInfo'],
                   options: data['optionList'],det: data['itemDetail'],params: data['itemParam'],desc: data['itemDesc']);
             });
@@ -371,6 +371,13 @@ class _DescriptionState extends State<Description> with SuperBase {
             print(source);
             _goToCart(product: _newProduct);
           }
+         platform.invokeMethod('logAddToCartEvent', <String, dynamic>{
+      'contentData': product.title,
+      'contentId': "${product.itemId}",
+      'contentType':"1",
+      'currency':'USD',
+      'price':product.discountPrice
+    });
           platform.invokeMethod("toast", "Product added to cart");
           setState(() {
             widget.user()?.cartCount += product.items;

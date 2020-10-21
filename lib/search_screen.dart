@@ -139,8 +139,27 @@ class _SearchScreenState extends State<SearchScreen> with SuperBase {
             _listUp.sort((v, c) => c.price.compareTo(v.price));
             _listDown.sort((v, c) => v.price.compareTo(c.price));
           });
+          platform.invokeMethod('logSearchEvent', <Object, dynamic>{
+      'contentData': "list of ${query}",
+      'contentId': "search",
+      'contentType':"search",
+      'searchString':query,
+      'success':true
+    });
         },
-        error: (s, v) => print(s),
+        
+
+        error: (s, v) => {
+          print(s),
+       platform.invokeMethod('logSearchEvent', <Object, dynamic>{
+      'contentData': "Error searching ${s}",
+      'contentId': "search",
+      'contentType':"search",
+      'searchString':query,
+      'success':false
+    })
+          
+          },
         onEnd: () {
           setState(() {
             _searching = false;
