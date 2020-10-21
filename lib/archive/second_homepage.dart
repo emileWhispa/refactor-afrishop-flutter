@@ -335,7 +335,7 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
 
       var uri = Uri.dataFromString(link);
       var parameter = uri.queryParameters['code'];
-      var productId = uri.queryParameters['id'];
+      var productId = uri.queryParameters['pid'] ?? uri.queryParameters['id'];
 
       if ( productId != null) {
         _selected = false;

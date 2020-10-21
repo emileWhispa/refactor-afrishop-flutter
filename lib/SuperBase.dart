@@ -21,7 +21,6 @@ import 'Json/Product.dart';
 import 'Json/User.dart';
 
 class SuperBase {
-
   // Live connections
 //  String server = "https://app.afrieshop.com/zion/";
 //  String server0 = "http://165.22.82.105:8080/"; //Discover
@@ -29,6 +28,7 @@ class SuperBase {
   //Test Connections
 //  String server = "https://dev.diaosaas.com/zion/"; // currently connected on live db
   String server = "http://165.22.82.105:7000/zion/";
+
   String get server0 => server; // Discover
   int version = 0; // sliders //0.android 1.IOS 2.PC WEB 3.Mobile Web
 
@@ -43,7 +43,6 @@ class SuperBase {
   String server007 = "http://www.afrieshop.com/";
   String server000 = "https://afrieshop.com/";
 
-
   String socket = "ws://dev.diaosaas.com/zion/";
   String jwtKey =
       'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsidGVzdGp3dHJlc291cmNlaWQiXSwidXNlcl9uYW1lIjoiV2hpc3BhIiwic2NvcGUiOlsicmVhZCIsIndyaXRlIl0sImV4cCI6MTU4NjgwNjM0OCwiYXV0aG9yaXRpZXMiOlsiU1RBTkRBUkRfVVNFUiJdLCJqdGkiOiJiOTI3ZTcwNi0yOGNiLTRmN2MtYWEwNS00N2JkNjYxZDg1ZDAiLCJjbGllbnRfaWQiOiJ3aGlzcGFqd3RjbGllbnRpZCJ9.cqBA3timG1yf8Q5wRVKyYlpwu2omdr2chgnLbzpyqh8';
@@ -52,14 +51,14 @@ class SuperBase {
   String jwt = '';
   var formatter = new NumberFormat.decimalPattern("en_US");
 
-  String formatNumber(num value)=>formatter.format(value);
+  String formatNumber(num value) => formatter.format(value);
 
   RegExp reg = new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
-  RegExp emailExp = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+  RegExp emailExp = RegExp(
+      r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
   RegExp phoneExp = RegExp(r'^(?:[+0]9)?[0-9]{10}$');
-  final amountValidator = RegExInputFormatter.withRegex('^\$|^(0|([1-9][0-9]{0,}))(\\.[0-9]{0,})?\$');
-
-
+  final amountValidator = RegExInputFormatter.withRegex(
+      '^\$|^(0|([1-9][0-9]{0,}))(\\.[0-9]{0,})?\$');
 
   String validatePassword(String value) {
     if (value.isEmpty) {
@@ -85,32 +84,30 @@ class SuperBase {
       return null;
     }
   }
+
   String validateEmail(String value) {
     Pattern pattern =
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = new RegExp(pattern);
     if (value.isEmpty) {
-
-        return "Email can not be empty";
-    
+      return "Email can not be empty";
     } else {
       if (!regex.hasMatch(value)) {
-       return "Enter a valid email.";
-    
+        return "Enter a valid email.";
       }
       {
         final bool isValid = EmailValidator.validate(value);
         if (isValid) {
-         return null;
+          return null;
         } else {
           return "Enter a valid email.";
-         
         }
       }
     }
   }
 
   String get historyLink => "Get-history-link";
+
   String get historyLinkDiscover => "Get-history-link-discover";
   Function mathFunc = (Match match) => '${match[1]},';
 
@@ -132,13 +129,12 @@ class SuperBase {
   Future<SharedPreferences> prefs = SharedPreferences.getInstance();
 
   void sharePost(Post post, {String subject: "Share post", User user}) {
-    if( user != null && !user.invited ){
-      platform.invokeMethod("toast","Member registration not yet done");
+    if (user != null && !user.invited) {
+      platform.invokeMethod("toast", "Member registration not yet done");
       return;
     }
-    String sharer = user != null && user.code != null
-        ? "?code=${user.code}"
-        : "";
+    String sharer =
+        user != null && user.code != null ? "?code=${user.code}" : "";
     if (post != null && post.id != null)
       Share.share(_url2("community/${post.id}$sharer"), subject: subject);
   }
@@ -151,25 +147,27 @@ class SuperBase {
   String url2(String url) => "$server0$url";
 
   String _url2(String url) => "$server00$url";
+
   String replacedUrl(String url) => url.contains(server001)
       ? url.replaceAll(server001, server0)
       : url.contains(server002)
-      ? url.replaceAll(server002, server0)
-      : url.contains(server003)
-      ? url.replaceAll(server003, server0)
-      : url.contains(server004)
-      ? url.replaceAll(server004, server0)
-      : url.contains(server005)
-      ? url.replaceAll(server005, server0)
-      : url.contains(server006)
-      ? url.replaceAll(server006, server0)
-      : url.contains(server007)
-      ? url.replaceAll(server007, server0)
-      : url.replaceAll(server00, server0);
+          ? url.replaceAll(server002, server0)
+          : url.contains(server003)
+              ? url.replaceAll(server003, server0)
+              : url.contains(server004)
+                  ? url.replaceAll(server004, server0)
+                  : url.contains(server005)
+                      ? url.replaceAll(server005, server0)
+                      : url.contains(server006)
+                          ? url.replaceAll(server006, server0)
+                          : url.contains(server007)
+                              ? url.replaceAll(server007, server0)
+                              : url.replaceAll(server00, server0);
 
   String url(String url) => "$server$url";
 
   String get _favoriteLink => "12-fav-data-implement";
+
   String get _favoriteLinkPosts => "fav-post-link";
 
   String get _visitedLink => "visited-link-fav-get-kik";
@@ -228,7 +226,7 @@ class SuperBase {
     var _list = await getProductsFav();
     _list
       ..removeWhere((p) => p.itemId == product.itemId)
-      ..insert(0,product);
+      ..insert(0, product);
     save(_favoriteLink, _list);
   }
 
@@ -236,7 +234,7 @@ class SuperBase {
     var _list = await getPostsFav();
     _list
       ..removeWhere((p) => p.id == post.id)
-      ..insert(0,post);
+      ..insert(0, post);
     save(_favoriteLinkPosts, _list);
   }
 
@@ -345,8 +343,9 @@ class SuperBase {
 
   double log10(num x) => log(x) / ln10;
 
-  RichText convertHashtag(String text,{void Function(String tag) onTap,TextStyle style}) {
-    if( text == null ) return RichText(text: TextSpan());
+  RichText convertHashtag(String text,
+      {void Function(String tag) onTap, TextStyle style}) {
+    if (text == null) return RichText(text: TextSpan());
     List<String> split = text.split(RegExp("#"));
     List<String> hashtags = split.getRange(1, split.length).fold([], (t, e) {
       var texts = e.split(" ");
@@ -357,13 +356,20 @@ class SuperBase {
       return List.from(t)..add("#${texts.first}");
     });
     return RichText(
-      text: TextSpan(style: style ?? TextStyle(color: Colors.black87),
+      text: TextSpan(
+        style: style ?? TextStyle(color: Colors.black87),
         children: [TextSpan(text: split.first)]..addAll(hashtags
             .map((text) => text.contains("#")
-            ? WidgetSpan(child: InkWell(onTap: (){if(onTap != null){
-              onTap(text);
-        }},child: Text(text, style: TextStyle(color: Colors.blue))))
-            : TextSpan(text: text))
+                ? WidgetSpan(
+                    child: InkWell(
+                        onTap: () {
+                          if (onTap != null) {
+                            onTap(text);
+                          }
+                        },
+                        child:
+                            Text(text, style: TextStyle(color: Colors.blue))))
+                : TextSpan(text: text))
             .toList()),
       ),
     );
@@ -503,6 +509,7 @@ class SuperBase {
       {Color color: Colors.red,
       Color bColor: Colors.white,
       double size: 20,
+        double value,
       double width: 3}) {
     return SizedBox(
       height: size,
@@ -510,6 +517,7 @@ class SuperBase {
       child: CircularProgressIndicator(
         backgroundColor: bColor,
         strokeWidth: width,
+        value: value,
         valueColor: AlwaysStoppedAnimation<Color>(color),
       ),
     );
@@ -542,6 +550,7 @@ class SuperBase {
       String authKey,
       bool json: true,
       bool absolutePath: false,
+      void Function(int count, int total) progress,
       bool localSave: false,
       bool noOptions: false,
       String jsonData,
@@ -549,7 +558,11 @@ class SuperBase {
       void Function(dynamic response, String url) onValue,
       void Function() onEnd,
       void Function(String response, String url) error}) async {
-    url = absolutePath ? url : base2 ? this.url2(url) : this.url(url);
+    url = absolutePath
+        ? url
+        : base2
+            ? this.url2(url)
+            : this.url(url);
 
     Map<String, String> headers = new Map<String, String>();
 
@@ -584,9 +597,12 @@ class SuperBase {
     }
 
     Future<Response> future = method.toUpperCase() == "POST"
-        ? Dio().post(url, data: jsonData ?? map ?? data, options: opt)
+        ? Dio().post(url,
+            onSendProgress: progress,
+            data: jsonData ?? map ?? data,
+            options: opt)
         : method.toUpperCase() == "PUT"
-            ? Dio().put(url, data: jsonData ?? map ?? data, options: opt)
+            ? Dio().put(url,onSendProgress: progress, data: jsonData ?? map ?? data, options: opt)
             : method.toUpperCase() == "DELETE"
                 ? Dio().delete(url, data: jsonData ?? map ?? data, options: opt)
                 : Dio().get(url, options: opt);
@@ -619,7 +635,7 @@ class SuperBase {
     prefs.then((SharedPreferences val) => val.setString(key, value));
   }
 
-  void deletePost(Post post,String key) {
+  void deletePost(Post post, String key) {
     this.ajax(
       url: "discover/post/delete/post/${post.id}",
       authKey: key,

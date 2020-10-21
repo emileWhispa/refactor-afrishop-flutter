@@ -121,6 +121,19 @@ class DiscoverState extends State<Discover> with SuperBase {
         ),
       ));
 
+  void goUser() async {
+    await waitUserCheck();
+    if (widget.user() != null)
+      Navigator.push(
+          context,
+          CupertinoPageRoute(
+              builder: (context) => DiscoverProfile(
+                user: widget.user,
+                callback: widget.callback,
+                object: widget.user,
+              )));
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -130,18 +143,7 @@ class DiscoverState extends State<Discover> with SuperBase {
         elevation: 0.6,
         leading: Align(
           child: InkWell(
-              onTap: () async {
-                await waitUserCheck();
-                if (widget.user() != null)
-                  Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                          builder: (context) => DiscoverProfile(
-                                user: widget.user,
-                                callback: widget.callback,
-                                object: widget.user,
-                              )));
-              },
+              onTap: goUser,
               child: Container(
                   height: 24,
                   width: 24,

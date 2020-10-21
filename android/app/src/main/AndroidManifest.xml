@@ -43,6 +43,10 @@
                 <data android:scheme="https"
                     android:host="m.afrieshop.com" />
                 <data android:scheme="https"
+                    android:host="afrieshop.com" />
+                <data android:scheme="http"
+                    android:host="afrieshop.com" />
+                <data android:scheme="https"
                     android:host="www.afrieshop.com" />
                 <!-- note that the leading "/" is required for pathPrefix-->
             </intent-filter>

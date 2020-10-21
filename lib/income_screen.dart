@@ -76,7 +76,7 @@ class _IncomeScreenState extends State<IncomeScreen> with SuperBase {
     fetchUser();
     this.ajax(
         url:
-            "discover/bonus/list/bonus/${widget.user()?.id}/today?pageNo=$_current&pageSize=50",
+            "discover/bonus/list/today?pageNo=$_current&pageSize=50",
         authKey: widget.user()?.token,
         onValue: (source, url) {
           if (!_urls.contains(url)) {
@@ -96,7 +96,7 @@ class _IncomeScreenState extends State<IncomeScreen> with SuperBase {
         onEnd: () {});
     this.ajax(
         url:
-            "discover/bonus/list/bonus/${widget.user()?.id}/prevMonth?pageNo=$_current1&pageSize=50",
+            "discover/bonus/list/prevMonth?pageNo=$_current1&pageSize=50",
         authKey: widget.user()?.token,
         onValue: (source, url) {
           if (!_urls.contains(url)) {
@@ -116,7 +116,7 @@ class _IncomeScreenState extends State<IncomeScreen> with SuperBase {
         onEnd: () {});
     return this.ajax(
         url:
-            "discover/bonus/list/bonus/${widget.user()?.id}/currentMonth?pageNo=$_current2&pageSize=50",
+            "discover/bonus/list/currentMonth?pageNo=$_current2&pageSize=50",
         authKey: widget.user()?.token,
         onValue: (source, url) {
           if (!_urls.contains(url)) {

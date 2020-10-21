@@ -121,7 +121,8 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
 
   Future<bool> willPop() async {
     if (_controller.text.trim().isNotEmpty ||
-        _titleController.text.trim().isNotEmpty || _list.isNotEmpty) {
+        _titleController.text.trim().isNotEmpty ||
+        _list.isNotEmpty) {
       await showCupertinoModalPopup(
           context: context,
           builder: (context) => new CupertinoAlertDialog(
@@ -147,14 +148,14 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                   )
                 ],
               ));
-      Navigator.pop(context);
+      if(!_sending) Navigator.pop(context);
       return false;
     }
 
     return true;
   }
 
-  Future<File> writeToFile(ByteData data,{String extension:""}) async {
+  Future<File> writeToFile(ByteData data, {String extension: ""}) async {
     final buffer = data.buffer;
 
     final directory = await getApplicationDocumentsDirectory();
@@ -175,12 +176,15 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
         _list.add(
             Choice("#dribble", await writeToFile(await f.getByteData()), true));
       }
-      if( _list.isNotEmpty ){
+      if (_list.isNotEmpty) {
         _navToTag(_list.first, 0);
       }
       setState(() {});
     }
   }
+
+  int sent = 0;
+  int total = 0;
 
   void sendPost() {
     if (!_formKey.currentState.validate() || _list.isEmpty) return;
@@ -190,20 +194,24 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
     });
 
     reqFocus(context);
-    
+
     var data = new FormData();
 
     data.files.addAll(_list
         .map((f) => f.file)
         .map((f) => MapEntry(
-        "files",MultipartFile.fromFileSync(f.path,filename: "$unique${getName(f)}")))
+            "files",
+            MultipartFile.fromFileSync(f.path,
+                filename: "$unique${getName(f)}")))
         .toList());
 
     data.files.addAll(_list
         .where((f) => f.thumb != null)
         .map((f) => f.thumb)
         .map((f) => MapEntry(
-        "thumbs",MultipartFile.fromFileSync(f.path,filename: "$unique${getName(f)}")))
+            "thumbs",
+            MultipartFile.fromFileSync(f.path,
+                filename: "$unique${getName(f)}")))
         .toList());
 
     widget.user().toServerModel().forEach((key, value) {
@@ -213,7 +221,8 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
     data.fields.add(MapEntry("description", _controller.text));
     data.fields.add(MapEntry("hashtags", jsonEncode(_hashtags)));
     data.fields.add(MapEntry("category", "images"));
-    data.fields.add(MapEntry("tags", jsonEncode(_list.map((f)=>f.toJsonOld()).toList())));
+    data.fields.add(
+        MapEntry("tags", jsonEncode(_list.map((f) => f.toJsonOld()).toList())));
 
 //    var map = {
 //      "title": _titleController.text,
@@ -228,13 +237,19 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
         method: "POST",
         authKey: widget.user()?.token,
         data: data,
+        progress: (int data, int total) {
+          setState(() {
+            this.sent = data;
+            this.total = total;
+          });
+        },
         onValue: (s, v) async {
           print(s);
           print(v);
-          for(var x in _list){
-            try{
+          for (var x in _list) {
+            try {
               await x.file.delete();
-            }catch(e){
+            } catch (e) {
               print(e);
             }
           }
@@ -248,7 +263,6 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
           });
         });
   }
-
 
   Future<void> showSuccess(String success) async {
     await showDialog(
@@ -397,39 +411,39 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
     checkTags(newText);
   }
 
-  void checkTags(String str){
-
+  void checkTags(String str) {
     setState(() {
       _loadingHashTag = false;
     });
     var list = findHashtags(str);
     setState(() {
-      list.forEach((f){
-        if( !_hashtags.any((x)=>x.name == f.name) ){
+      list.forEach((f) {
+        if (!_hashtags.any((x) => x.name == f.name)) {
           _hashtags.add(f);
         }
       });
-      _hashtags = _hashtags.length > 9 ? _hashtags.sublist(0,9).toList() : _hashtags;
+      _hashtags =
+          _hashtags.length > 9 ? _hashtags.sublist(0, 9).toList() : _hashtags;
     });
   }
 
-  void _navToTag(Choice choice,index)async{
-    if( _sending ) return;
+  void _navToTag(Choice choice, index) async {
+    if (_sending) return;
     var c = await Navigator.push(
         context,
         CupertinoPageRoute<Choice>(
             builder: (context) => ProductTag(
-              choice: choice,
-              list: [],
-              user: widget.user,
-              callback: widget.callback,
-            )));
+                  choice: choice,
+                  list: [],
+                  user: widget.user,
+                  callback: widget.callback,
+                )));
     if (c != null) {
-      setState(() {
-
-      });
+      setState(() {});
     }
   }
+
+  double get _progress => total == 0 || total == sent ? null : sent / total;
 
   @override
   Widget build(BuildContext context) {
@@ -461,7 +475,7 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                   )
                 : _sending
                     ? IconButton(
-                        icon: loadBox(),
+                        icon: loadBox(value: _progress),
                         onPressed: null,
                       )
                     : FlatButton(onPressed: sendPost, child: Text("Release"))
@@ -486,8 +500,7 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                       if (index == _list.length) {
                         return InkWell(
                             onTap: () async {
-
-                              if( _sending ) return;
+                              if (_sending) return;
 
                               if (_list.length > 8) {
                                 platform.invokeMethod(
@@ -578,14 +591,15 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                                 return;
                               }
 
-
                               var filePath = await ImagePicker().getVideo(
                                 source: ImageSource.gallery,
-                                maxDuration: Duration(seconds: 300),);
+                                maxDuration: Duration(seconds: 300),
+                              );
                               var x = await filePath.readAsBytes();
 
-
-                              var file = await writeToFile(x.buffer.asByteData(),extension: ".mp4");
+                              var file = await writeToFile(
+                                  x.buffer.asByteData(),
+                                  extension: ".mp4");
 
                               if (file == null) return;
                               var choice = Choice(null, file, source);
@@ -594,7 +608,8 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                                     await VideoThumbnail.thumbnailFile(
                                   video: file.path,
                                   thumbnailPath:
-                                      (await getApplicationDocumentsDirectory()).path,
+                                      (await getApplicationDocumentsDirectory())
+                                          .path,
                                   imageFormat: ImageFormat.PNG,
                                   maxHeight: 164,
                                   // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
@@ -645,7 +660,7 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
 
                               if (!choice.isImage) return;
 
-                              _navToTag(choice,index);
+                              _navToTag(choice, index);
                             },
                             child: choice.isImage
                                 ? Image(
@@ -772,15 +787,13 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                                 side: BorderSide(color: Colors.grey.shade300),
                                 borderRadius: BorderRadius.circular(4)),
                             onPressed: () async {
-
-
-                              if( _sending ) return;
+                              if (_sending) return;
 
                               var ls = await Navigator.of(context)
                                   .push(CupertinoPageRoute<List<Hashtag>>(
                                       builder: (context) => NewTagScreen(
                                             selected: _hashtags,
-                                        user: widget.user,
+                                            user: widget.user,
                                           )));
                               if (ls != null) {
                                 setState(() {
@@ -814,7 +827,24 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                     )
                   ],
                 ),
-              )
+              ),
+              _sending
+                  ? Center(
+                    child: Text(
+                         total == 0 ? "0%" : total == sent ? "100%" : "${((_progress) * 100).round()}%",
+                        style:
+                            TextStyle(fontSize: 40, fontWeight: FontWeight.w900),
+                      ),
+                  )
+                  : SizedBox.shrink(),
+              _sending
+                  ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: LinearProgressIndicator(
+                  value: _progress,
+                  minHeight: 10,
+                ),
+              ) : SizedBox.shrink()
             ],
           ),
         ),

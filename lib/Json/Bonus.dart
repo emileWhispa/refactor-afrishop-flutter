@@ -20,7 +20,7 @@ class Bonus extends Model {
         _title = json['item'] != null  ? json['item']['itemName'] : "Commission fees",
         url = json['item'] != null  ? json['item']['itemImg'] : null;
 
-  String get _amountStr => format((withDraw ? amount*-1 : amount) ?? 0.0);
+  double get _amountStr => (withDraw ? amount*-1 : amount) ?? 0.0;
   String get amountStr => withDraw ? "-\$$_amountStr" : "$_amountStr";
 
   String get title => withDraw ? "Withdraw" : _title;
