@@ -274,6 +274,7 @@ class _MyHomePageState extends State<MyHomePage>
           }
           (await prefs).remove(dKey);
           _discoverKey.currentState?.refreshFollow();
+          _discoverKey.currentState?.goToTop();
           await showSuccess("Released successfully");
         },
         error: (s, v) => print(v),
