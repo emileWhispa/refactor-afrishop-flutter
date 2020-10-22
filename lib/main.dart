@@ -132,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage>
     //Sender.scheduleNotification(title: "top");
     _firebaseNotifications.setUpFirebase().then((value) => globals.fcm = value);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      position = Offset(20.0, MediaQuery.of(context).padding.top);
+      position = Offset(7.0, MediaQuery.of(context).padding.top + 7);
       this.signedIn((token, user) => this._addUser(user), () {
         _homePageKey.currentState?.showNewCouponDialog(show: true);
       });
