@@ -250,7 +250,8 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
         fontSize: 14.1,
         fontStyle: FontStyle.italic,
         fontFamily: 'FuturaBT-MediumItalic');
-    return InkWell(
+    return category.isShow == "1"?
+    InkWell(
       onTap: () async {
         await Navigator.of(context).push(CupertinoPageRoute(
             builder: (context) => OldCategory(
@@ -268,7 +269,7 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
           )
         ),
       ),
-    );
+    ):SizedBox.shrink();
   }
 
   @override
@@ -501,11 +502,10 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
 
 
   void handleNavigation(Poster poster) async {
-    print(poster.posterType);
-    print(poster.linkUrl);
     switch (poster.posterType) {
       case 0:
         {
+          poster.isShow =="1"?
           await Navigator.push(
               context,
               CupertinoPageRoute(
@@ -514,7 +514,7 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
                     user: widget.user,
                     callback: widget.callback,
                     title: poster.title,
-                  )));
+                  ))):SizedBox.shrink();
           break;
         }
 //      case 1:{
@@ -712,12 +712,12 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
                                         onTap: () async {
                                           handleNavigation(f);
                                         },
-                                        child: FadeInImage(
+                                        child: f.isShow=="1"? FadeInImage(
                                           image: CachedNetworkImageProvider(
                                               f.poster),
                                           fit: BoxFit.cover,
                                           placeholder: defLoader,
-                                        ),
+                                        ):SizedBox.shrink(),
                                       ))
                                   .toList(),
                             ),
@@ -1145,13 +1145,13 @@ class __CarouselState extends State<_Carousel> with SuperBase {
               itemBuilder: (context, i) {
                 var sl = images[i];
                 return GestureDetector(
-                  onTap: ()=>this.handleNavigation(sl),
+                  // onTap: ()=>this.handleNavigation(sl),
                   child: Container(
                     width: double.infinity,
                     child: FadeInImage(
                       image: CachedNetworkImageProvider(sl.image ?? ''),
                       placeholder: defLoader,
-                      fit: BoxFit.cover,
+                      // fit: BoxFit.cover,
                     ),
                   ),
                 );

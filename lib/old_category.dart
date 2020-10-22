@@ -111,7 +111,7 @@ class _OldCategoryState extends State<OldCategory> with SuperBase {
                               children: <Widget>[
                                 Expanded(
                                     child: Text(
-                                  "${cat.name}".toUpperCase(),
+                                  "jOHN4".toUpperCase(),
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontFamily: 'DIN Alternate',
@@ -178,7 +178,7 @@ class _OldCategoryState extends State<OldCategory> with SuperBase {
                           children: <Widget>[
                             Expanded(
                                 child: Text(
-                              "${cat.name}".toUpperCase(),
+                              "jOHN".toUpperCase(),
                               style: TextStyle(
                                   fontWeight: FontWeight.w800,
                                   fontFamily: 'DIN Alternate',
