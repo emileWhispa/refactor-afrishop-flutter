@@ -117,7 +117,7 @@ class _SearchScreenState extends State<SearchScreen> with SuperBase {
 
     return this.ajax(
         url:
-            "itemStation/searchItems?name=${Uri.encodeComponent(query)}&pageNum=1&pageSize=50",
+            "itemStation/searchItems?name=${Uri.encodeComponent(query)}&pageNum=0&pageSize=50",
         server: true,
         onValue: (source, url) {
           print(url);

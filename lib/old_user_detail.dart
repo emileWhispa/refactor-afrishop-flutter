@@ -14,11 +14,13 @@ import 'package:afri_shop/new_post.dart';
 import 'package:afri_shop/pending_cart.dart';
 import 'package:afri_shop/user_profile.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share/share.dart';
 
+import 'Json/choice.dart';
 import 'SuperBase.dart';
 import 'Support.dart';
 import 'cart_page.dart';
@@ -29,6 +31,7 @@ class OldUserDetail extends StatefulWidget {
   final void Function(String data) onLogOut;
   final void Function(User user) callback;
   final void Function(int index) jumpTo;
+  final void Function(FormData data,List<Choice> list) uploadFile;
   final bool isSigned;
   final GlobalKey<CartScreenState> cartState;
 
@@ -37,7 +40,7 @@ class OldUserDetail extends StatefulWidget {
       @required this.user,
       this.onLogOut,
       @required this.callback,
-      this.isSigned: false, this.jumpTo,@required this.cartState})
+      this.isSigned: false, this.jumpTo,@required this.cartState,@required this.uploadFile})
       : super(key: key);
 
   @override
@@ -868,6 +871,7 @@ class _OldUserDetailState extends State<OldUserDetail> with SuperBase {
                                     context,
                                     CupertinoPageRoute(
                                         builder: (context) => NewPostScreen(
+                                          uploadFile: widget.uploadFile,
                                             user: widget.user,
                                             callback: widget.callback)));
                                 if (x != null) {

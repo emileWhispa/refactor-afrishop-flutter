@@ -22,8 +22,9 @@ import 'SuperBase.dart';
 class NewPostScreen extends StatefulWidget {
   final User Function() user;
   final void Function(User user) callback;
+  final void Function(FormData data,List<Choice> list) uploadFile;
 
-  const NewPostScreen({Key key, @required this.user, @required this.callback})
+  const NewPostScreen({Key key, @required this.user, @required this.callback,@required this.uploadFile})
       : super(key: key);
 
   @override
@@ -40,8 +41,8 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
   var _sending = false;
   var _loadingHashTag = false;
   FocusNode _focusNode = new FocusNode();
+  ScrollController _scrollController = new ScrollController();
 
-  String get dKey => "draft-key";
 
   @override
   void initState() {
@@ -183,15 +184,10 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
     }
   }
 
-  int sent = 0;
-  int total = 0;
 
   void sendPost() {
     if (!_formKey.currentState.validate() || _list.isEmpty) return;
 
-    setState(() {
-      _sending = true;
-    });
 
     reqFocus(context);
 
@@ -224,67 +220,19 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
     data.fields.add(
         MapEntry("tags", jsonEncode(_list.map((f) => f.toJsonOld()).toList())));
 
+    if( widget.uploadFile != null)
+    widget.uploadFile(data,_list);
+
 //    var map = {
 //      "title": _titleController.text,
 //      "description": _controller.text,
 //      "hashtags": ,
 //      "category": "images",
 //    };
+    //_scrollController.animateTo(_scrollController.position.minScrollExtent, duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
 
-    this.ajax(
-        url: "discover/post/upload",
-        server: true,
-        method: "POST",
-        authKey: widget.user()?.token,
-        data: data,
-        progress: (int data, int total) {
-          setState(() {
-            this.sent = data;
-            this.total = total;
-          });
-        },
-        onValue: (s, v) async {
-          print(s);
-          print(v);
-          for (var x in _list) {
-            try {
-              await x.file.delete();
-            } catch (e) {
-              print(e);
-            }
-          }
-          (await prefs).remove(dKey);
-          await showSuccess("Released successfully");
-        },
-        error: (s, v) => print(v),
-        onEnd: () {
-          setState(() {
-            _sending = false;
-          });
-        });
   }
 
-  Future<void> showSuccess(String success) async {
-    await showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Image(
-                    height: 120,
-                    fit: BoxFit.cover,
-                    image: AssetImage("assets/logo_circle.png")),
-                SizedBox(height: 20),
-                Text("$success",
-                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16))
-              ],
-            ),
-          );
-        });
-    Navigator.of(context).pop("data");
-  }
 
   Future<File> writeToGallery(File file) async {
     final directory = await getExternalStorageDirectory();
@@ -443,7 +391,6 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
     }
   }
 
-  double get _progress => total == 0 || total == sent ? null : sent / total;
 
   @override
   Widget build(BuildContext context) {
@@ -473,17 +420,13 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                     child: Text("Delete"),
                     textColor: Colors.red,
                   )
-                : _sending
-                    ? IconButton(
-                        icon: loadBox(value: _progress),
-                        onPressed: null,
-                      )
-                    : FlatButton(onPressed: sendPost, child: Text("Release"))
+                : FlatButton(onPressed: sendPost, child: Text("Release"))
           ],
         ),
         body: Form(
           key: _formKey,
           child: ListView(
+            controller: _scrollController,
             children: <Widget>[
               Container(
                 width: double.infinity,
@@ -828,23 +771,6 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                   ],
                 ),
               ),
-              _sending
-                  ? Center(
-                    child: Text(
-                         total == 0 ? "0%" : total == sent ? "100%" : "${((_progress) * 100).round()}%",
-                        style:
-                            TextStyle(fontSize: 40, fontWeight: FontWeight.w900),
-                      ),
-                  )
-                  : SizedBox.shrink(),
-              _sending
-                  ? Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: LinearProgressIndicator(
-                  value: _progress,
-                  minHeight: 10,
-                ),
-              ) : SizedBox.shrink()
             ],
           ),
         ),

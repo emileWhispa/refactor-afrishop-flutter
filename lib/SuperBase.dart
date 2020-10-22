@@ -73,6 +73,8 @@ class SuperBase {
     }
   }
 
+  String get dKey => "draft-key";
+
   String validateMobile(String value) {
     String pattern = r'(^(?:[+0]9)?[0-9]{8,14}$)';
     RegExp regExp = new RegExp(pattern);

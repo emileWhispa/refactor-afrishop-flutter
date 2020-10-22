@@ -5,10 +5,12 @@ import 'package:afri_shop/following.dart';
 import 'package:afri_shop/new_account_screen.dart';
 import 'package:afri_shop/new_post.dart';
 import 'package:afri_shop/recommended.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'Json/User.dart';
+import 'Json/choice.dart';
 import 'SuperBase.dart';
 import 'cart_page.dart';
 import 'discover_profile.dart';
@@ -18,8 +20,9 @@ class Discover extends StatefulWidget {
   final void Function(User user) callback;
   final Future<void> Function() showModal;
   final GlobalKey<CartScreenState> cartState;
+  final void Function(FormData data,List<Choice> list) uploadFile;
 
-  const Discover({Key key, this.user, this.callback, this.cartState, this.showModal}) : super(key: key);
+  const Discover({Key key, this.user, this.callback, this.cartState, this.showModal,@required this.uploadFile}) : super(key: key);
 
   @override
   DiscoverState createState() => DiscoverState();
@@ -213,6 +216,7 @@ class DiscoverState extends State<Discover> with SuperBase {
                   var s = await Navigator.of(context).push(CupertinoPageRoute(
                       builder: (context) => NewPostScreen(
                             user: widget.user,
+                            uploadFile: widget.uploadFile,
                             callback: widget.callback,
                           )));
                   if (s != null) refreshFollow();

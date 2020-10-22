@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:afri_shop/old_authorization.dart';
 import 'package:afri_shop/old_user_detail.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'Json/choice.dart';
 import 'Json/globals.dart' as globals;
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -24,6 +26,7 @@ class AccountScreen extends StatefulWidget {
   final void Function(User user) callback;
   final void Function(int index) jumpTo;
   final GlobalKey<CartScreenState> cartState;
+  final void Function(FormData data,List<Choice> list) uploadFile;
   final bool canPop;
   final bool partial;
 
@@ -34,7 +37,7 @@ class AccountScreen extends StatefulWidget {
       this.canPop: false,
       this.partial: false,
       this.jumpTo,
-      @required this.cartState})
+      @required this.cartState,@required this.uploadFile})
       : super(key: key);
 
   @override
@@ -262,6 +265,7 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
 
     return widget.user() != null
         ? OldUserDetail(
+      uploadFile: widget.uploadFile,
             user: widget.user,
             onLogOut: (d) {
               setState(() {
