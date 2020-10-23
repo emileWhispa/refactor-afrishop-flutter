@@ -59,6 +59,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
   List<Post> posts = [];
 
   Address _address;
+  int itemNum = 0;
 
   List<Logistic> _logistics = [];
 
@@ -112,6 +113,11 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
 
     _order = widget.completedOrder;
     _order2 = widget.order;
+    widget.list.map((e) => {
+          setState(() {
+            itemNum = itemNum + e.itemNum;
+          })
+        });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       //this.checkVisitedLink();
       getDefault();
@@ -120,16 +126,16 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
         goCheckOut(widget.completedOrder);
       }
       //DateFormat format = new DateFormat("MMM dd, yyyy hh:mm:ss");
-     // print(order?.orderTime);
+      // print(order?.orderTime);
       var formattedDate =
           DateTime.tryParse('${order?.orderTime}') ?? DateTime.now();
       var addedTime = formattedDate.add(Duration(hours: 24));
       setState(() {
-       // _diffDt = addedTime.difference(_addDt);
+        // _diffDt = addedTime.difference(_addDt);
         _duration = addedTime.difference(DateTime.now());
       });
       _timer = Timer.periodic(Duration(seconds: 1), (t) {
-     if (_duration == Duration(hours: 0)) {
+        if (_duration == Duration(hours: 0)) {
           setState(() {
             _duration = Duration(hours: 0);
           });
@@ -188,9 +194,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                       children: List.generate(products.length, (index) {
                         var post = posts.length > index
                             ? posts[index]
-                            : posts.isNotEmpty
-                                ? posts.first
-                                : null;
+                            : posts.isNotEmpty ? posts.first : null;
                         var product = products[index];
 
                         if (post == null) return SizedBox.shrink();
@@ -489,12 +493,11 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                   trailing: Text("\$$total2"),
                 ),
                 ListTile(
-                  onTap: () {},
-                  title: Text("Shipping Fee"),
-                  trailing: Text(order?.expressCost == 0
-                      ? "\$${0}"
-                      : "${order?.expressCost}")
-                ),
+                    onTap: () {},
+                    title: Text("Shipping Fee"),
+                    trailing: Text(order?.expressCost == 0
+                        ? "\$${0}"
+                        : "${order?.expressCost}")),
                 ListTile(
                   onTap: () {},
                   title: Text("Handling Fee"),
@@ -537,7 +540,8 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                         ? Row(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
-                              Text(order?.couponPrice == null
+                              Text(
+                                  order?.couponPrice == null
                                       ? "-\$${0}"
                                       : "${order?.couponPrice}",
                                   style: TextStyle(
@@ -547,7 +551,8 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                                   color: canCoupon ? Colors.orange : null)
                             ],
                           )
-                        : Text(order?.couponPrice == null
+                        : Text(
+                            order?.couponPrice == null
                                 ? "-\$${0}"
                                 : "${order?.couponPrice}",
                             style: TextStyle(
@@ -617,7 +622,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                     ],
                   ),
                 ),
-             widget.order.status == 'Pending'
+          widget.order.status == 'Pending'
               ? SizedBox.shrink()
               : Container(
                   decoration: BoxDecoration(
@@ -931,6 +936,15 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
           if (map != null && map['code'] == 1) {
             _order = Order.fromJson(map['data']);
             setState(() {});
+            platform.invokeMethod('logInitiateCheckoutEvent', <Object, dynamic>{
+              "contentData": "${_order.orderName}",
+              "contentId": "${_order.orderId}",
+              "contentType": 'order',
+              "numItems": itemNum,
+              "paymentInfoAvailable": true,
+              "currency": "USD",
+              "totalPrice": order.totalPrice
+            });
             goCheckOut(_order);
           } else {
             platform.invokeMethod("toast", map['message']);
@@ -1685,9 +1699,7 @@ class _PopPageState extends State<PopPage> with SuperBase {
                                   _controller.text.isNotEmpty &&
                                   emailExp.hasMatch(_controller.text)
                               ? flutterWave
-                              : _selected == 0
-                                  ? dpoPayment
-                                  : null,
+                              : _selected == 0 ? dpoPayment : null,
                           color: color,
                           elevation: 0.0,
                           shape: RoundedRectangleBorder(

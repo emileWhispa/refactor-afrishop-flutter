@@ -93,15 +93,19 @@ class _WebViewExampleState extends State<WebViewExample> with SuperBase {
                 _loading = true;
               });
               print(source);
-              if (body['code'] == 1)
+              if (body['code'] == 1){
+            platform.invokeMethod('logPurchase', <Object, dynamic>{
+            "currency":"USD",
+             "purchaseAmount":widget.order.totalPrice
+            });
                 Navigator.push(
                     context,
                     CupertinoPageRoute(
                         builder: (context) => PaymentSuccess(
-                            user: widget.user, order: widget.order,callback: widget.callback,)));
-              else
+                            user: widget.user, order: widget.order,callback: widget.callback,)));}
+              else{
                 Navigator.push(context,
-                    CupertinoPageRoute(builder: (context) => PayFailure()));
+                    CupertinoPageRoute(builder: (context) => PayFailure()));}
             },
             error: (source, url) {
               Navigator.popUntil(context, (c) => c.isFirst);
@@ -138,15 +142,19 @@ class _WebViewExampleState extends State<WebViewExample> with SuperBase {
               setState(() {
                 _loading = true;
               });
-              if (body['code'] == 1)
+              if (body['code'] == 1){
+            platform.invokeMethod('logPurchase', <Object, dynamic>{
+            "currency":"USD",
+             "purchaseAmount":widget.order.totalPrice
+            });
                 Navigator.push(
                     context,
                     CupertinoPageRoute(
                         builder: (context) => PaymentSuccess(
-                            user: widget.user, order: widget.order,callback: widget.callback,)));
-              else
+                            user: widget.user, order: widget.order,callback: widget.callback,)));}
+              else{
                 Navigator.push(context,
-                    CupertinoPageRoute(builder: (context) => PayFailure()));
+                    CupertinoPageRoute(builder: (context) => PayFailure()));}
             },
             error: (source, url) {
               Navigator.pushReplacement(context,
