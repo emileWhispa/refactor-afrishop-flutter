@@ -371,6 +371,13 @@ class _DescriptionState extends State<Description> with SuperBase {
             print(source);
             _goToCart(product: _newProduct);
           }
+         platform.invokeMethod('logAddToCartEvent', <String, dynamic>{
+      'contentData': product.title,
+      'contentId': "${product.itemId}",
+      'contentType':"1",
+      'currency':'USD',
+      'price':product.discountPrice
+    });
           platform.invokeMethod("toast", "Product added to cart");
           setState(() {
             widget.user()?.cartCount += product.items;
