@@ -74,7 +74,7 @@ class Post {
     return map != null && map.isNotEmpty
         ? map.map((f) => Picture.fromJson(f)).toList()
         : iterable != null
-            ? iterable.map((e) => Picture.fromJson({'content': e['content'],'image':e['image']})).toList()
+            ? iterable.map((e) => Picture.fromJson(e)).toList()
             : [];
   }
 
@@ -86,7 +86,7 @@ class Post {
   String get username => _username ?? user?.username ?? "-- name --";
 
   String get bigImage => pictures.isNotEmpty
-      ? pictures.first.isImage ? pictures.first.image : ""
+      ? pictures.first.isImage ? pictures.first.image : (pictures.first.thumb ?? "")
       : "";
 
   User get getDynamicUser => User.fromJson({

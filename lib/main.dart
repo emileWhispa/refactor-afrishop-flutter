@@ -247,10 +247,16 @@ class _MyHomePageState extends State<MyHomePage>
   Offset position;
 
   void uploadPost(FormData data, List<Choice> _list) {
+
+    if( _sending ){
+      platform.invokeMethod("toast","Another upload in progress");
+      return;
+    }
+
     setState(() {
       _sending = true;
       _currentTabIndex = 1;
-      _uploadFile = _list.isNotEmpty ? _list.first.file : null;
+      _uploadFile = _list.isNotEmpty ? _list.first.isImage ? _list.first.file : _list.first.thumb : null;
     });
     Navigator.popUntil(context, (route) => route.isFirst);
     this.ajax(
@@ -273,6 +279,9 @@ class _MyHomePageState extends State<MyHomePage>
             }
           }
           (await prefs).remove(dKey);
+          setState(() {
+            _currentTabIndex = 1;
+          });
           _discoverKey.currentState?.refreshFollow();
           _discoverKey.currentState?.goToTop();
           await showSuccess("Released successfully");

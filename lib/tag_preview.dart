@@ -66,7 +66,7 @@ class _TagPreviewState extends State<TagPreview> with SuperBase {
                     post: widget.post,
                     allowTap: false,
                     user: widget.user,
-                    callback: widget.callback) : VideoApp(url: pc.image);
+                    callback: widget.callback) : VideoApp(url: pc.image,thumb: pc.thumb,);
               }),
           Positioned(
               bottom: 15,

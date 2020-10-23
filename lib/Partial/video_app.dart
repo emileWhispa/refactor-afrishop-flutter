@@ -1,5 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+
+import '../SuperBase.dart';
 
 class VideoApp extends StatefulWidget {
   final String url;
@@ -11,7 +15,7 @@ class VideoApp extends StatefulWidget {
   _VideoAppState createState() => _VideoAppState();
 }
 
-class _VideoAppState extends State<VideoApp> {
+class _VideoAppState extends State<VideoApp> with SuperBase {
   VideoPlayerController _controller;
 
   @override
@@ -35,13 +39,27 @@ class _VideoAppState extends State<VideoApp> {
 //    return Center();
 //  }
 
+  bool get initialized => _controller.value.initialized;
 
-  Widget get _video =>_controller.value.initialized
+
+  Widget get _video => initialized
       ? AspectRatio(
     aspectRatio: _controller.value.aspectRatio,
     child: VideoPlayer(_controller),
   )
-      : Container(child: CircularProgressIndicator(),);
+      : Stack(
+        children: [
+          Center(
+            child: Container( width: double.infinity,decoration:BoxDecoration(
+    image:DecorationImage(
+            fit: BoxFit.cover,
+            image: CachedNetworkImageProvider(widget.thumb ?? "")
+    )
+  ),child: FadeInImage(placeholder: def,fit: BoxFit.cover, image: CachedNetworkImageProvider(widget.thumb ?? "")),),
+          ),
+          Positioned(child: Center(child: CupertinoActivityIndicator(radius: 30),))
+        ],
+      );
 
   @override
   Widget build(BuildContext context) {

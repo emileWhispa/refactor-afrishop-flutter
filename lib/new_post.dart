@@ -554,9 +554,9 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                                       (await getApplicationDocumentsDirectory())
                                           .path,
                                   imageFormat: ImageFormat.PNG,
-                                  maxHeight: 164,
+                                  maxHeight: 200,
                                   // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
-                                  quality: 75,
+                                  quality: 100,
                                 );
                                 choice.thumb = new File(uint8list);
                               }
