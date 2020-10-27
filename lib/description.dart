@@ -773,7 +773,7 @@ class _DescriptionState extends State<Description> with SuperBase {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    "Recommended Items",
+                    "You may like this",
                     style: TextStyle(
                       fontSize: 14,
                         fontWeight: FontWeight.w900,
@@ -1068,6 +1068,9 @@ class _DescStateState extends State<DescState> with SuperBase {
   void initState() {
     // TODO: implement initState
     super.initState();
+      print('=-=-=-=-==-=-=-=-=');
+      widget.options.map((e) => print(e));
+  
     _value = widget.value;
   }
 
