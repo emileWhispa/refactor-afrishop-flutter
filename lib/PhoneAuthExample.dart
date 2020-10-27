@@ -25,7 +25,7 @@ class PhoneAuthExample extends StatefulWidget {
 
 class _PhoneAuthExampleState extends State<PhoneAuthExample> with SuperBase {
   var phoneNumController = new TextEditingController();
-
+  bool _isPhoneValid = true;
   /// will get an AuthCredential object that will help with logging into Firebase.
   void _verificationComplete(authCredential) {
     FirebaseAuth.instance
@@ -68,7 +68,7 @@ class _PhoneAuthExampleState extends State<PhoneAuthExample> with SuperBase {
   var _verify = false;
 
   String get phoneNumber =>
-      "+${_selected?.dialingCode??"250"}${phoneNumController.text}";
+      "+${_selected?.dialingCode??"260"}${phoneNumController.text}";
 
   var _verificationId;
 
@@ -114,10 +114,34 @@ class _PhoneAuthExampleState extends State<PhoneAuthExample> with SuperBase {
     });
   }
 
+  _codeAutoRetrievalTimeout(String verificationId) {
+    showSnackBar('time out $verificationId');
+    setState(() {
+      _loading = false;
+      _verify = true;
+    });
+  }
 
+    void _verificationFailed(authException, BuildContext context) {
+    var text = authException.message.toString();
+    print("Exception");
+    showSnackBar(text);
+    print(text);
+    setState(() {
+      _loading = false;
+      _verify = false;
+    });
+  }
 
   void _verifyPhoneNumber(BuildContext context) async {
+
+    // _validateMobile(phoneNumber);
+    // if(_isPhoneValid==false){
+    // }
+    // else
+    // {
     if (!_formKey.currentState.validate()) {
+      platform.invokeMethod('toast','Enter a valid phone number');
       return;
     }
     reqFocus(context);
@@ -137,27 +161,27 @@ class _PhoneAuthExampleState extends State<PhoneAuthExample> with SuperBase {
         // called when the SMS code is sent
         codeSent: (verificationId, [code]) =>
             _smsCodeSent(verificationId, [code]));
+            // }
   }
 
-  _codeAutoRetrievalTimeout(String verificationId) {
-    showSnackBar('time out $verificationId');
-    setState(() {
-      _loading = false;
-      _verify = true;
-    });
-  }
 
-  void _verificationFailed(authException, BuildContext context) {
-    var text = authException.message.toString();
-    print("Exception");
-    showSnackBar(text);
-    print(text);
-    setState(() {
-      _loading = false;
-      _verify = false;
-    });
+  void _validateMobile(String value) {
+    print(value.length);
+    String pattern = r'(^(?:[+0]9)?[0-9]{8,14}$)';
+    RegExp regExp = new RegExp(pattern);
+    if (value.length == 0) {
+      setState(() {
+        _isPhoneValid = false;      });
+    } else if (!regExp.hasMatch(value)) {
+      setState(() {
+        _isPhoneValid = false;
+      });
+    } else {
+      setState(() {
+        _isPhoneValid = true;
+      });
+    }
   }
-
 
 
 
@@ -165,7 +189,7 @@ class _PhoneAuthExampleState extends State<PhoneAuthExample> with SuperBase {
     widget.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text(snackBar)));
   }
 
-  Country _selected = Country.RW;
+  Country _selected = Country.ZM;
 
   var _formKey = new GlobalKey<FormState>();
 
@@ -218,7 +242,7 @@ class _PhoneAuthExampleState extends State<PhoneAuthExample> with SuperBase {
                           filled: true,
                           fillColor: Color(0xffefeeee),
                           hintText: "Phone Number",
-                          prefixText: '+${_selected?.dialingCode??"250"}',
+                          prefixText: '+${_selected?.dialingCode??"260"}',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5),
                             borderSide: BorderSide.none,

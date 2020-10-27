@@ -100,9 +100,9 @@ class _ConfirmInvitationState extends State<ConfirmInvitation> with SuperBase {
               SizedBox(height: 25),
               CircleAvatar(
                 radius: 50,
-                backgroundImage: widget.inviter?.avatar == null
-                    ? defLoader
-                    : CachedNetworkImageProvider(widget.inviter.avatar),
+              
+                backgroundImage:  AssetImage("assets/africa_logo.png"),
+                    
               ),
               SizedBox(height: 25),
               RichText(

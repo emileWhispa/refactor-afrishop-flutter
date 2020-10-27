@@ -29,6 +29,8 @@ class DiscoverDescription extends StatefulWidget {
   final GlobalKey<CartScreenState> cartState;
   final void Function() delete;
   final bool fromLink;
+  final bool partial;
+
 
   const DiscoverDescription(
       {Key key,
@@ -36,7 +38,7 @@ class DiscoverDescription extends StatefulWidget {
       @required this.post,
       @required this.user,
       @required this.callback,
-      this.fromLink: false,@required this.delete,@required this.likePost,@required this.cartState})
+      this.fromLink: false,@required this.delete,@required this.likePost,@required this.cartState,this.partial:false})
       : super(key: key);
 
   @override
@@ -421,13 +423,19 @@ class _DiscoverDescriptionState extends State<DiscoverDescription>
                       style: TextStyle(fontWeight: FontWeight.w800),
                     ),
                     onPressed: () async {
-                      await Navigator.push(
+                          if(widget.user()!=null){
+                         await Navigator.push(
                           context,
                           CupertinoPageRoute(
                               builder: (context) => CommentSection(
                                 callback: widget.callback,
                                   post: post, user: widget.user)));
-                      loadComments();
+                          loadComments();
+                      }
+                      else{
+                    platform.invokeListMethod('toast','You must login first');}
+
+
                     },
                     color: Color(0xffffe707),
                     padding: EdgeInsets.all(5),
@@ -440,7 +448,12 @@ class _DiscoverDescriptionState extends State<DiscoverDescription>
                       widget.post.liked ? "Dislike" : "Like",
                       style: TextStyle(fontWeight: FontWeight.w800),
                     ),
-                    onPressed: likePost,
+                    onPressed:()=> {
+                    widget.user()!=null?likePost():platform.invokeListMethod('toast','You must login first')
+
+
+                      
+                      },
                     color: Color(0xffffe707),
                     padding: EdgeInsets.all(5),
                   ))

@@ -120,7 +120,7 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
     reqFocus(context);
     var phone = _isEmail2
         ? _emailRegController.text
-        : "${_country2?.dialingCode ?? "250"}${_phoneRegController.text}";
+        : "${_country2?.dialingCode ?? "260"}${_phoneRegController.text}";
 
     var map = {
       "email":phone,
