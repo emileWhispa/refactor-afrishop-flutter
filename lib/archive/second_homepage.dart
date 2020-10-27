@@ -250,8 +250,7 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
         fontSize: 14.1,
         fontStyle: FontStyle.italic,
         fontFamily: 'FuturaBT-MediumItalic');
-    return category.isShow == "1"?
-    InkWell(
+    return InkWell(
       onTap: () async {
         await Navigator.of(context).push(CupertinoPageRoute(
             builder: (context) => OldCategory(
@@ -269,7 +268,7 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
           )
         ),
       ),
-    ):SizedBox.shrink();
+    );
   }
 
   @override
@@ -427,7 +426,7 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
                 }
                 if( x['classificationList'] != null ){
                   Iterable _map0 = x['classificationList'];
-                  _categories = _map0.map((f) => Category.fromJson(f)).toList();
+                  _categories = _map0.map((f) => Category.fromJson(f)).where((element) => element.isShow == "1").toList();
                 }
               }
             });
