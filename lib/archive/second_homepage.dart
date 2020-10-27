@@ -419,7 +419,7 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
               for(var x in dx){
                 if( x['postersList'] != null ){
                   Iterable _map2 = x['postersList'];
-                  _posters = _map2.map((f) => Poster.fromJson(f)).toList();
+                  _posters = _map2.map((f) => Poster.fromJson(f)).where((element) => element.isShow == 1).toList();
                 }
                 if( x['storeStationList'] != null ){
                   Iterable _map = x['storeStationList'];
@@ -505,7 +505,6 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
     switch (poster.posterType) {
       case 0:
         {
-          poster.isShow =="1"?
           await Navigator.push(
               context,
               CupertinoPageRoute(
@@ -514,7 +513,7 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
                     user: widget.user,
                     callback: widget.callback,
                     title: poster.title,
-                  ))):SizedBox.shrink();
+                  )));
           break;
         }
 //      case 1:{
@@ -712,12 +711,12 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
                                         onTap: () async {
                                           handleNavigation(f);
                                         },
-                                        child: f.isShow=="1"? FadeInImage(
+                                        child: FadeInImage(
                                           image: CachedNetworkImageProvider(
                                               f.poster),
                                           fit: BoxFit.cover,
                                           placeholder: defLoader,
-                                        ):SizedBox.shrink(),
+                                        ),
                                       ))
                                   .toList(),
                             ),

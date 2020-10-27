@@ -4,7 +4,7 @@ class Poster {
   String id;
   int posterType;
   String title;
-  String isShow;
+  int isShow;
 
   Poster.fromJson(Map<String, dynamic> json)
       : id = json['id'],

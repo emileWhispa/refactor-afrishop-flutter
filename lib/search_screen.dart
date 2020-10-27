@@ -29,7 +29,15 @@ class _SearchScreenState extends State<SearchScreen> with SuperBase {
       loadRecommended();
       loadHistories();
     });
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+        _loadData(_text,increment: true);
+      }
+    });
   }
+
+
+  bool _loading = false;
 
   List<Product> _list = [];
   List<Product> _listFuzzy = [];
@@ -39,6 +47,7 @@ class _SearchScreenState extends State<SearchScreen> with SuperBase {
   List<String> _recommended = [];
 
   TextEditingController _controller = new TextEditingController();
+  ScrollController _scrollController = new ScrollController();
 
   bool _searching = false;
   bool _searched = false;
@@ -69,7 +78,7 @@ class _SearchScreenState extends State<SearchScreen> with SuperBase {
         url: "search/getRecords",
         authKey: widget.user()?.token,
         auth: true,
-        error: (s,v)=>print(s),
+        error: (s, v) => print(s),
         onValue: (source, url) {
           setState(() {
             _searchUrl = url;
@@ -96,8 +105,10 @@ class _SearchScreenState extends State<SearchScreen> with SuperBase {
 
   int _inc = 1;
 
+  int _page = 0;
+
   Future<void> _loadData(String query,
-      {bool fuzzy: false, bool addHistory: true, int inc: 1}) {
+      {bool fuzzy: false, bool addHistory: true, int inc: 1,bool increment:false}) {
     setState(() {
       _inc = inc;
       if (query.isEmpty) {
@@ -115,9 +126,14 @@ class _SearchScreenState extends State<SearchScreen> with SuperBase {
       this.addHistory(query);
     }
 
+      setState(() {
+        _loading = increment;
+      });
+
+
     return this.ajax(
         url:
-            "itemStation/searchItems?name=${Uri.encodeComponent(query)}&pageNum=0&pageSize=50",
+            "itemStation/searchItems?name=${Uri.encodeComponent(query)}&pageNum=${fuzzy?0:_page}&pageSize=${fuzzy?5:50}",
         server: true,
         onValue: (source, url) {
           print(url);
@@ -132,7 +148,12 @@ class _SearchScreenState extends State<SearchScreen> with SuperBase {
             }
             _listFuzzy = [];
             _searching = false;
-            _list = iterable.map((f) => Product.fromJson(f)).toList();
+            if( increment ) _page++;
+            else _page = 0;
+            var list = iterable.map((f) => Product.fromJson(f)).toList();
+            if( increment ){
+              _list = _list..removeWhere((element) => list.any((el) => el.itemId == element.itemId))..addAll(list);
+            }else _list = list.toList();
             _listUp = _list.toList();
             _listDown = _list.toList();
             _searched = true;
@@ -140,29 +161,29 @@ class _SearchScreenState extends State<SearchScreen> with SuperBase {
             _listDown.sort((v, c) => v.price.compareTo(c.price));
           });
           platform.invokeMethod('logSearchEvent', <Object, dynamic>{
-      'contentData': "list of ${query}",
-      'contentId': "search",
-      'contentType':"search",
-      'searchString':query,
-      'success':true
-    });
+            'contentData': "list of $query",
+            'contentId': "search",
+            'contentType': "search",
+            'searchString': query,
+            'success': true
+          });
         },
-        
-
-        error: (s, v) => {
-          print(s),
-       platform.invokeMethod('logSearchEvent', <Object, dynamic>{
-      'contentData': "Error searching ${s}",
-      'contentId': "search",
-      'contentType':"search",
-      'searchString':query,
-      'success':false
-    })
-          
-          },
+        error: (s, v) {
+              print(s);
+              platform.invokeMethod('logSearchEvent', <Object, dynamic>{
+                'contentData': "Error searching $s",
+                'contentId': "search",
+                'contentType': "search",
+                'searchString': query,
+                'success': false
+              });
+            },
         onEnd: () {
           setState(() {
-            _searching = false;
+            if(!fuzzy) _searching = false;
+            if(increment){
+                _loading = false;
+            }
           });
         });
   }
@@ -186,7 +207,7 @@ class _SearchScreenState extends State<SearchScreen> with SuperBase {
   void _deleteAll() async {
     Navigator.of(context).pop();
     (await prefs).remove(historyLink);
-    (await prefs).remove(_searchUrl??"");
+    (await prefs).remove(_searchUrl ?? "");
     var ids = _histories.map((e) => e.id).toList();
     setState(() {
       _deleting = true;
@@ -206,12 +227,12 @@ class _SearchScreenState extends State<SearchScreen> with SuperBase {
             setState(() {
               _histories.clear();
             });
-          }else{
+          } else {
             print(source);
             print(url);
           }
         },
-        error: (s,v){
+        error: (s, v) {
           print(s);
           print(v);
         },
@@ -504,15 +525,22 @@ class _SearchScreenState extends State<SearchScreen> with SuperBase {
                     : ProductList(
                         items: _list,
                         user: widget.user,
-                        controller: null,
+                        controller: _scrollController,
                         loadData: () async {
-                          //await _loadData(_text);
+                          await _loadData(_text);
                           return Future.value();
                         },
                         callback: widget.callback,
                         itemsDown: _listDown,
                         itemsUp: _listUp,
                       ),
+
+        bottomNavigationBar: _loading
+            ? Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CupertinoActivityIndicator(),
+        )
+            : null,
       ),
     );
   }
