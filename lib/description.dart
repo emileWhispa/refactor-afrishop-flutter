@@ -739,6 +739,7 @@ class _DescriptionState extends State<Description> with SuperBase {
               ),
             ),
             Column(
+              key: _detailKey,
               children: (product?.images2 ?? [])
                       ?.map((f) => FadeInImage(
                             image: CachedNetworkImageProvider(f),
@@ -765,7 +766,6 @@ class _DescriptionState extends State<Description> with SuperBase {
               ),
             ),
             Container(
-              key: _detailKey,
               margin: EdgeInsets.symmetric(vertical: 5),
               padding: EdgeInsets.all(15),
               decoration: BoxDecoration(color: Colors.white),
