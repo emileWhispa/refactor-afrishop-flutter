@@ -15,4 +15,13 @@ class Address {
         addressId = json['addressId'],
         phone = json['phone'],
         email = json['email'];
+
+
+  Map<String,dynamic> toJson()=>{
+    "deliveryName":delivery,
+    "addressDetail":address,
+    "addressId":addressId,
+    "phone":phone,
+    "email":email,
+  };
 }

@@ -136,14 +136,14 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
     print(withCredential.user.uid);
     print(token);
     if (tokenResult.token != null) platform.invokeMethod("toast", "Success");
-    await this.realSign(tokenResult, withCredential.user);
+    await this.realSign(tokenResult, withCredential.user,2);
     return Future.value();
   }
 
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> realSign(IdTokenResult tokenResult, FirebaseUser user) async {
+  Future<void> realSign(IdTokenResult tokenResult, FirebaseUser user,int userType) async {
     var pic = "${user?.photoUrl}";
 
     pic = pic.replaceFirst("s96-c", "s400-c");
@@ -152,6 +152,7 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
       "nick": user?.displayName,
       "email": user?.email,
       "phone": user?.phoneNumber,
+      "userType": userType,
       "fcm": globals.fcm,
       "password": user?.uid,
       "account": user?.uid ?? user?.email ?? user?.phoneNumber,
@@ -223,7 +224,7 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
       var tokenResult = await user.getIdToken();
       print(tokenResult?.token);
 
-      await this.realSign(tokenResult, user);
+      await this.realSign(tokenResult, user,6);
       platform.invokeMethod("toast", "Signed in ${user.displayName}");
       return user;
     } else {
@@ -554,7 +555,7 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
     _phoneLogin ? new_auth.Authorization(
       onLog: (user) async {
         showMd();
-        this.realSign(await user.getIdToken(), user);
+        this.realSign(await user.getIdToken(), user,4);
       },
       pop: false,
     ) : SizedBox.shrink(),

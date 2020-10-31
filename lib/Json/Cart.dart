@@ -5,6 +5,7 @@ import 'Product.dart';
 class Cart {
   String id;
   int checkFlag;
+  String ordersId;
   String itemId;
   String sourceItemId;
   String stationId;
@@ -27,6 +28,7 @@ class Cart {
   Cart.fromJson(Map<String, dynamic> json)
       : id = json['cartRecordId'],
         checkFlag = json['checkFlag'],
+        ordersId = json['ordersId'],
         sourceItemId = json['sourceItemId'],
         stationId = json['stationId'],
         itemTitle = json['itemTitle'],

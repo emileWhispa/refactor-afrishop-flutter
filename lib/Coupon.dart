@@ -45,9 +45,9 @@ class _CouponScreenState extends State<CouponScreen> with SuperBase {
   int _index = 0;
 
   List<String> get _menus => [
-        // "Valid",
-        // "Used",
-        // "Expired",
+         "Valid",
+         "Used",
+         "Expired",
       ];
 
   Future<void> _loadCoupons() async {
@@ -88,39 +88,39 @@ class _CouponScreenState extends State<CouponScreen> with SuperBase {
       ),
       body: Column(
         children: <Widget>[
-          // Container(
-          //   height: 50,
-          //   color: Colors.white,
-          //   child: Row(
-          //     children: List.generate(_menus.length, (index) {
-          //       return Expanded(
-          //         child: InkWell(
-          //           child: Container(
-          //               padding:
-          //                   EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-          //               decoration: _index == index
-          //                   ? BoxDecoration(
-          //                       border: Border(
-          //                           bottom:
-          //                               BorderSide(color: color, width: 2.5)))
-          //                   : null,
-          //               child: Text(
-          //                 "${_menus[index]}",
-          //                 textAlign: TextAlign.center,
-          //                 style: TextStyle(
-          //                     color: Colors.black, fontWeight: _index == index ? FontWeight.bold : null,fontFamily: 'SF UI Display'),
-          //               )),
-          //           onTap: () {
-          //             setState(() {
-          //               _index = index;
-          //               _controller.jumpToPage(index);
-          //             });
-          //           },
-          //         ),
-          //       );
-          //     }),
-          //   ),
-          // ),
+           Container(
+             height: 50,
+             color: Colors.white,
+             child: Row(
+               children: List.generate(_menus.length, (index) {
+                 return Expanded(
+                   child: InkWell(
+                     child: Container(
+                         padding:
+                             EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                         decoration: _index == index
+                             ? BoxDecoration(
+                                 border: Border(
+                                     bottom:
+                                         BorderSide(color: color, width: 2.5)))
+                             : null,
+                         child: Text(
+                           "${_menus[index]}",
+                           textAlign: TextAlign.center,
+                           style: TextStyle(
+                               color: Colors.black, fontWeight: _index == index ? FontWeight.bold : null,fontFamily: 'SF UI Display'),
+                         )),
+                     onTap: () {
+                       setState(() {
+                         _index = index;
+                         _controller.jumpToPage(index);
+                       });
+                     },
+                   ),
+                 );
+               }),
+             ),
+           ),
           Expanded(
             child: PageView(
               controller: _controller,
@@ -135,16 +135,16 @@ class _CouponScreenState extends State<CouponScreen> with SuperBase {
                   loadCoupons: _loadCoupons,
                   expired: 1,
                 ),
-                // _CouponList(
-                //   list: _usedList,
-                //   loadCoupons: _loadCoupons,
-                //   expired: 2,
-                // ),
-                // _CouponList(
-                //   list: _expiredList,
-                //   loadCoupons: _loadCoupons,
-                //   expired: 3,
-                // ),
+                 _CouponList(
+                   list: _usedList,
+                   loadCoupons: _loadCoupons,
+                   expired: 2,
+                 ),
+                 _CouponList(
+                   list: _expiredList,
+                   loadCoupons: _loadCoupons,
+                   expired: 3,
+                 ),
               ],
             ),
           ),

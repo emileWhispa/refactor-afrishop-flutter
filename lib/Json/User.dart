@@ -134,7 +134,7 @@ class User extends Model {
 
   String singleChar() => username.substring(0, 1).toUpperCase();
 
-  String get walletStr => (wallet ?? 0).toString();
+  String get walletStr => (wallet ?? 0).toStringAsFixed(3);
 
   String get networkAmountStr => (networkAmount ?? 0).toString();
 }

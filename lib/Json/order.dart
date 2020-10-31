@@ -78,6 +78,11 @@ class Order {
             .toList(),
         dealTime = json['dealTime'];
 
+
+  DateTime get getDate => DateFormat("yyyy-MMM-dd HH:mm:ss").parse('$orderTime') ?? DateTime.now();
+
+  bool get closedByTime => !getDate.add(Duration(hours: 24)).isAfter(DateTime.now()) && isPending;
+
   String get status => orderStatus == 0
       ? "Deleted"
       : isPending

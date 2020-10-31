@@ -127,6 +127,7 @@ class _DescriptionState extends State<Description> with SuperBase {
   List<String> _urls = [];
   int current = 0;
   var _loading2 = false;
+  bool _ended = false;
 
   void _loadRecommended({bool inc: false}) {
 
@@ -148,6 +149,7 @@ class _DescriptionState extends State<Description> with SuperBase {
               var l2 = (data['content'] as Iterable)
                   .map((e) => Product.fromJson(e))
                   .toList();
+              _ended = l2.length < 20;
 
               _recommended..removeWhere((el) => l2.any((element) => element.itemId == el.itemId))..addAll(l2);
             });
@@ -738,31 +740,46 @@ class _DescriptionState extends State<Description> with SuperBase {
                 ],
               ),
             ),
-            Column(
-              key: _detailKey,
-              children: (product?.images2 ?? [])
-                      ?.map((f) => FadeInImage(
-                            image: CachedNetworkImageProvider(f),
-                            placeholder: defLoader,
-                            fit: BoxFit.fitWidth,
-                            width: double.infinity,
-                          ))
-                      ?.toList() ??
-                  [],
-            ),
             Container(
               width: double.infinity,
               margin: EdgeInsets.symmetric(vertical: 5),
-              padding: EdgeInsets.all(15),
+              padding: EdgeInsets.symmetric(vertical: 20).copyWith(top: 5),
               decoration: BoxDecoration(color: Colors.white),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: (product?.infos ?? []).map((e) => Container(
-                  margin: EdgeInsets.only(bottom: 12),
-                  child: RichText(text: TextSpan(
-                      text: "${e.paramName} : \n ${e.paramValue}"
-                  )),
-                )).toList(),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children:[
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Text("Detail",style: TextStyle(fontSize: 17),),
+                  ),
+                  Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: (product?.infos ?? []).map((e) => Container(
+                        margin: EdgeInsets.only(bottom: 9,top: 10),
+                        child: RichText(textAlign: TextAlign.center,text: TextSpan(
+                            children: [
+                              TextSpan(text:"${e.paramName} : ",style: TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(text:"\n${e.paramValue}"),
+                            ],
+                            style: TextStyle(color: Colors.black87)
+                        )),
+                      )).toList(),
+                    ),
+                  ),
+                  Column(
+                    key: _detailKey,
+                    children: (product?.images2 ?? [])
+                        ?.map((f) => FadeInImage(
+                      image: CachedNetworkImageProvider(f),
+                      placeholder: defLoader,
+                      fit: BoxFit.fitWidth,
+                      width: double.infinity,
+                    ))
+                        ?.toList() ??
+                        [],
+                  ),
+                ]
               ),
             ),
             Container(
@@ -772,25 +789,26 @@ class _DescriptionState extends State<Description> with SuperBase {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    "You may like this",
+                  Center(child:Text(
+                    "You may like",
+                    textAlign:TextAlign.center,
                     style: TextStyle(
-                      fontSize: 14,
+                        fontSize: 17,
                         fontWeight: FontWeight.w900,
                         fontFamily: 'SF UI Text'
                     ),
-                  ),
+                  )),
                   SizedBox(height: 10),
                   GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,childAspectRatio: 2.7/4),
+                          crossAxisCount: 2,childAspectRatio: 3.1/4,crossAxisSpacing: 7),
                       itemCount: _recommended.length,
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
                         var _pro = _recommended[index];
                         return TouchableOpacity(
-                          padding: EdgeInsets.all(5),
+                          padding: EdgeInsets.all(0),
                           onTap: () async {
                             await Navigator.of(context).pushReplacement(CupertinoPageRoute(
                                 builder: (context) => Description(
@@ -801,7 +819,6 @@ class _DescriptionState extends State<Description> with SuperBase {
                             //widget.cartState.currentState?.refresh();
                           },
                                   child: Container(
-              height: 170,
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -875,7 +892,7 @@ class _DescriptionState extends State<Description> with SuperBase {
                       }),
 
                   Center(
-                    child: _loading2 ? Padding(
+                    child: _loading2 && !_ended ? Padding(
                       padding: const EdgeInsets.all(18.0),
                       child: CircularProgressIndicator(),
                     ) : SizedBox.shrink(),

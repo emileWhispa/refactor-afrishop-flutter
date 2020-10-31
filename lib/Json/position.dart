@@ -19,7 +19,7 @@ class Position {
       : x = json['x'],
         y = json['y'],
         tagName = json['tag']['tagName'],
-        product = Product.fromJson(json['tag']['item']);
+        product =  Product.fromJson(json['tag']['item']);
 
   Position.fromJson2(Map<String, dynamic> json)
       : x = json['x'],

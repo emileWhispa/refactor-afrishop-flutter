@@ -21,6 +21,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../Json/Brand.dart';
 import '../SuperBase.dart';
@@ -504,15 +505,18 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
     switch (poster.posterType) {
       case 0:
         {
-          await Navigator.push(
-              context,
-              CupertinoPageRoute(
-                  builder: (context) => CrawlScreen(
-                    url: poster.linkUrl,
-                    user: widget.user,
-                    callback: widget.callback,
-                    title: poster.title,
-                  )));
+//          await Navigator.push(
+//              context,
+//              CupertinoPageRoute(
+//                  builder: (context) => CrawlScreen(
+//                    url: poster.linkUrl,
+//                    user: widget.user,
+//                    callback: widget.callback,
+//                    title: poster.title,
+//                  )));
+        if( await canLaunch(poster.linkUrl) ){
+          await launch(poster.linkUrl);
+        }
           break;
         }
 //      case 1:{
@@ -1040,20 +1044,21 @@ class __CarouselState extends State<_Carousel> with SuperBase {
 
 
   void handleNavigation(Slide slide) async {
-    print(slide.imgType);
-    print(slide.linkUrl);
     switch (slide.imgType) {
       case 0:
         {
-          await Navigator.push(
-              context,
-              CupertinoPageRoute(
-                  builder: (context) => CrawlScreen(
-                    url: slide.linkUrl,
-                    user: widget.user,
-                    callback: widget.callback,
-                    title: slide.imgName,
-                  )));
+//          await Navigator.push(
+//              context,
+//              CupertinoPageRoute(
+//                  builder: (context) => CrawlScreen(
+//                    url: slide.linkUrl,
+//                    user: widget.user,
+//                    callback: widget.callback,
+//                    title: slide.imgName,
+//                  )));
+          if( await canLaunch(slide.linkUrl) ){
+            await launch(slide.linkUrl);
+          }
           break;
         }
 
@@ -1143,13 +1148,13 @@ class __CarouselState extends State<_Carousel> with SuperBase {
               itemBuilder: (context, i) {
                 var sl = images[i];
                 return GestureDetector(
-                  // onTap: ()=>this.handleNavigation(sl),
+                   onTap: ()=>this.handleNavigation(sl),
                   child: Container(
                     width: double.infinity,
                     child: FadeInImage(
                       image: CachedNetworkImageProvider(sl.image ?? ''),
                       placeholder: defLoader,
-                      // fit: BoxFit.cover,
+                       fit: BoxFit.cover,
                     ),
                   ),
                 );

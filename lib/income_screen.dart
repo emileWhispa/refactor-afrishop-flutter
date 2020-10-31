@@ -148,7 +148,7 @@ class _IncomeScreenState extends State<IncomeScreen> with SuperBase {
                 ),
                 SizedBox(height: 30),
                 Text(
-                  "${_today < 0 ? "-" : ""}\$${formatNumber(_today < 0 ? _today * -1 : _today)}",
+                  "${_today < 0 ? "-" : ""}\$${(_today < 0 ? _today * -1 : _today).toStringAsFixed(3)}",
                   style: TextStyle(
                       fontWeight: FontWeight.w900,
                       fontSize: 28,
@@ -169,7 +169,7 @@ class _IncomeScreenState extends State<IncomeScreen> with SuperBase {
                 ),
                 SizedBox(height: 30),
                 Text(
-                  "${_currentMonth < 0 ? "-" : ""}\$${formatNumber(_currentMonth < 0 ? _currentMonth * -1 : _currentMonth)}",
+                  "${_currentMonth < 0 ? "-" : ""}\$${(_currentMonth < 0 ? _currentMonth * -1 : _currentMonth).toStringAsFixed(3)}",
                   style: TextStyle(
                       fontWeight: FontWeight.w900,
                       fontSize: 28,
@@ -190,7 +190,7 @@ class _IncomeScreenState extends State<IncomeScreen> with SuperBase {
                 ),
                 SizedBox(height: 30),
                 Text(
-                  "${_prevMonth < 0 ? "-" : ""}\$${formatNumber(_prevMonth < 0 ? _prevMonth * -1 : _prevMonth)}",
+                  "${_prevMonth < 0 ? "-" : ""}\$${(_prevMonth < 0 ? _prevMonth * -1 : _prevMonth).toStringAsFixed(3)}",
                   style: TextStyle(
                       fontWeight: FontWeight.w900,
                       fontSize: 28,

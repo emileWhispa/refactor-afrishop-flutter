@@ -34,6 +34,7 @@ class CompleteOrder extends StatefulWidget {
   final bool continueToPayment;
   final String payNowParams;
   final void Function(User user) callback;
+  final String ordersId;
 
   const CompleteOrder(
       {Key key,
@@ -44,7 +45,7 @@ class CompleteOrder extends StatefulWidget {
       this.fromOrders: false,
       this.completedOrder,
       @required this.callback,
-      this.payNowParams})
+      this.payNowParams, this.ordersId})
       : super(key: key);
 
   @override
@@ -65,19 +66,21 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
 
   Future<void> _getLogisticDetails() {
     return this.ajax(
-        url: "logistics/getOrderLogistics/${order?.orderId}",
+        url: "logistics/getOrderLogistics/${widget.ordersId}",
         auth: true,
         authKey: widget.user()?.token,
+        server: true,
         error: (s, v) => print(s),
         onValue: (source, url) {
           print(source);
+          print(url);
           var dx = json.decode(source);
           var d = dx['data'];
           if (d != null && dx['code'] == 1) {
-            List data = ['content'];
+            Iterable data = d['content'];
             setState(() {
               if (data.isNotEmpty) {
-                _logistics = (data[0]['data'] as Iterable)
+                _logistics = (data.first['data'] as Iterable)
                     .map((f) => Logistic.fromJson(f))
                     .toList();
               }
@@ -87,6 +90,15 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
   }
 
   void getDefault() {
+    getDefaultAddress().then((value){
+      _address = value;
+      if( value == null){
+        getOtherDefault();
+      }
+    });
+  }
+
+  void getOtherDefault(){
     this.ajax(
         url: "address/default",
         authKey: widget.user()?.token,
@@ -96,6 +108,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
           if (data == null) return;
           setState(() {
             _address = Address.fromJson(data);
+            setDefaultAddress(_address);
           });
         });
   }
@@ -107,17 +120,28 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
     _timer?.cancel();
   }
 
+  void autoClose() {
+    setState(() {
+      _order?.orderStatus = 60;
+      _order2?.orderStatus = 60;
+    });
+    this.ajax(
+        url:
+            "order/cancelOrder?orderId=${widget.order?.orderId}&reason=${Uri.encodeComponent("Time out")}",
+        authKey: widget.user()?.token,server: true);
+  }
+
   @override
   void initState() {
     super.initState();
 
     _order = widget.completedOrder;
     _order2 = widget.order;
-    widget.list.map((e) => {
-          setState(() {
-            itemNum = itemNum + e.itemNum;
-          })
-        });
+    widget.list.map((e) {
+      setState(() {
+        itemNum = itemNum + e.itemNum;
+      });
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       //this.checkVisitedLink();
       getDefault();
@@ -127,12 +151,15 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
       }
       //DateFormat format = new DateFormat("MMM dd, yyyy hh:mm:ss");
       // print(order?.orderTime);
-      var formattedDate =
-          DateTime.tryParse('${order?.orderTime}') ?? DateTime.now();
+      var now = DateTime.now();
+      var formattedDate = order?.getDate ?? now;
       var addedTime = formattedDate.add(Duration(hours: 24));
       setState(() {
         // _diffDt = addedTime.difference(_addDt);
-        _duration = addedTime.difference(DateTime.now());
+        if (order?.closedByTime == true) {
+          autoClose();
+        }
+          _duration = addedTime.difference(DateTime.now());
       });
       _timer = Timer.periodic(Duration(seconds: 1), (t) {
         if (_duration == Duration(hours: 0)) {
@@ -194,7 +221,9 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                       children: List.generate(products.length, (index) {
                         var post = posts.length > index
                             ? posts[index]
-                            : posts.isNotEmpty ? posts.first : null;
+                            : posts.isNotEmpty
+                                ? posts.first
+                                : null;
                         var product = products[index];
 
                         if (post == null) return SizedBox.shrink();
@@ -736,7 +765,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
               _order == null ? "Proceed to Checkout" : "Pay",
               style: TextStyle(fontWeight: FontWeight.w300),
             ),
-            onPressed: _address == null ? null : requestOrder),
+            onPressed: nullAddressOnPending ? null : requestOrder),
       );
 
   void _deleteOrder() {
@@ -896,8 +925,10 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
 
   Order get order => _order ?? _order2;
 
+  bool get nullAddressOnPending => _address == null && _order == null;
+
   void requestOrder() {
-    if (_address == null) return;
+    if (nullAddressOnPending) return;
 
     if (_order != null) {
       goCheckOut(_order);
@@ -1699,7 +1730,9 @@ class _PopPageState extends State<PopPage> with SuperBase {
                                   _controller.text.isNotEmpty &&
                                   emailExp.hasMatch(_controller.text)
                               ? flutterWave
-                              : _selected == 0 ? dpoPayment : null,
+                              : _selected == 0
+                                  ? dpoPayment
+                                  : null,
                           color: color,
                           elevation: 0.0,
                           shape: RoundedRectangleBorder(

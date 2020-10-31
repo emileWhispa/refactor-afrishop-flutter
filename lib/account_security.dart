@@ -118,37 +118,37 @@ class _AccountSecurityState extends State<AccountSecurity> with SuperBase {
           SizedBox(
             height: 12,
           ),
-//          InkWell(
-//            onTap: () {
-//              Navigator.of(context).push(CupertinoPageRoute(
-//                  builder: (context) => PasswordSecurity(
-//                        user: widget.user,
-//                      )));
-//            },
-//            child: Container(
-//              color: Colors.white.withOpacity(0.7),
-//              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-//              child: Row(
-//                children: <Widget>[
-//                  Icon(
-//                    Icons.lock,
-//                    size: 26,
-//                    color: color,
-//                  ),
-//                  Expanded(
-//                      child: Padding(
-//                    padding: const EdgeInsets.all(8.0),
-//                    child: Text(
-//                      "Password",
-//                      style: TextStyle(
-//                          fontWeight: FontWeight.bold, fontSize: 14.5),
-//                    ),
-//                  )),
-//                  Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 20)
-//                ],
-//              ),
-//            ),
-//          ),
+         widget.user()?.type == 1 ? InkWell(
+            onTap: () {
+              Navigator.of(context).push(CupertinoPageRoute(
+                  builder: (context) => PasswordSecurity(
+                        user: widget.user,
+                      )));
+            },
+            child: Container(
+              color: Colors.white.withOpacity(0.7),
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+              child: Row(
+                children: <Widget>[
+                  Icon(
+                    Icons.lock,
+                    size: 26,
+                    color: color,
+                  ),
+                  Expanded(
+                      child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Password",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 14.5),
+                    ),
+                  )),
+                  Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 20)
+                ],
+              ),
+            ),
+          ) : SizedBox.shrink(),
         ],
       ),
     );

@@ -159,6 +159,16 @@ class _OldUserDetailState extends State<OldUserDetail> with SuperBase {
     _key.currentState?.show();
   }
 
+  void _goPending(int st) async {
+    await Navigator.push(
+        context,
+        CupertinoPageRoute(
+            builder: (context) => PendingCart(
+                user: widget.user, callback: widget.callback,active: st,)));
+    _key.currentState?.show();
+    widget.cartState?.currentState?.refresh();
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -370,15 +380,7 @@ class _OldUserDetailState extends State<OldUserDetail> with SuperBase {
                           style: TextStyle(fontWeight: FontWeight.w900),
                         )),
                         InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                CupertinoPageRoute(
-                                    builder: (context) => PendingCart(
-                                          user: widget.user,
-                                          callback: widget.callback,
-                                        )));
-                          },
+                          onTap: () =>this._goPending(0),
                           child: Text(
                             "View All >",
                             style: TextStyle(color: Colors.grey),
@@ -393,16 +395,7 @@ class _OldUserDetailState extends State<OldUserDetail> with SuperBase {
                       children: <Widget>[
                         Expanded(
                           child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                      builder: (context) => PendingCart(
-                                            user: widget.user,
-                                            active: 1,
-                                            callback: widget.callback,
-                                          )));
-                            },
+                            onTap: () =>this._goPending(1),
                             child: Column(
                               children: <Widget>[
                                 Image.asset("assets/unpaid.png",
@@ -415,16 +408,7 @@ class _OldUserDetailState extends State<OldUserDetail> with SuperBase {
                         ),
                         Expanded(
                           child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                      builder: (context) => PendingCart(
-                                            user: widget.user,
-                                            active: 2,
-                                            callback: widget.callback,
-                                          )));
-                            },
+                            onTap: () =>this._goPending(2),
                             child: Column(
                               children: <Widget>[
                                 Image.asset("assets/purchased.png",
@@ -437,16 +421,7 @@ class _OldUserDetailState extends State<OldUserDetail> with SuperBase {
                         ),
                         Expanded(
                           child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                      builder: (context) => PendingCart(
-                                            user: widget.user,
-                                            active: 3,
-                                            callback: widget.callback,
-                                          )));
-                            },
+                            onTap: () =>this._goPending(3),
                             child: Column(
                               children: <Widget>[
                                 Image.asset("assets/arrived.png",
@@ -459,16 +434,7 @@ class _OldUserDetailState extends State<OldUserDetail> with SuperBase {
                         ),
                         Expanded(
                           child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                      builder: (context) => PendingCart(
-                                            user: widget.user,
-                                            active: 4,
-                                            callback: widget.callback,
-                                          )));
-                            },
+                            onTap: () =>this._goPending(4),
                             child: Column(
                               children: <Widget>[
                                 Image.asset("assets/finished.png",
@@ -519,7 +485,7 @@ class _OldUserDetailState extends State<OldUserDetail> with SuperBase {
                                 Padding(
                                   padding: const EdgeInsets.all(21.0),
                                   child: Text(
-                                    "\$${(_user?.walletStr ?? "0.00")}",
+                                    "\$${(_user?.walletStr ?? "0.000")}",
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(

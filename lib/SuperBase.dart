@@ -16,13 +16,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:email_validator/email_validator.dart';
 
+import 'Json/Address.dart';
 import 'Json/Post.dart';
 import 'Json/Product.dart';
 import 'Json/User.dart';
 
 class SuperBase {
   // Live connections
-//  String server = "https://app.afrieshop.com/zion/";
+//  String server = "http://159.138.48.71:8080/zion/";
 //  String server0 = "http://165.22.82.105:8080/"; //Discover
 
   //Test Connections
@@ -74,6 +75,26 @@ class SuperBase {
   }
 
   String get dKey => "draft-key";
+
+  String get defAddress => "default-address-key";
+
+  void setDefaultAddress(Address address){
+    save(defAddress, address);
+  }
+
+  void setDefaultAddressIfEmpty(Address address){
+    getDefaultAddress().then((value){
+      if( value == null) setDefaultAddress(address);
+    });
+  }
+
+  Future<Address> getDefaultAddress()async{
+    var x = (await prefs).getString(defAddress);
+    if( x != null){
+      return Address.fromJson(json.decode(x));
+    }
+    return null;
+  }
 
   String validateMobile(String value) {
     String pattern = r'(^(?:[+0]9)?[0-9]{8,14}$)';

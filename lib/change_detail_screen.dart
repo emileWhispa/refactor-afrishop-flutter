@@ -31,7 +31,7 @@ class _NetworkScreenState extends State<NetworkScreen> with SuperBase {
   Future<void> _loadNetworks() {
     return this.ajax(
         url:
-            "discover/networking/networksByUserId/${widget.user()?.id}?pageNo=0&pageSize=50",
+            "discover/networking/networksByUserId/${widget.user()?.id}?pageNo=0&pageSize=200",
         authKey: widget.user()?.token,
         onValue: (source, url) {
           print(url);

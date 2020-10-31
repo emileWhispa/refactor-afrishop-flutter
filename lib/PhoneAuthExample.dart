@@ -34,7 +34,7 @@ class _PhoneAuthExampleState extends State<PhoneAuthExample> with SuperBase {
       setState(() {
         _loading = false;
       });
-      var text = "Success!!! UUID is: ${authResult.user.uid}";
+      var text = "Code verification complete";
      // var token = (await authResult.user.getIdToken()).token;
       widget.onLog(authResult.user);
       showSnackBar(text);
@@ -115,7 +115,7 @@ class _PhoneAuthExampleState extends State<PhoneAuthExample> with SuperBase {
   }
 
   _codeAutoRetrievalTimeout(String verificationId) {
-    showSnackBar('time out $verificationId');
+    showSnackBar('Time out');
     setState(() {
       _loading = false;
       _verify = true;
@@ -186,6 +186,7 @@ class _PhoneAuthExampleState extends State<PhoneAuthExample> with SuperBase {
 
 
   void showSnackBar(String snackBar) {
+    platform.invokeMethod("toast",snackBar);
     widget.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text(snackBar)));
   }
 

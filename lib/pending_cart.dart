@@ -53,6 +53,16 @@ class _PendingCartState extends State<PendingCart> with SuperBase {
 
   PageController _controller = new PageController();
 
+  void autoClose(Order order) {
+    setState(() {
+      order?.orderStatus = 60;
+    });
+    this.ajax(
+        url:
+        "order/cancelOrder?orderId=${order?.orderId}&reason=${Uri.encodeComponent("Time out")}",
+        authKey: widget.user()?.token,server: true);
+  }
+
   Future<void> _loadItems() {
     refreshKey.currentState?.show(atTop: true);
     return this.ajax(
@@ -65,6 +75,11 @@ class _PendingCartState extends State<PendingCart> with SuperBase {
           Iterable _map = json.decode(source)['data']['content'];
           setState(() {
             _list = _map.map((f) => Order.fromJson(f)).toList();
+            _list.forEach((element) {
+              if( element.closedByTime ){
+                autoClose(element);
+              }
+            });
             _deleted = _list.where((f) => f.orderStatus == 0).toList();
             _unpaid = _list.where((f) => f.isPending).toList();
             _paid = _list.where((f) => f.orderStatus == 20).toList();
@@ -233,7 +248,23 @@ class __BodyStateState extends State<_BodyState> with SuperBase {
     });
   }
 
+
+  void autoClose(Order order) {
+    setState(() {
+      order?.orderStatus = 60;
+    });
+    this.ajax(
+        url:
+        "order/cancelOrder?orderId=${order?.orderId}&reason=${Uri.encodeComponent("Time out")}",
+        authKey: widget.user()?.token,server: true);
+  }
+
   void goCheckOut(Order order) async {
+    if( order.closedByTime ){
+      autoClose(order);
+      platform.invokeMethod("toast","Order closed");
+      return;
+    }
     await showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -328,6 +359,7 @@ class __BodyStateState extends State<_BodyState> with SuperBase {
                                                         callback: widget.callback,
                                                         user: widget.user,
                                                         list: _pro.itemList,
+                                                        ordersId: f.ordersId,
                                                         completedOrder: _pro,
                                                         order: _pro,
                                                         fromOrders: true)));

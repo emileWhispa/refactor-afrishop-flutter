@@ -151,7 +151,6 @@ class _OldSubCategoryState extends State<OldSubCategory> with SuperBase {
                 margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
                 child: InkWell(
                   onTap: () {
-
                     Navigator.of(context).push(CupertinoPageRoute(
                         builder: (context) => InsideCategory(
                           category: cat,

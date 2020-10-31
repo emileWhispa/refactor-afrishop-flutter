@@ -94,6 +94,9 @@ class _AddressInfoState extends State<AddressInfo> with SuperBase {
           if (map != null) {
             setState(() {
               _list = map.map((json) => Address.fromJson(json)).toList();
+              if( _list.isNotEmpty ){
+                setDefaultAddressIfEmpty(address);
+              }
             });
           }
         });
@@ -126,6 +129,7 @@ class _AddressInfoState extends State<AddressInfo> with SuperBase {
         onValue: (source, url) {
           setState(() {
             _list.removeWhere((f) => f.addressId == address.addressId);
+
           });
           this.load();
         },
@@ -142,6 +146,7 @@ class _AddressInfoState extends State<AddressInfo> with SuperBase {
   void _setDefault(Address address) {
     setState(() {
       address.sending = true;
+      setDefaultAddress(address);
     });
     this.ajax(
         url: "address/default/${address.addressId}",

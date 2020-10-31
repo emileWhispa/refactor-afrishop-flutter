@@ -55,9 +55,7 @@ class _EmailSecurityState extends State<EmailSecurity> with SuperBase {
   var _formKey = new GlobalKey<FormState>();
 
   void _change() {
-
-
-    if( !(_formKey.currentState?.validate() ?? false) ) return;
+    if (!(_formKey.currentState?.validate() ?? false)) return;
 
     setState(() {
       _sending2 = true;
@@ -102,32 +100,40 @@ class _EmailSecurityState extends State<EmailSecurity> with SuperBase {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if( widget.user()?.email != null ){
-     // _emailController = new TextEditingController(text: widget.user()?.email);
+    if (widget.user()?.email != null) {
+      // _emailController = new TextEditingController(text: widget.user()?.email);
     }
   }
 
   void _getTheCode() {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() {
       _sending = true;
     });
     this.ajax(
         url: "user/getEmailCode?email=$email",
         server: true,
+        authKey: widget.user()?.token,
         onValue: (source, url) async {
-          setState(() {
-            _duration = new Duration(seconds: 60);
-            _timer?.cancel();
-            _timer = Timer.periodic(Duration(seconds: 1), (t) {
-              if (_duration.inSeconds <= 0) {
-                t.cancel();
-              }
-              setState(() {
-                _duration = Duration(seconds: _duration.inSeconds - 1);
+          var jx = json.decode(source);
+          if (jx['code'] == 1) {
+            setState(() {
+              _duration = new Duration(seconds: 60);
+              _timer?.cancel();
+              _timer = Timer.periodic(Duration(seconds: 1), (t) {
+                if (_duration.inSeconds <= 0) {
+                  t.cancel();
+                }
+                setState(() {
+                  _duration = Duration(seconds: _duration.inSeconds - 1);
+                });
               });
             });
-          });
+          } else {
+            platform.invokeMethod("toast", jx['message']);
+          }
         },
+        error: (s, v) => platform.invokeMethod("toast", s),
         onEnd: () {
           setState(() {
             _sending = false;
@@ -160,81 +166,84 @@ class _EmailSecurityState extends State<EmailSecurity> with SuperBase {
           children: <Widget>[
             Container(
                 child: TextFormField(
-                  controller: _emailController,
-                  validator: (s)=>emailExp.hasMatch(s) ? null : "Valid email is required",
-                  decoration: InputDecoration(
-                      filled: true,
-                      hintText: "Email",
-                      fillColor: Colors.white,
-                      contentPadding: EdgeInsets.only(left: 7),
-                      border: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.circular(5))),
-                )),
-//          SizedBox(height: 10),
-//          Container(
-//            height: 45,
-//            child: TextFormField(
-//              controller: _controller,
-//              onChanged: (string) {
-//                if (string.length == 6) {
-//                  setState(() {
-//                    _valid = true;
-//                  });
-//                } else if (_valid) {
-//                  setState(() {
-//                    _valid = false;
-//                  });
-//                }
-//              },
-//              inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
-//              keyboardType: TextInputType.number,
-//              decoration: InputDecoration(
-//                  hintText: "Code",
-//                  fillColor: Colors.white,
-//                  filled: true,
-//                  contentPadding: EdgeInsets.only(left: 10),
-//                  suffixIcon: _sending
-//                      ? CupertinoActivityIndicator()
-//                      : Container(
-//                    height: 40,
-//                    padding: EdgeInsets.all(7),
-//                    child: RaisedButton(
-//                      onPressed:
-//                      _duration.inSeconds > 0 ? () {} : _getTheCode,
-//                      color: color.withOpacity(0.2),
-//                      padding: EdgeInsets.all(0),
-//                      shape: RoundedRectangleBorder(
-//                          side: BorderSide(
-//                            color: color,
-//                          ),
-//                          borderRadius: BorderRadius.circular(6)),
-//                      elevation: 0.0,
-//                      child: Text(
-//                        _duration.inSeconds > 0
-//                            ? "${_duration.inSeconds}"
-//                            : "Get the code",
-//                        style: TextStyle(
-//                            fontWeight: FontWeight.bold, fontSize: 14),
-//                      ),
-//                    ),
-//                  ),
-//                  border: OutlineInputBorder(
-//                      borderRadius: BorderRadius.circular(6),
-//                      borderSide: BorderSide.none)),
-//            ),
-//          ),
-            SizedBox(height: 90),
-            _sending2 ? CupertinoActivityIndicator() : RaisedButton(
-              elevation: 0.0,
-              child: Text(
-                "Submit",
-                style: TextStyle(fontWeight: FontWeight.bold),
+              controller: _emailController,
+              validator: (s) =>
+                  emailExp.hasMatch(s) ? null : "Valid email is required",
+              decoration: InputDecoration(
+                  filled: true,
+                  hintText: "Email",
+                  fillColor: Colors.white,
+                  contentPadding: EdgeInsets.only(left: 7),
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(5))),
+            )),
+            SizedBox(height: 10),
+            Container(
+              height: 45,
+              child: TextFormField(
+                controller: _controller,
+                onChanged: (string) {
+                  if (string.length == 6) {
+                    setState(() {
+                      _valid = true;
+                    });
+                  } else if (_valid) {
+                    setState(() {
+                      _valid = false;
+                    });
+                  }
+                },
+                inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                    hintText: "Code",
+                    fillColor: Colors.white,
+                    filled: true,
+                    contentPadding: EdgeInsets.only(left: 10),
+                    suffixIcon: _sending
+                        ? CupertinoActivityIndicator()
+                        : Container(
+                            height: 40,
+                            padding: EdgeInsets.all(7),
+                            child: RaisedButton(
+                              onPressed:
+                                  _duration.inSeconds > 0 ? () {} : _getTheCode,
+                              color: color.withOpacity(0.2),
+                              padding: EdgeInsets.all(0),
+                              shape: RoundedRectangleBorder(
+                                  side: BorderSide(
+                                    color: color,
+                                  ),
+                                  borderRadius: BorderRadius.circular(6)),
+                              elevation: 0.0,
+                              child: Text(
+                                _duration.inSeconds > 0
+                                    ? "${_duration.inSeconds}"
+                                    : "Get the code",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 14),
+                              ),
+                            ),
+                          ),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(6),
+                        borderSide: BorderSide.none)),
               ),
-              padding: EdgeInsets.zero,
-              onPressed: _change,
-              color: color,
-            )
+            ),
+            SizedBox(height: 90),
+            _sending2
+                ? CupertinoActivityIndicator()
+                : RaisedButton(
+                    elevation: 0.0,
+                    child: Text(
+                      "Submit",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    padding: EdgeInsets.zero,
+                    onPressed: _change,
+                    color: color,
+                  )
           ],
         ),
       ),

@@ -43,6 +43,7 @@ class _InvitationCodeState extends State<InvitationCode> with SuperBase {
     setState(() {
       _sending = true;
     });
+    var bool = _controller.text == "000000";
     this.ajax(
         url: "user/userByCode/${Uri.encodeComponent(_controller.text)}",
         server: true,
@@ -58,6 +59,7 @@ class _InvitationCodeState extends State<InvitationCode> with SuperBase {
                     builder: (context) => ConfirmInvitation(
                           user: widget.user,
                           callback: widget.callback,
+                          fromAfrishop: bool,
                           inviter: inv),
                         ));
            if( d != null){

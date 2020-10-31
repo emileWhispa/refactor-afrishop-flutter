@@ -12,7 +12,7 @@ class Product {
   double _price;
   String size;
   String itemSku;
-  final int count;
+   int count;
   int items = 1;
   String itemId;
   List<String> images;

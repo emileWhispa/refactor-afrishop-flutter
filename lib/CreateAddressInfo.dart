@@ -48,7 +48,9 @@ class _CreateAddressInfoState extends State<CreateAddressInfo> with SuperBase {
         onValue: (source, url) {
           var mp = jsonDecode(source);
           if (mp['code'] == 1) {
-            Navigator.of(context).pop(Address.fromJson(mp['data']));
+            var address = Address.fromJson(mp['data']);
+            Navigator.of(context).pop(address);
+            setDefaultAddress(address);
           } else {
             _showSnack(mp['message']);
           }

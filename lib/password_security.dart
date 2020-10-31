@@ -52,10 +52,16 @@ class _PasswordSecurityState extends State<PasswordSecurity> with SuperBase {
       setState(() {
         _sending = true;
       });
+      reqFocus(context);
       this.ajax(
           url:
-              "user/updatePassword?userId=${Uri.encodeComponent(widget.user()?.id)}&oldPassword=${Uri.encodeComponent(_oldPasswordController.text)}&newPassword=${Uri.encodeComponent(_passwordController.text)}",
+              "user/updatePassword",
           method: "PUT",
+          authKey: widget.user()?.token,
+          map: {
+            "oldPassword":_oldPasswordController.text,
+            "newPassword":_passwordController.text
+          },
           server: true,
           onValue: (source, url) {
             var js = jsonDecode(source);

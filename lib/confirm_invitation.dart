@@ -10,12 +10,13 @@ class ConfirmInvitation extends StatefulWidget {
   final User Function() user;
   final User inviter;
   final void Function(User user) callback;
+  final bool fromAfrishop;
 
   const ConfirmInvitation(
       {Key key,
       @required this.user,
       @required this.callback,
-      @required this.inviter})
+      @required this.inviter, this.fromAfrishop:false})
       : super(key: key);
 
   @override
@@ -98,10 +99,9 @@ class _ConfirmInvitationState extends State<ConfirmInvitation> with SuperBase {
                     TextStyle(fontWeight: FontWeight.w900, color: Colors.grey),
               ),
               SizedBox(height: 25),
-              CircleAvatar(
+              widget.fromAfrishop ? Image.asset("assets/about_logo.png",height: 120,) : CircleAvatar(
                 radius: 50,
-              
-                backgroundImage:  AssetImage("assets/africa_logo.png"),
+                backgroundImage:  CachedNetworkImageProvider(widget.inviter.avatar),
                     
               ),
               SizedBox(height: 25),
