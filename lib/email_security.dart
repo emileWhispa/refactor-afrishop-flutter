@@ -63,7 +63,7 @@ class _EmailSecurityState extends State<EmailSecurity> with SuperBase {
     reqFocus(context);
     this.ajax(
         url:
-            "user/bindPhoneOrEmail?account=${widget.user()?.account}&email=$email",
+            "user/bindPhoneOrEmail?code=${_controller.text}&email=$email",
         server: true,
         method: "PUT",
         authKey: widget.user()?.token,
@@ -129,9 +129,9 @@ class _EmailSecurityState extends State<EmailSecurity> with SuperBase {
                 });
               });
             });
-          } else {
-            platform.invokeMethod("toast", jx['message']);
           }
+
+          platform.invokeMethod("toast", jx['message']);
         },
         error: (s, v) => platform.invokeMethod("toast", s),
         onEnd: () {
@@ -140,6 +140,8 @@ class _EmailSecurityState extends State<EmailSecurity> with SuperBase {
           });
         });
   }
+
+  bool get enabled =>!_sending && _duration.inSeconds <= 0;
 
   @override
   Widget build(BuildContext context) {
@@ -167,12 +169,14 @@ class _EmailSecurityState extends State<EmailSecurity> with SuperBase {
             Container(
                 child: TextFormField(
               controller: _emailController,
+              enabled: enabled,
               validator: (s) =>
                   emailExp.hasMatch(s) ? null : "Valid email is required",
               decoration: InputDecoration(
                   filled: true,
                   hintText: "Email",
-                  fillColor: Colors.white,
+                  enabled: enabled,
+                  fillColor: enabled ? Colors.white : Colors.grey.shade100,
                   contentPadding: EdgeInsets.only(left: 7),
                   border: OutlineInputBorder(
                       borderSide: BorderSide.none,

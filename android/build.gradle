@@ -14,6 +14,10 @@ buildscript {
      }
 }
 
+ext {
+    flutterFFmpegPackage  = "video-lts"
+}
+
 allprojects {
     repositories {
         google()

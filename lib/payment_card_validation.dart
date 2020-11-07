@@ -158,14 +158,14 @@ class CardUtils {
       case CardType.Others:
         icon = new Icon(
           Icons.credit_card,
-          size: 30.0,
+          size: 19.0,
           color: Colors.grey[600],
         );
         break;
       case CardType.Invalid:
         icon = new Icon(
           Icons.warning,
-          size: 30.0,
+          size: 25.0,
           color: Colors.grey[600],
         );
         break;
@@ -174,7 +174,7 @@ class CardUtils {
     if (img.isNotEmpty) {
       widget = new Image.asset(
         'assets/$img',
-        width: 30.0,
+        width: 27.0,
       );
     } else {
       widget = icon;

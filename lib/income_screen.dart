@@ -316,6 +316,7 @@ class _IncomeScreenState extends State<IncomeScreen> with SuperBase {
             child: Scrollbar(
               child: ListView.builder(
                   controller: _controller,
+                  padding: EdgeInsets.only(bottom: 100),
                   itemCount: _bonusList.length + (_loading ? 2 : 1),
                   itemBuilder: (context, index) {
                     index = index - 1;

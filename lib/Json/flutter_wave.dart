@@ -9,6 +9,8 @@ class Flutterwave{
   String phone;
   String year;
 
+  bool isPhone = false;
+
 
   Flutterwave(this.card,this.country,this.cvv,this.email,this.firstName,this.lastName,this.month,this.year,this.phone);
 }

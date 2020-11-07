@@ -191,11 +191,13 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
             }
           } else {
             print(map);
+            platform.invokeMethod("toast",map['message']);
             canPop();
           }
         },
         error: (source, url) {
           print(source);
+          platform.invokeMethod("toast",source);
           canPop();
         });
   }

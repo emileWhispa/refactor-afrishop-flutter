@@ -41,10 +41,14 @@ class _SupportState extends State<Support> with SuperBase {
         authKey: widget.user()?.token,
         onValue: (source, url) {
           var js = json.decode(source);
-          setState(() {
-            _user = User.fromJson2(js);
-            widget.user()?.code = _user.code;
-          });
+          if( js['code'] == 1) {
+            setState(() {
+              _user = User.fromJson2(js['data']);
+              widget
+                  .user()
+                  ?.code = _user.code;
+            });
+          }
         });
   }
   @override

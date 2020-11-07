@@ -28,7 +28,9 @@ dependencies:
   shared_preferences: ^0.5.3+4
   carousel_slider: ^1.4.1
   flutter_staggered_grid_view: ^0.3.0
-  video_thumbnail: ^0.2.1
+  video_compress: ^2.1.0
+  flutter_ffmpeg: ^0.2.7
+  flutter_native_image: ^0.0.5
   image_picker: ^0.6.7+11
   flutter_country_picker: ^0.1.6
   package_info: ^0.4.3
@@ -77,6 +79,11 @@ flutter:
     - assets/home_.png
     - assets/discover.png
     - assets/btnicon_more.png
+    - assets/rave-logo.png
+    - assets/rave-small.png
+    - assets/dinners_club.png
+    - assets/american_express.png
+    - assets/discover1.png
     - assets/discover_.png
     - assets/add_photo.png
     - assets/take_a_photo.png
@@ -98,6 +105,7 @@ flutter:
     - assets/faq.png
     - assets/dollar.png
     - assets/location.png
+    - assets/secure-rave.png
     - assets/success.png
     - assets/support.png
     - assets/camera.png

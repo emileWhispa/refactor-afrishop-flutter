@@ -23,12 +23,12 @@ import 'Json/User.dart';
 
 class SuperBase {
   // Live connections
-//  String server = "http://159.138.48.71:8080/zion/";
+  String server = "http://159.138.48.71:8080/zion/";
 //  String server0 = "http://165.22.82.105:8080/"; //Discover
 
   //Test Connections
 //  String server = "https://dev.diaosaas.com/zion/"; // currently connected on live db
-  String server = "http://165.22.82.105:7000/zion/";
+//  String server = "http://165.22.82.105:7000/zion/";
 
   String get server0 => server; // Discover
   int version = 0; // sliders //0.android 1.IOS 2.PC WEB 3.Mobile Web

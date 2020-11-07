@@ -51,7 +51,7 @@ class _WebViewExampleState extends State<WebViewExample> with SuperBase {
               child: Container(
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                    color: Colors.black54,
+                    color: Colors.black38,
                     borderRadius: BorderRadius.circular(7)),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -72,12 +72,14 @@ class _WebViewExampleState extends State<WebViewExample> with SuperBase {
         });
   }
 
+  bool dpoMatch(String url) => url.contains("dpo/notify") && widget.isDpo;
+
   void listenChange(String url) async {
     print(url);
-    var isMatch = url.contains("dpo/notify") && widget.isDpo;
+    var isMatch = dpoMatch(url);
     if (isMatch) {
       showMd();
-      ajax(
+      this.ajax(
           url: url,
           absolutePath: true,
           authKey: widget.user()?.token,
@@ -114,50 +116,57 @@ class _WebViewExampleState extends State<WebViewExample> with SuperBase {
           });
     }
 
-    String s = await _controller.evaluateJavascript("window.document.getElementsByTagName('body')[0].textContent;");
+    //String s = await _controller.evaluateJavascript("window.document.getElementsByTagName('body')[0].textContent;");
 
-    print(s);
-    if(canDecode(s)) print(jsonDecode(s));
+    //print(s);
+    //if(canDecode(s)) print(jsonDecode(s));
 
-    bool isJson = canDecode(s) && (s.contains('failed') || s.contains('successful') || s.contains('Transaction Failed-AUTHENTICATION_ATTEMPTED'));
-
-
-    var isMatch2 = url.contains("app/loading.html?res");
-    var isMatch3 = url.contains("message=Approved") && url.contains("submitting_mock_form");
-    if( !widget.isDpo && (isMatch2 || isMatch3 || isJson) ){
-
+//    bool isPureJson = canDecode(s);
+//
+//    bool isJson = isPureJson && (s.contains('failed') || s.contains('successful') || s.contains('Transaction Failed-AUTHENTICATION_ATTEMPTED'));
+//
+//
+//    var isMatch2 = url.contains("app/loading.html?res");
+//    var isMatch3 = url.contains("message=Approved") && url.contains("submitting_mock_form");
+    if( !widget.isDpo && url.contains("flutterwave/notify") ){
       showMd();
-      ajax(
-          url: "flutterwave/verifyPay?orderId=${widget.order.orderId}",
-          method: "POST",
-          server: true,
-          auth: true,
-          authKey: widget.user()?.token,
-          onValue: (source, url) async {
-            var body = json.decode(source);
-            Navigator.popUntil(context, (c) => c.isFirst);
-            setState(() {
-              _loading = true;
-            });
-            if (body['code'] == 1){
-              platform.invokeMethod('logPurchase', <Object, dynamic>{
-                "currency":"USD",
-                "purchaseAmount":widget.order.totalPrice
-              });
-              Navigator.push(
-                  context,
-                  CupertinoPageRoute(
-                      builder: (context) => PaymentSuccess(
-                        user: widget.user, order: widget.order,callback: widget.callback,)));}
-            else{
-              Navigator.push(context,
-                  CupertinoPageRoute(builder: (context) => PayFailure()));}
-          },
-          error: (source, url) {
-            Navigator.pushReplacement(context,
-                CupertinoPageRoute(builder: (context) => PayFailure()));
-          });
+      verifyFlutterPay(canError: true);
     }
+  }
+
+
+  void verifyFlutterPay({bool canError:false}){
+    ajax(
+        url: "flutterwave/verifyPay?orderId=${widget.order.orderId}",
+        method: "POST",
+        server: true,
+        auth: true,
+        authKey: widget.user()?.token,
+        onValue: (source, url) async {
+          var body = json.decode(source);
+          Navigator.popUntil(context, (c) => c.isFirst);
+          setState(() {
+            _loading = true;
+          });
+          if (body['code'] == 1){
+            platform.invokeMethod('logPurchase', <Object, dynamic>{
+              "currency":"USD",
+              "purchaseAmount":widget.order.totalPrice
+            });
+            Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => PaymentSuccess(
+                      user: widget.user, order: widget.order,callback: widget.callback,)));}
+          else if( canError ){
+            Navigator.push(context,
+                CupertinoPageRoute(builder: (context) => PayFailure()));}
+        },
+        error: (source, url) {
+          if(canError)
+            Navigator.pushReplacement(context,
+              CupertinoPageRoute(builder: (context) => PayFailure()));
+        });
   }
 
   @override
@@ -178,10 +187,7 @@ class _WebViewExampleState extends State<WebViewExample> with SuperBase {
 
   @override
   Widget build(BuildContext context) {
-    return _loading
-        ? Scaffold()
-        : Scaffold(
-
+    return Scaffold(
       appBar: new AppBar(
         leading: Navigator.canPop(context)
             ? IconButton(
@@ -221,11 +227,24 @@ class _WebViewExampleState extends State<WebViewExample> with SuperBase {
               })
         ],
       ),
-          body: WebView(
+          body: _loading ? Center(
+            child: Image.asset("assets/about_logo.png",height: 170,),
+          ) : WebView(
 
               initialUrl: _url,
             onPageFinished: listenChange,
+            navigationDelegate: (NavigationRequest request){
+//                print(request.url);
+//                if( dpoMatch(request.url) ){
+//                  return NavigationDecision.prevent;
+//                }
+//
+//                if( _loading && !widget.isDpo){
+//                  return NavigationDecision.prevent;
+//                }
 
+                return NavigationDecision.navigate;
+            },
             javascriptMode: JavascriptMode.unrestricted,
             onWebViewCreated: (WebViewController webViewController) {
               _controller = webViewController;

@@ -18,6 +18,9 @@ class Problem {
 
   static String parse(String data) {
     var d = parser.parse(data);
-    return d.children.map((f) => f.text).join(" ");
+    return d.children.map((f) =>
+    f.hasChildNodes() ? f.children.map((e) => Uri.decodeComponent(e.text)).join(
+        " ") : Uri.decodeComponent(f.text))
+        .join(" ");
   }
 }

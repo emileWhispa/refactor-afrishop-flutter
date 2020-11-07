@@ -32,6 +32,10 @@ class _PhoneSecurityState extends State<PhoneSecurity> with SuperBase {
     String phone;
 
 
+
+    bool get enabled =>!_sending && _duration.inSeconds <= 0;
+
+
     void showSuccess() async {
         await showDialog(
             context: context,
@@ -198,11 +202,13 @@ class _PhoneSecurityState extends State<PhoneSecurity> with SuperBase {
                                           inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
                                           validator: validateMobile,
                                           keyboardType: TextInputType.phone,
+                                          enabled: enabled,
                                           decoration: InputDecoration(
                                               filled: true,
+                                              enabled: enabled,
+                                              fillColor: enabled ? Colors.white : Colors.grey.shade100,
                                               hintText: "Phone number",
                                               contentPadding: EdgeInsets.only(left: 7),
-                                              fillColor: Colors.white,
                                               border: OutlineInputBorder(
                                                   borderSide: BorderSide.none,
                                                   borderRadius: BorderRadius.circular(5))),

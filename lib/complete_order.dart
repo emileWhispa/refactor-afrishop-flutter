@@ -45,7 +45,8 @@ class CompleteOrder extends StatefulWidget {
       this.fromOrders: false,
       this.completedOrder,
       @required this.callback,
-      this.payNowParams, this.ordersId})
+      this.payNowParams,
+      this.ordersId})
       : super(key: key);
 
   @override
@@ -90,15 +91,15 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
   }
 
   void getDefault() {
-    getDefaultAddress().then((value){
+    getDefaultAddress().then((value) {
       _address = value;
-      if( value == null){
+      if (value == null) {
         getOtherDefault();
       }
     });
   }
 
-  void getOtherDefault(){
+  void getOtherDefault() {
     this.ajax(
         url: "address/default",
         authKey: widget.user()?.token,
@@ -128,7 +129,8 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
     this.ajax(
         url:
             "order/cancelOrder?orderId=${widget.order?.orderId}&reason=${Uri.encodeComponent("Time out")}",
-        authKey: widget.user()?.token,server: true);
+        authKey: widget.user()?.token,
+        server: true);
   }
 
   @override
@@ -159,7 +161,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
         if (order?.closedByTime == true) {
           autoClose();
         }
-          _duration = addedTime.difference(DateTime.now());
+        _duration = addedTime.difference(DateTime.now());
       });
       _timer = Timer.periodic(Duration(seconds: 1), (t) {
         if (_duration == Duration(hours: 0)) {
@@ -1411,7 +1413,41 @@ class _PopPageState extends State<PopPage> with SuperBase {
         });
   }
 
+  Future<void> convertMoney() async {
+    setState(() {
+      _sending = true;
+    });
+    await this.ajax(
+        url:
+            "order/currencyConversion?currency=zmk&price=${widget.order.realityPay}",
+        server: true,
+        authKey: widget.user()?.token,onValue: (source,url){
+          var x = json.decode(source);
+          if( x['code'] == 1){
+            setState(() {
+              zmk = x['data'];
+            });
+          }else{
+            platform.invokeMethod("toast",x['message']);
+          }
+    });
+
+    setState(() {
+      _sending = false;
+    });
+  }
+
+  double zmk;
+
   void flutterWave() async {
+
+    if( zmk == null ) await convertMoney();
+
+    if( zmk == null ) {
+      platform.invokeMethod("toast","Service error");
+      return;
+    }
+
     _flutterwave = await Navigator.push(
         context,
         CupertinoPageRoute(
@@ -1420,6 +1456,7 @@ class _PopPageState extends State<PopPage> with SuperBase {
                   flutterwave: _flutterwave,
                   user: widget.user,
                   price: widget.order.realityPay,
+              priceZmk: zmk,
                 )));
     if (_flutterwave == null) {
       platform.invokeMethod("toast", "Required information missing");
@@ -1431,17 +1468,18 @@ class _PopPageState extends State<PopPage> with SuperBase {
     });
 
     this.ajax(
-        url: "flutterwave/pay?orderId=${widget.order.orderId}",
+        url:
+            "flutterwave/${_flutterwave.isPhone ? "payMobile" : "pay"}?orderId=${widget.order.orderId}",
         server: true,
         auth: true,
         authKey: widget.user()?.token,
         method: "POST",
         map: {
-          "amount": widget.order.realityPay,
+          "amount": _flutterwave.isPhone ? zmk : widget.order.realityPay,
           "card": _flutterwave.card,
           "country": _flutterwave.country,
           "cvv": _flutterwave.cvv,
-          "email": _flutterwave.email,
+          "email": "user@example.com",
           "firstname": _flutterwave.firstName,
           "lastname": _flutterwave.lastName,
           "month": _flutterwave.month,
@@ -1452,15 +1490,28 @@ class _PopPageState extends State<PopPage> with SuperBase {
         onValue: (source, url) async {
           var map = json.decode(source);
           print(source);
-          if (map != null &&
-              map['data'] != null &&
-              map['data']['data'] != null &&
-              map['data']['data']['authurl'] != null) {
-            var uri = map['data']['data']['authurl'];
-            await widget.addToCart(uri, "Flutterwave payment", false);
-            verifyPay();
+          if (_flutterwave.isPhone) {
+            if (map != null &&
+                map['data'] != null &&
+                map['data']['data'] != null &&
+                map['data']['data']['link'] != null) {
+              var uri = map['data']['data']['link'];
+              await widget.addToCart(uri, "Flutterwave payment", false);
+              verifyPay();
+            } else {
+              platform.invokeMethod("toast", map['message']);
+            }
           } else {
-            platform.invokeMethod("toast", map['message']);
+            if (map != null &&
+                map['data'] != null &&
+                map['data']['data'] != null &&
+                map['data']['data']['authurl'] != null) {
+              var uri = map['data']['data']['authurl'];
+              await widget.addToCart(uri, "Flutterwave payment", false);
+              verifyPay();
+            } else {
+              platform.invokeMethod("toast", map['message']);
+            }
           }
         },
         error: (s, v) {

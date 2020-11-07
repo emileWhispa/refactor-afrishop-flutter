@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'Json/User.dart';
-import 'Json/country.dart';
 import 'Json/flutter_wave.dart';
 import 'SuperBase.dart';
 import 'input_formatters.dart';
@@ -12,68 +11,74 @@ import 'input_formatters.dart';
 class NewItem {
   bool isExpanded;
   final String header;
-  final Widget body;
-  final Widget iconpic;
-  NewItem(this.isExpanded, this.header, this.body, this.iconpic);
+  final String iconpic;
+  final int index;
+
+  NewItem(this.index, this.isExpanded, this.header, this.iconpic);
 }
 
 double discretevalue = 2.0;
 double hospitaldiscretevalue = 25.0;
 
+class MyBehavior extends ScrollBehavior {
+  @override
+  Widget buildViewportChrome(
+      BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
+  }
+}
+
 class FlutterForm extends StatefulWidget {
   final String email;
   final double price;
+  final double priceZmk;
   final User Function() user;
   final Flutterwave flutterwave;
-  const FlutterForm({Key key, @required this.email,@required this.price,@required this.user, this.flutterwave})
+
+  const FlutterForm(
+      {Key key,
+      @required this.email,
+      @required this.price,
+      @required this.user,
+      this.flutterwave,@required this.priceZmk})
       : super(key: key);
+
   @override
   _FlutterFormState createState() => _FlutterFormState();
 }
 
 class _FlutterFormState extends State<FlutterForm> with SuperBase {
-  var _cardController = new TextEditingController();
   var _cvvController = new TextEditingController();
-  var _emailController = new TextEditingController();
-  var _firstController = new TextEditingController();
-  var _lastController = new TextEditingController();
-  var _monthController = new TextEditingController();
   var _phoneController = new TextEditingController();
   var _yearController = new TextEditingController();
-
 
   var numberController = new TextEditingController();
   var _paymentCard = PaymentCard();
 
   var _formKey = new GlobalKey<FormState>();
-  TextEditingController _phone = new TextEditingController();
-  var _autoValidate = false;
   FocusNode myFocusNode = new FocusNode();
 
-
-  Country _country;
-  var _selectedMethod;
-  final List<String> _items = <String>['1', '2', '3'];
-  bool _isPhone = true;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    if (widget.email != null) {
-      _emailController = new TextEditingController(text: widget.email);
+
+    if (widget.flutterwave != null && !widget.flutterwave.isPhone ) {
+      numberController =
+          new TextEditingController(text: widget.flutterwave.card);
+      _cvvController = new TextEditingController(text: widget.flutterwave.cvv);
+      _yearController = new TextEditingController(
+          text: "${widget.flutterwave.month}/${widget.flutterwave.year}");
     }
 
-    if( widget.flutterwave != null ){
-      numberController = new TextEditingController(text: widget.flutterwave.card);
-      _cvvController = new TextEditingController(text: widget.flutterwave.cvv);
-      _yearController = new TextEditingController(text: "${widget.flutterwave.month}/${widget.flutterwave.year}");
+    if (widget.flutterwave != null && widget.flutterwave.isPhone ) {
+      _phoneController =
+          new TextEditingController(text: widget.flutterwave.phone);
     }
 
     _paymentCard.type = CardType.Others;
     numberController.addListener(_getCardTypeFrmNumber);
   }
-
-
 
   void useCard() async {
     Navigator.push(
@@ -83,520 +88,481 @@ class _FlutterFormState extends State<FlutterForm> with SuperBase {
                 CardPayment(price: widget.price, email: widget.email)));
   }
 
-  List<NewItem> get items => <NewItem>[
-    new NewItem(
-        false,
-        'Pay with Mobile Money',
 
-        Container(
-          child: Column(
-            children: [
-              Container(
-                height: 100,
-                width: 500,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(15.0),
-                      topRight: const Radius.circular(15.0),
-                    )),
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 140.0),
-                      child: ClipRRect(
-                        child: Image.asset(
-                          "assets/flutterwave.png",
-                          width: 60.0,
-                          height: 60.0,
-                          fit: BoxFit.fitWidth,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                        child: Text(
-                          "ccfz investment company limited",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        )),
-                  ],
+
+  FocusNode focusNode = new FocusNode();
+  FocusNode focusNode1 = new FocusNode();
+  FocusNode focusNode2 = new FocusNode();
+  FocusNode focusNode3 = new FocusNode();
+
+
+  @override
+  Widget build(BuildContext context) {
+    Scaffold scaffold = new Scaffold(
+        appBar: new AppBar(
+          leading: Navigator.canPop(context)
+              ? IconButton(
+                  icon: Icon(Icons.arrow_back_ios),
+                  onPressed: () {
+                    Navigator.maybePop(context);
+                  })
+              : null,
+          title: Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(right: 50.0),
+                child: Image.asset(
+                  "assets/afrishop_logo@3x.png",
+                  width: 70,
+                  fit: BoxFit.fitWidth,
                 ),
               ),
-              SizedBox(
-                height: 5,
-              ),
-              Container(
-                height: 250,
-                width: 500,
-                color: Color(0xfffdf9e8),
-                child: Column(
-                  children: [
-                    Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              right: 220.0, top: 10),
-                          child: Text(
-                            "\$${widget.price}",
-                            style: TextStyle(color: Colors.black54),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 130.0),
-                          child: Text(
-                            "${widget.email}",
-                            style: TextStyle(color: Colors.black54),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-
-                    Container(
-                      width: 270,
-                      height: 55,
-                      color: Colors.white,
-                      child: DropdownButton(
-                        focusColor: Colors.white,
-                        hint: _selectedMethod == null
-                            ? Padding(
-                          padding:
-                          const EdgeInsets.only(left: 8.0),
-                          child: Text(
-                            'CHOOSE NETWORK',
-                            style: TextStyle(fontSize: 13),
-                          ),
-                        )
-                            : Text(
-                          _selectedMethod,
-                          style: TextStyle(color: Colors.blue),
-                        ),
-                        isExpanded: true,
-                        iconSize: 30.0,
-                        underline: Container(
-                          height: 0,
-                        ),
-                        value: _selectedMethod,
-                        items: ['MTN', 'ZAMTEL'].map((code) {
-                          return DropdownMenuItem<String>(
-                              value: code, child: Text(code));
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedMethod = value;
-                          });
-                        },
-                      ),
-                    ),
-
-                    SizedBox(
-                      height: 10,
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.only(left: 2.0),
-                      child: Container(
-                        width: 270,
-                        child: TextFormField(
-                          controller: _phone,
-                          validator: (s) =>
-                          s.isEmpty ? "Field required !!" : null,
-                          keyboardType: TextInputType.phone,
-                          inputFormatters: [
-                            WhitelistingTextInputFormatter.digitsOnly
-                          ],
-                          decoration: InputDecoration(
-                              hintText: "Phone number",
-                              hintStyle:
-                              TextStyle(color: Colors.grey),
-                              fillColor: Colors.white,
-                              filled: true,
-                              // border: OutlineInputBorder(borderSide: BorderSide.none)
-                              border: OutlineInputBorder(
-                                  borderSide: BorderSide.none)),
-                        ),
-                      ),
-                    ),
-                    // ),
-                    Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Container(
-                        width: 270,
-                        height: 42,
-                        child: CupertinoButton(
-                            borderRadius: BorderRadius.circular(4),
-                            padding: EdgeInsets.zero,
-                            child: Text(
-                              "Pay \$${widget.price}",
-                              style: TextStyle(
-                                  color: Colors.black54,
-                                  fontWeight: FontWeight.w800),
-                            ),
-                            onPressed: () => {},
-                            color: color),
-                      ),
-                    ),
-                  ],
-                ),
-              )
+              Expanded(
+                  child: Text(
+                "Flutterwave",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              )),
             ],
           ),
-        ),ClipRRect(
-      child: Image.asset(
-        "assets/payment_icon.png",
-        width: 20.0,
-        height: 20.0,
-        fit: BoxFit.fitWidth,
-      ),
-    )),
-    new NewItem(
-        true,
-        'Pay with Card',
-        Form(
-          key: _formKey,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
-            child: Column(
+        ),
+        backgroundColor: Colors.grey.shade200,
+        body: Center(
+          child: ScrollConfiguration(
+            behavior: MyBehavior(),
+            child: ListView(
+              shrinkWrap: true,
               children: [
-                Container(
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 100,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                              topLeft: const Radius.circular(15.0),
-                              topRight: const Radius.circular(15.0),
-                            )),
-                        child: Row(
-                          children: [
-                            ClipRRect(
-                              child: Image.asset(
-                                "assets/flutterwave.png",
-                                width: 60.0,
-                                height: 60.0,
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                            Spacer(),
-                            Text(
-                              "ccfz investment company limited",
-                              style:
-                              TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Container(
-                        width: double.infinity,
-                        color: Color(0xfffdf9e8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 10),
-                                    child: Text(
-                                      "\$${widget.price}",
-                                      style:
-                                      TextStyle(color: Colors.black54),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding:
-                                    const EdgeInsets.only(right: 0.0),
-                                    child: Text(
-                                      "${widget.email}",
-                                      style:
-                                      TextStyle(color: Colors.black54),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 20),
-                              child: new TextFormField(
-                                focusNode: myFocusNode,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: [
-                                  WhitelistingTextInputFormatter
-                                      .digitsOnly,
-                                  new LengthLimitingTextInputFormatter(
-                                      19),
-                                  new CardNumberInputFormatter()
-                                ],
-                                controller: numberController,
-                                decoration: new InputDecoration(
-                                  // border: const UnderlineInputBorder(),
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                                  border: OutlineInputBorder(
-                                      borderSide: BorderSide.none),
-                                  filled: true,
-                                  suffixIcon: CardUtils.getCardIcon(
-                                      _paymentCard.type),
-                                  hintText: '0000 0000 0000 0000',
-                                  labelText: 'Card number',
-                                  labelStyle: TextStyle(
-                                      color: myFocusNode.hasFocus
-                                          ? Colors.black54
-                                          : Colors.black54),
-                                  fillColor: Colors.white,
-                                ),
-                                onSaved: (String value) {
-                                  print('onSaved = $value');
-                                  print(
-                                      'Num controller has = ${numberController.text}');
-                                  _paymentCard.number =
-                                      CardUtils.getCleanedNumber(value);
-                                },
-                                validator: CardUtils.validateCardNum,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 6,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 20.0,right: 20, bottom: 10),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: new TextFormField(
-                                      controller: _yearController,
-                                      inputFormatters: [
-                                        WhitelistingTextInputFormatter
-                                            .digitsOnly,
-                                        new LengthLimitingTextInputFormatter(
-                                            4),
-                                        new CardMonthInputFormatter()
-                                      ],
-                                      decoration: new InputDecoration(
-                                        contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                                        border: OutlineInputBorder(
-                                            borderSide:
-                                            BorderSide.none),
-                                        filled: true,
-                                        hintText: 'MM/YY',
-                                        labelText: 'Expiry Date',
-                                        labelStyle: TextStyle(
-                                            color: myFocusNode.hasFocus
-                                                ? Colors.black54
-                                                : Colors.black54),
-                                        fillColor: Colors.white,
-                                      ),
-                                      validator: CardUtils.validateDate,
-                                      keyboardType:
-                                      TextInputType.number,
-                                      onSaved: (value) {
-                                        List<String> expiryDate =
-                                        CardUtils.getExpiryDate(
-                                            value);
-                                        _paymentCard.month =
-                                        expiryDate[0];
-                                        _paymentCard.year =
-                                        expiryDate[1];
-                                      },
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 3.0),
-                                      child: new TextFormField(
-                                        controller: _cvvController,
-                                        inputFormatters: [
-                                          WhitelistingTextInputFormatter
-                                              .digitsOnly,
-                                          new LengthLimitingTextInputFormatter(
-                                              4),
-                                        ],
-                                        decoration: new InputDecoration(
-                                          filled: true,
-                                          contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                                          fillColor: Colors.white,
-                                          hintText:
-                                          'Number behind card',
-                                          hintStyle:
-                                          TextStyle(fontSize: 12.0),
-                                          labelText: 'CVV',
-                                          labelStyle: TextStyle(
-                                              color:
-                                              myFocusNode.hasFocus
-                                                  ? Colors.black54
-                                                  : Colors.black54),
-                                          border: OutlineInputBorder(
-                                              borderSide:
-                                              BorderSide.none),
-                                        ),
-                                        obscureText: true,
-                                        validator:
-                                        CardUtils.validateCVV,
-                                        keyboardType:
-                                        TextInputType.number,
-                                        onSaved: (value) {
-                                          _paymentCard.cvv =
-                                              int.parse(value);
-                                        },
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            // ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 20).copyWith(bottom: 20),
-                              child: Container(
-                                width: double.infinity,
-                                height: 42,
-                                child: CupertinoButton(
-                                    borderRadius:
-                                    BorderRadius.circular(4),
-                                    padding: EdgeInsets.zero,
-                                    child: Text(
-                                      "Pay \$${widget.price}",
-                                      style: TextStyle(
-                                          color: Colors.black54,
-                                          fontWeight: FontWeight.w800),
-                                    ),
-                                    onPressed: ()  {
-                                      if( _formKey.currentState?.validate() ?? false ){
-                                        _paymentCard.number =
-                                            CardUtils.getCleanedNumber(numberController.text);
-                                        var name = widget.user()?.display() ?? "";
-
-                                        List<String> expiryDate =
-                                        CardUtils.getExpiryDate(
-                                            _yearController.text);
-                                        _paymentCard.month =
-                                        expiryDate[0];
-                                        _paymentCard.year =
-                                        expiryDate[1];
-                                        var card = Flutterwave(_paymentCard.number, "RWF", _cvvController.text, widget.email, name, name, _paymentCard.month, _paymentCard.year, widget.user()?.phone ?? "");
-                                        Navigator.pop(context,card);
-                                      }
-
-                                    },
-                                    color: Color(0xffffe707)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                InkWell(
-                  onTap: (){},
+                Card(
                   child: Container(
-                    width: 500,
-                    height: 60,
-                    color: Colors.white,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: AssetImage("assets/rave-logo.png"),
+                                radius: 30,
+                              ),
+                              Spacer(),
+                              Text(
+                                "Afrishop".toUpperCase(),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(color: Color(0xfffef6e9)),
+                          padding: EdgeInsets.all(30),
+                          child: _selectedIndex == 0 ? phoneWidget : cardWidget,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              _selectedIndex = _selectedIndex == 0 ? 1 : 0;
+                            });
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(20),
+                            child: Row(
+                              children: [
+                                Image.asset("assets/rave-small.png"),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: Text(_selectedIndex == 1
+                                      ? "Pay with Mobile Money"
+                                      : "Pay with Card"),
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                )
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(4)
+                      ),
+                      margin: EdgeInsets.symmetric(vertical: 30),
+                        padding: EdgeInsets.symmetric(vertical: 5,horizontal: 10),
+                        child:Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset("assets/secure-rave.png"),
+                            Padding(
+                              padding: const EdgeInsets.only(left:8.0),
+                              child: Text("SECURED BY FLUTTERWAVE",style: TextStyle(
+                                color: Color(0xfff5a623),
+                                fontWeight: FontWeight.bold
+                              ),),
+                            )
+                          ],
+                        )
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
-        ),ClipRRect(
-      child: Image.asset(
-        "assets/payment_icon.png",
-        width: 20.0,
-        height: 20.0,
-        fit: BoxFit.fitWidth,
-      ),
-    )),
-    //give all your items here
-  ];
-
-  ListView List_Criteria;
-  @override
-  Widget build(BuildContext context) {
-    List_Criteria = new ListView(
-      children: [
-        new Padding(
-          padding: new EdgeInsets.all(10.0),
-          child: new ExpansionPanelList(
-            expansionCallback: (int index, bool isExpanded) {
-              setState(() {
-                items[index].isExpanded = !items[index].isExpanded;
-              });
-            },
-            children: items.map((NewItem item) {
-              return new ExpansionPanel(
-                headerBuilder: (BuildContext context, bool isExpanded) {
-                  return new ListTile(
-                      leading: item.iconpic,
-                      title: new Text(
-                        item.header,
-                        textAlign: TextAlign.left,
-                        style: new TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ));
-                },
-                isExpanded: item.isExpanded,
-                body: item.body,
-              );
-            }).toList(),
-          ),
-        )
-      ],
-    );
-
-    Scaffold scaffold = new Scaffold(
-      appBar: new AppBar(
-        leading: Navigator.canPop(context)
-            ? IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            onPressed: () {
-              Navigator.maybePop(context);
-            })
-            : null,
-        title: Row(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(right: 50.0),
-              child: Image.asset(
-                "assets/afrishop_logo@3x.png",
-                width: 70,
-                fit: BoxFit.fitWidth,
-              ),
-            ),
-            Expanded(
-                child: Text(
-                  "Flutterwave",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                )),
-          ],
-        ),
-      ),
-      body: List_Criteria
-    );
+        ));
     return scaffold;
   }
 
+  int _selectedIndex = 0;
+
+  GlobalKey _toolTipKey = GlobalKey();
+
+  Widget get phoneWidget => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          RichText(
+              text: TextSpan(style: TextStyle(color: Colors.black), children: [
+            TextSpan(text: "ZMK", style: TextStyle(fontSize: 13)),
+            TextSpan(
+                text: " ${widget.priceZmk}",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          ])),
+          Text("${widget.email}"),
+          SizedBox(
+            height: 20,
+          ),
+          GestureDetector(
+            onTap: () => focusNode.requestFocus(),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(3),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.grey.shade400,
+                        offset: Offset(0.4, 0.4),
+                        blurRadius: 0.4)
+                  ]),
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("PHONE NUMBER"),
+                  TextFormField(
+                    focusNode: focusNode,
+                    controller: _phoneController,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration.collapsed(
+                        hintText: "",
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.circular(5))),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Container(
+            height: 45,
+            margin: EdgeInsets.only(top: 15),
+            child: RaisedButton(
+              onPressed: () {
+                if( validateMobile(_phoneController.text) != null ){
+                  platform.invokeMethod("toast","Invalid mobile phone");
+                  return;
+                }
+                var name = widget.user()?.username;
+                var card = Flutterwave(
+                    _paymentCard.number,
+                    "RWF",
+                    _cvvController.text,
+                    widget.email,
+                    name,
+                    name,
+                    _paymentCard.month,
+                    _paymentCard.year,
+                    _phoneController.text ?? widget.user()?.phone ?? "");
+
+                card.isPhone = true;
+
+                Navigator.pop(context, card);
+              },
+              elevation: 1.6,
+              color: Color(0xffecb356),
+              textColor: Colors.white,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                      child: Text(
+                    "Pay ZMK ${widget.priceZmk}",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  )),
+                  Icon(
+                    Icons.arrow_forward_ios_outlined,
+                    size: 14,
+                  )
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+
+
+  Widget get cardWidget => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          RichText(
+              text: TextSpan(style: TextStyle(color: Colors.black), children: [
+            TextSpan(text: "USD", style: TextStyle(fontSize: 13)),
+            TextSpan(
+                text: " \$${widget.price}",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          ])),
+          Text("${widget.email}"),
+          SizedBox(
+            height: 20,
+          ),
+          GestureDetector(
+            onTap: () => focusNode1.requestFocus(),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(3),
+                      topLeft: Radius.circular(3)),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.grey.shade400,
+                        offset: Offset(0.4, 0.4),
+                        blurRadius: 0.4)
+                  ]),
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("CARD NUMBER"),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          focusNode: focusNode1,
+                          controller: numberController,
+                          validator: CardUtils.validateCardNum,
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly,
+                            new LengthLimitingTextInputFormatter(19),
+                            new CardNumberInputFormatter()
+                          ],
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration.collapsed(
+                              hintText: "0000 0000 0000 0000",
+
+                              hintStyle: TextStyle(fontSize: 12, color: Colors.grey),
+                              border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(5))),
+                        ),
+                      ),
+                      CardUtils.getCardIcon(_paymentCard.type)
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => focusNode2.requestFocus(),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius:
+                            BorderRadius.only(bottomLeft: Radius.circular(3)),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.grey.shade400,
+                              offset: Offset(0.4, 0.4),
+                              blurRadius: 0.4)
+                        ]),
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("VALID TILL"),
+                        TextFormField(
+                          focusNode: focusNode2,
+                          controller: _yearController,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            new LengthLimitingTextInputFormatter(4),
+                            new CardMonthInputFormatter()
+                          ],
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration.collapsed(
+                              hintText: "MM / YY",
+                              hintStyle:
+                                  TextStyle(fontSize: 12, color: Colors.grey),
+                              border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(5))),
+                          validator: CardUtils.validateDate,
+                          onSaved: (value) {
+                            List<String> expiryDate =
+                            CardUtils.getExpiryDate(value);
+                            _paymentCard.month = expiryDate[0];
+                            _paymentCard.year = expiryDate[1];
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    focusNode3.requestFocus();
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius:
+                            BorderRadius.only(bottomRight: Radius.circular(3)),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.grey.shade400,
+                              offset: Offset(0.4, 0.4),
+                              blurRadius: 0.4)
+                        ]),
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(child: Text("CVV")),
+                            GestureDetector(
+                              onTap: () {
+                                final dynamic tooltip =
+                                    _toolTipKey.currentState;
+                                tooltip?.ensureTooltipVisible();
+                              },
+                              child: Tooltip(
+                                  key: _toolTipKey,
+                                  message:
+                                      "The CVV is a 3 digit security code located at the back of your card.",
+                                  child: Text(
+                                    "What is this ?",
+                                    style: TextStyle(fontSize: 12),
+                                  )),
+                            )
+                          ],
+                        ),
+                        TextFormField(
+                          focusNode: focusNode3,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            new LengthLimitingTextInputFormatter(4),
+                          ],
+                          controller: _cvvController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration.collapsed(
+                              hintText: "123",
+                              hintStyle:
+                                  TextStyle(fontSize: 12, color: Colors.grey),
+                              border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(5))),
+                          validator: CardUtils.validateCVV,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Container(
+            height: 45,
+            margin: EdgeInsets.only(top: 15),
+            child: RaisedButton(
+              onPressed: () {
+                if( CardUtils.validateCardNum(numberController.text) != null){
+                  focusNode1.requestFocus();
+                  platform.invokeMethod("toast","Invalid Card number");
+                  return;
+                }
+                if( CardUtils.validateDate(_yearController.text) != null){
+                  focusNode2.requestFocus();
+                  platform.invokeMethod("toast","Invalid Card Expiry Date");
+                  return;
+                }
+                if( CardUtils.validateCVV(_cvvController.text) != null){
+                  focusNode3.requestFocus();
+                  platform.invokeMethod("toast","Invalid CVV number");
+                  return;
+                }
+
+                _paymentCard.number =
+                    CardUtils.getCleanedNumber(
+                        numberController.text);
+                var name = widget.user()?.display() ?? "";
+
+                List<String> expiryDate =
+                CardUtils.getExpiryDate(
+                    _yearController.text);
+                _paymentCard.month = expiryDate[0];
+                _paymentCard.year = expiryDate[1];
+                var card = Flutterwave(
+                    _paymentCard.number,
+                    "RWF",
+                    _cvvController.text,
+                    widget.email,
+                    name,
+                    name,
+                    _paymentCard.month,
+                    _paymentCard.year,
+                    widget.user()?.phone ?? "");
+
+                card.isPhone = false;
+
+                Navigator.pop(context, card);
+              },
+              elevation: 1.6,
+              color: Color(0xffecb356),
+              textColor: Colors.white,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                      child: Text(
+                    "Pay USD \$${widget.price}",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontWeight: FontWeight.w900),
+                  )),
+                  Icon(
+                    Icons.arrow_forward_ios_outlined,
+                    size: 14,
+                  )
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
 
   Widget build2(BuildContext context) {
     // TODO: implement build
@@ -649,7 +615,6 @@ class _FlutterFormState extends State<FlutterForm> with SuperBase {
     );
   }
 
-
   @override
   void dispose() {
     // Clean up the controller when the Widget is removed from the Widget tree
@@ -666,19 +631,7 @@ class _FlutterFormState extends State<FlutterForm> with SuperBase {
     });
   }
 
-  void _validateInputs() {
-    final FormState form = _formKey.currentState;
-    if (!form.validate()) {
-      setState(() {
-        _autoValidate = true; // Start validating on every change.
-      });
-    //  _showInSnackBar('Please fix the errors in red before submitting.');
-    } else {
-      form.save();
-      // Encrypt and send send payment details to payment gateway
-    //  _showInSnackBar('Payment card is valid');
-    }
-  }
+
 
 //  Widget _getPayButton() {
 //    if (Platform.isIOS) {

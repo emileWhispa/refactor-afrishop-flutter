@@ -43,7 +43,7 @@ class _ComplainScreenState extends State<ComplainScreen> with SuperBase {
       _saving = true;
     });
     this.ajax(
-        url: "saveComplain",
+        url: "discover/post/saveComplain",
         authKey: widget.object()?.token,
         server: true,
         data: FormData.fromMap({

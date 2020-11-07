@@ -9,11 +9,13 @@ import 'package:afri_shop/product_tag.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:video_compress/video_compress.dart';
 
 import 'Json/User.dart';
 import 'Json/choice.dart';
@@ -22,9 +24,10 @@ import 'SuperBase.dart';
 class NewPostScreen extends StatefulWidget {
   final User Function() user;
   final void Function(User user) callback;
-  final void Function(FormData data,List<Choice> list) uploadFile;
+  final void Function(FormData data, List<Choice> list) uploadFile;
 
-  const NewPostScreen({Key key, @required this.user, @required this.callback,@required this.uploadFile})
+  const NewPostScreen(
+      {Key key, @required this.user, @required this.callback, @required this.uploadFile})
       : super(key: key);
 
   @override
@@ -76,7 +79,9 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
       } else if (s.trim() == "") {
         checkTags(str);
       } else if (_loadingHashTag) {
-        _searchHash(str.split("#").last);
+        _searchHash(str
+            .split("#")
+            .last);
       }
     });
     _titleController.addListener(() {
@@ -89,7 +94,9 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
       } else if (s.trim() == "") {
         checkTags(str);
       } else if (_loadingHashTag) {
-        _searchHash(str.split("#").last);
+        _searchHash(str
+            .split("#")
+            .last);
       }
     });
   }
@@ -104,7 +111,9 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
     });
     this.ajax(
         url: "searchHashtags/${Uri.encodeComponent(query)}?pageNo=0&pageSize=8",
-        authKey: widget.user()?.token,
+        authKey: widget
+            .user()
+            ?.token,
         server: true,
         onValue: (source, url) {
           Iterable map = json.decode(source);
@@ -115,45 +124,62 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
         error: (s, v) => print(s));
   }
 
-  List<Hashtag> findHashtags(String searchText) => RegExp(r"\B#\w\w+")
-      .allMatches(searchText)
-      .map((f) => Hashtag(f.group(0)))
-      .toList();
+  List<Hashtag> findHashtags(String searchText) =>
+      RegExp(r"\B#\w\w+")
+          .allMatches(searchText)
+          .map((f) => Hashtag(f.group(0)))
+          .toList();
 
   Future<bool> willPop() async {
-    if (_controller.text.trim().isNotEmpty ||
-        _titleController.text.trim().isNotEmpty ||
+    if (_controller.text
+        .trim()
+        .isNotEmpty ||
+        _titleController.text
+            .trim()
+            .isNotEmpty ||
         _list.isNotEmpty) {
       await showCupertinoModalPopup(
           context: context,
-          builder: (context) => new CupertinoAlertDialog(
-                title: new Text("Confirm To Save Draft"),
-                content: new Text("Do you want to save a draft ?"),
-                actions: <Widget>[
-                  CupertinoDialogAction(
-                    child: Text("Cancel"),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                  CupertinoDialogAction(
-                    isDefaultAction: true,
-                    onPressed: () {
-                      save(
-                          dKey,
-                          Draft(_titleController.text, _controller.text,
-                              _list.toList()));
-                      Navigator.pop(context);
-                    },
-                    child: Text("Confirm"),
-                  )
-                ],
-              ));
-      if(!_sending) Navigator.pop(context);
+          builder: (context) =>
+          new CupertinoAlertDialog(
+            title: new Text("Confirm To Save Draft"),
+            content: new Text("Do you want to save a draft ?"),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: Text("Cancel"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                onPressed: () {
+                  save(
+                      dKey,
+                      Draft(_titleController.text, _controller.text,
+                          _list.toList()));
+                  Navigator.pop(context);
+                },
+                child: Text("Confirm"),
+              )
+            ],
+          ));
+      if (!_sending) Navigator.pop(context);
       return false;
     }
 
     return true;
+  }
+
+
+  final FlutterFFmpeg _flutterFFmpeg = new FlutterFFmpeg();
+
+  Future<File> func(File file) async {
+    Directory appDocumentDir = await getTemporaryDirectory();
+    String rawDocumentPath = appDocumentDir.path;
+    String outputPath =  "$rawDocumentPath/$unique.mp4";
+    await _flutterFFmpeg.execute("-i ${file.path} -c:v mpeg4 $outputPath");
+    return new File(outputPath);
   }
 
   Future<File> writeToFile(ByteData data, {String extension: ""}) async {
@@ -171,14 +197,31 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
 
   void pickMulti() async {
     var num = 9 - _list.length;
+    Choice choice;
     if (num > 0) {
       var list = await MultiImagePicker.pickImages(maxImages: num);
+      var x = 0;
       for (var f in list) {
-        _list.add(
-            Choice("#dribble", await writeToFile(await f.getByteData()), true));
+        var file = await writeToFile(await f.getByteData());
+        print(file.lengthSync());
+        try{
+         var _file =
+          file.lengthSync() > 500000 ? await FlutterNativeImage.compressImage(
+              file.path) : file;
+         file = _file == null ? file : _file;
+        }catch(e){
+
+        }
+        print(file.lengthSync());
+        var c = Choice("#dribble", file, true);
+        _list.add(c);
+
+        if (x == 0) choice = c;
+
+        x++;
       }
-      if (_list.isNotEmpty) {
-        _navToTag(_list.first, 0);
+      if (choice != null) {
+        _navToTag(choice, 0);
       }
       setState(() {});
     }
@@ -186,7 +229,12 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
 
 
   void sendPost() {
-    if (!_formKey.currentState.validate() || _list.isEmpty) return;
+    if (!_formKey.currentState.validate()) return;
+
+    if (_list.where((element) => element.file != null).isEmpty) {
+      platform.invokeMethod("toast", "Select photos");
+      return;
+    }
 
 
     reqFocus(context);
@@ -195,7 +243,8 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
 
     data.files.addAll(_list
         .map((f) => f.file)
-        .map((f) => MapEntry(
+        .map((f) =>
+        MapEntry(
             "files",
             MultipartFile.fromFileSync(f.path,
                 filename: "$unique${getName(f)}")))
@@ -204,7 +253,8 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
     data.files.addAll(_list
         .where((f) => f.thumb != null)
         .map((f) => f.thumb)
-        .map((f) => MapEntry(
+        .map((f) =>
+        MapEntry(
             "thumbs",
             MultipartFile.fromFileSync(f.path,
                 filename: "$unique${getName(f)}")))
@@ -220,8 +270,8 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
     data.fields.add(
         MapEntry("tags", jsonEncode(_list.map((f) => f.toJsonOld()).toList())));
 
-    if( widget.uploadFile != null)
-    widget.uploadFile(data,_list);
+    if (widget.uploadFile != null)
+      widget.uploadFile(data, _list);
 
 //    var map = {
 //      "title": _titleController.text,
@@ -260,7 +310,9 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
               FlatButton(
                   onPressed: () async {
                     Navigator.pop(context);
-                    if (await Permission.storage.request().isGranted) {
+                    if (await Permission.storage
+                        .request()
+                        .isGranted) {
                       try {
                         if (_list.isEmpty) return;
 
@@ -285,56 +337,61 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
   void _delete() async {
     showCupertinoModalPopup(
         context: context,
-        builder: (context) => new CupertinoAlertDialog(
-              title: new Text("Confirm To Delete"),
-              content: new Text("Delete This Address ?"),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                  child: Text("Cancel"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                CupertinoDialogAction(
-                  isDefaultAction: true,
-                  onPressed: () {
-                    Navigator.pop(context);
-                    setState(() {
-                      _list.removeWhere((f) => f.selected);
-                    });
-                  },
-                  child: Text("Confirm"),
-                )
-              ],
-            ));
+        builder: (context) =>
+        new CupertinoAlertDialog(
+          title: new Text("Confirm To Delete"),
+          content: new Text("Delete This Address ?"),
+          actions: <Widget>[
+            CupertinoDialogAction(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              onPressed: () {
+                Navigator.pop(context);
+                setState(() {
+                  _list.removeWhere((f) => f.selected);
+                });
+              },
+              child: Text("Confirm"),
+            )
+          ],
+        ));
   }
 
-  Widget get _area => Container(
-      padding: EdgeInsets.symmetric(vertical: 10),
-      margin: EdgeInsets.only(bottom: 5),
-      decoration: BoxDecoration(
-          border: Border(bottom: new BorderSide(color: Colors.grey.shade300))),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: 250.0, minHeight: 170),
-        child: new Scrollbar(
-          child: new SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: TextFormField(
-                validator: (s) =>
-                    s.trim().isEmpty ? "Field is required !!!" : null,
-                enabled: true,
-                maxLines: null,
-                textAlign: TextAlign.left,
-                onChanged: (s) {
-                  setState(() {});
-                },
-                controller: _controller,
-                focusNode: _focusNode,
-                decoration:
+  Widget get _area =>
+      Container(
+          padding: EdgeInsets.symmetric(vertical: 10),
+          margin: EdgeInsets.only(bottom: 5),
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: new BorderSide(color: Colors.grey.shade300))),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: 250.0, minHeight: 170),
+            child: new Scrollbar(
+              child: new SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: TextFormField(
+                    validator: (s) =>
+                    s
+                        .trim()
+                        .isEmpty ? "Field is required !!!" : null,
+                    enabled: true,
+                    maxLines: null,
+                    textAlign: TextAlign.left,
+                    onChanged: (s) {
+                      setState(() {});
+                    },
+                    controller: _controller,
+                    focusNode: _focusNode,
+                    decoration:
                     InputDecoration.collapsed(hintText: "Add description")),
-          ),
-        ),
-      ));
+              ),
+            ),
+          ));
 
   String replaceLast(String string, String from, String to) {
     int lastIndex = string.lastIndexOf(from);
@@ -371,7 +428,7 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
         }
       });
       _hashtags =
-          _hashtags.length > 9 ? _hashtags.sublist(0, 9).toList() : _hashtags;
+      _hashtags.length > 9 ? _hashtags.sublist(0, 9).toList() : _hashtags;
     });
   }
 
@@ -380,7 +437,8 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
     var c = await Navigator.push(
         context,
         CupertinoPageRoute<Choice>(
-            builder: (context) => ProductTag(
+            builder: (context) =>
+                ProductTag(
                   choice: choice,
                   list: [],
                   user: widget.user,
@@ -402,24 +460,26 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
         appBar: AppBar(
           leading: Navigator.canPop(context)
               ? IconButton(
-                  icon: Icon(Icons.arrow_back_ios),
-                  onPressed: () async {
-                    var b = await willPop();
-                    if (b) {
-                      Navigator.pop(context);
-                    }
-                  })
+              icon: Icon(Icons.arrow_back_ios),
+              onPressed: () async {
+                var b = await willPop();
+                if (b) {
+                  Navigator.pop(context);
+                }
+              })
               : null,
           title: Text("New Post",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           centerTitle: true,
           actions: <Widget>[
-            _list.where((f) => f.selected).isNotEmpty
+            _list
+                .where((f) => f.selected)
+                .isNotEmpty
                 ? FlatButton(
-                    onPressed: _delete,
-                    child: Text("Delete"),
-                    textColor: Colors.red,
-                  )
+              onPressed: _delete,
+              child: Text("Delete"),
+              textColor: Colors.red,
+            )
                 : FlatButton(onPressed: sendPost, child: Text("Release"))
           ],
         ),
@@ -473,7 +533,7 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                                               padding: EdgeInsets.all(10),
                                               shape: RoundedRectangleBorder(
                                                   borderRadius:
-                                                      BorderRadius.circular(6)),
+                                                  BorderRadius.circular(6)),
                                               elevation: 0.7,
                                               child: Text(
                                                 "Picture",
@@ -496,7 +556,7 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                                                     color: Colors.grey.shade300,
                                                   ),
                                                   borderRadius:
-                                                      BorderRadius.circular(6)),
+                                                  BorderRadius.circular(6)),
                                               elevation: 0.2,
                                               child: Text(
                                                 "Video",
@@ -538,6 +598,8 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                                 source: ImageSource.gallery,
                                 maxDuration: Duration(seconds: 300),
                               );
+
+
                               var x = await filePath.readAsBytes();
 
                               var file = await writeToFile(
@@ -548,27 +610,34 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                               var choice = Choice(null, file, source);
                               if (!source) {
                                 final uint8list =
-                                    await VideoThumbnail.thumbnailFile(
-                                  video: file.path,
-                                  thumbnailPath:
-                                      (await getApplicationDocumentsDirectory())
-                                          .path,
-                                  imageFormat: ImageFormat.PNG,
-                                  maxHeight: 200,
-                                  // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
-                                  quality: 100,
+                                await VideoCompress.getFileThumbnail(
+                                  file.path,
                                 );
-                                choice.thumb = new File(uint8list);
+                                //choice.file = ;
+                                setState(() {
+                                  _sending = true;
+                                });
+                                print(file.lengthSync());
+                                choice.file = await func(file);
+                                choice.file = choice.file == null ? file : choice.file;
+                                setState(() {
+                                  _sending = false;
+                                });
+                                print(choice.file.lengthSync());
+                                choice.thumb = uint8list;
                               }
+
+
                               if (source) {
                                 choice = await Navigator.of(context)
                                     .push(CupertinoPageRoute<Choice>(
-                                        builder: (context) => ProductTag(
-                                              choice: choice,
-                                              list: [],
-                                              user: widget.user,
-                                              callback: widget.callback,
-                                            )));
+                                    builder: (context) =>
+                                        ProductTag(
+                                          choice: choice,
+                                          list: [],
+                                          user: widget.user,
+                                          callback: widget.callback,
+                                        )));
                               }
                               setState(() {
                                 _list.add(choice);
@@ -593,7 +662,9 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                               });
                             },
                             onTap: () async {
-                              if (_list.where((f) => f.selected).isNotEmpty) {
+                              if (_list
+                                  .where((f) => f.selected)
+                                  .isNotEmpty) {
                                 setState(() {
                                   choice.selected = !choice.selected;
                                 });
@@ -607,46 +678,46 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                             },
                             child: choice.isImage
                                 ? Image(
-                                    image: FileImage(choice.file),
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                  )
+                              image: FileImage(choice.file),
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                            )
                                 : Container(
-                                    decoration: BoxDecoration(
-                                      image: choice.thumb != null
-                                          ? DecorationImage(
-                                              image: FileImage(choice.thumb),
-                                              fit: BoxFit.cover)
-                                          : null,
-                                      border: Border.all(color: Colors.black12),
-                                    ),
-                                    child: Center(
-                                      child: Icon(Icons.videocam),
-                                    ),
-                                  )),
+                              decoration: BoxDecoration(
+                                image: choice.thumb != null
+                                    ? DecorationImage(
+                                    image: FileImage(choice.thumb),
+                                    fit: BoxFit.cover)
+                                    : null,
+                                border: Border.all(color: Colors.black12),
+                              ),
+                              child: Center(
+                                child: Icon(Icons.videocam),
+                              ),
+                            )),
                       );
 
                       return choice.selected
                           ? Stack(
-                              children: <Widget>[
-                                cont,
-                                Positioned(
-                                    child: InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            choice.selected = false;
-                                          });
-                                        },
-                                        child: Center(
-                                          child: Icon(
-                                            Icons.check_circle_outline,
-                                            size: 50,
-                                            color: Colors.white,
-                                          ),
-                                        )))
-                              ],
-                            )
+                        children: <Widget>[
+                          cont,
+                          Positioned(
+                              child: InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      choice.selected = false;
+                                    });
+                                  },
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.check_circle_outline,
+                                      size: 50,
+                                      color: Colors.white,
+                                    ),
+                                  )))
+                        ],
+                      )
                           : cont;
                     }),
               ),
@@ -660,7 +731,9 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                           controller: _titleController,
                           maxLength: 50,
                           validator: (s) =>
-                              s.trim().isEmpty ? "Required !!!" : null,
+                          s
+                              .trim()
+                              .isEmpty ? "Required !!!" : null,
                           decoration: InputDecoration(
                               hintText: "Add title ...",
                               enabledBorder: new UnderlineInputBorder(
@@ -669,51 +742,56 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                         ),
                         _loadingHashTag
                             ? Positioned(
-                                child: Center(
-                                    child: Container(
-                                  width: MediaQuery.of(context).size.width / 2,
-                                  child: _loaded.isNotEmpty
-                                      ? Container(
-                                          height: 100,
-                                          child: ListView(
-                                            children: _loaded
-                                                .map((f) => InkWell(
-                                                      onTap: () => this
-                                                          ._appendCharacters(
-                                                              f.name),
-                                                      child: Container(
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                                  horizontal:
-                                                                      10,
-                                                                  vertical: 5),
-                                                          child: Text(
-                                                              "${f.name}")),
-                                                    ))
-                                                .toList(),
-                                          ),
-                                        )
-                                      : Padding(
-                                          padding: EdgeInsets.all(10),
-                                          child: Row(
-                                            children: <Widget>[
-                                              CupertinoActivityIndicator(),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 8.0),
-                                                child: Text("Loading hashtags"),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                  decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.7),
-                                      border: Border.all(
-                                          color: Colors.grey.shade100),
-                                      borderRadius: BorderRadius.circular(5)),
-                                )),
-                                bottom: 0,
-                              )
+                          child: Center(
+                              child: Container(
+                                width: MediaQuery
+                                    .of(context)
+                                    .size
+                                    .width / 2,
+                                child: _loaded.isNotEmpty
+                                    ? Container(
+                                  height: 100,
+                                  child: ListView(
+                                    children: _loaded
+                                        .map((f) =>
+                                        InkWell(
+                                          onTap: () =>
+                                              this
+                                                  ._appendCharacters(
+                                                  f.name),
+                                          child: Container(
+                                              padding: EdgeInsets
+                                                  .symmetric(
+                                                  horizontal:
+                                                  10,
+                                                  vertical: 5),
+                                              child: Text(
+                                                  "${f.name}")),
+                                        ))
+                                        .toList(),
+                                  ),
+                                )
+                                    : Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child: Row(
+                                    children: <Widget>[
+                                      CupertinoActivityIndicator(),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 8.0),
+                                        child: Text("Loading hashtags"),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.7),
+                                    border: Border.all(
+                                        color: Colors.grey.shade100),
+                                    borderRadius: BorderRadius.circular(5)),
+                              )),
+                          bottom: 0,
+                        )
                             : SizedBox.shrink()
                       ],
                     ),
@@ -734,10 +812,11 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
 
                               var ls = await Navigator.of(context)
                                   .push(CupertinoPageRoute<List<Hashtag>>(
-                                      builder: (context) => NewTagScreen(
-                                            selected: _hashtags,
-                                            user: widget.user,
-                                          )));
+                                  builder: (context) =>
+                                      NewTagScreen(
+                                        selected: _hashtags,
+                                        user: widget.user,
+                                      )));
                               if (ls != null) {
                                 setState(() {
                                   _hashtags = ls;

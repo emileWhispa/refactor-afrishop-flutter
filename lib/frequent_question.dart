@@ -28,7 +28,7 @@ class _FrequentQuestionState extends State<FrequentQuestion> with SuperBase {
 
   Future<void> load() {
     return this.ajax(
-        url: "problem?pageNum=1&pageSize=100",
+        url: "problem?pageNum=0&pageSize=100",
         authKey: widget.user.token,
         auth: true,
         onValue: (source, url) {

@@ -111,7 +111,7 @@ class _OldCategoryState extends State<OldCategory> with SuperBase {
                               children: <Widget>[
                                 Expanded(
                                     child: Text(
-                                  "NEW",
+                                  "NEW IN",
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontFamily: 'DIN Alternate',
@@ -245,7 +245,7 @@ class _OldCategoryState extends State<OldCategory> with SuperBase {
                           children: <Widget>[
                             Expanded(
                                 child: Text(
-                              "NEW",
+                              "NEW IN",
                               style: TextStyle(fontWeight: FontWeight.bold),
                             )),
                             Container(

@@ -259,6 +259,7 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
           noOptions: true,
           map: {
             "account": account,
+            "userType":1,
             "password": _passwordController.text,
             "fcm": globals.fcm,
           },

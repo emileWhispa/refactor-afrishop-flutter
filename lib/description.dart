@@ -741,6 +741,7 @@ class _DescriptionState extends State<Description> with SuperBase {
               ),
             ),
             Container(
+              key: _detailKey,
               width: double.infinity,
               margin: EdgeInsets.symmetric(vertical: 5),
               padding: EdgeInsets.symmetric(vertical: 20).copyWith(top: 5),
@@ -768,7 +769,6 @@ class _DescriptionState extends State<Description> with SuperBase {
                     ),
                   ),
                   Column(
-                    key: _detailKey,
                     children: (product?.images2 ?? [])
                         ?.map((f) => FadeInImage(
                       image: CachedNetworkImageProvider(f),
@@ -801,7 +801,7 @@ class _DescriptionState extends State<Description> with SuperBase {
                   SizedBox(height: 10),
                   GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,childAspectRatio: 3.1/4,crossAxisSpacing: 7),
+                          crossAxisCount: 3,childAspectRatio: 3.1/4,crossAxisSpacing: 7),
                       itemCount: _recommended.length,
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
