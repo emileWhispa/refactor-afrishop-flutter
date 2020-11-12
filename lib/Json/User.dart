@@ -1,4 +1,5 @@
 import 'model.dart';
+import 'package:intl/intl.dart';
 
 class User extends Model {
   String id;
@@ -137,4 +138,17 @@ class User extends Model {
   String get walletStr => (wallet ?? 0).toStringAsFixed(3);
 
   String get networkAmountStr => (networkAmount ?? 0).toString();
+
+
+  DateTime get formattedBirthDate => birthDay != null ? DateTime.tryParse(birthDay) ?? getParse() : null;
+
+  String get formatDate => formattedBirthDate == null ? birthDay : DateFormat("yyyy-MMM-dd").format(formattedBirthDate);
+
+  DateTime getParse(){
+    try{
+      return DateFormat("MM/dd/yyyy").parse(birthDay);
+    }catch(e){
+      return null;
+    }
+  }
 }

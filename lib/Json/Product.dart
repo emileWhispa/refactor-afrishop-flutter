@@ -6,7 +6,7 @@ import 'Review.dart';
 
 class Product {
   final String title;
-  final String url;
+  String url;
   double discountPrice;
   int totalScore = 0;
   double _price;
@@ -15,6 +15,7 @@ class Product {
    int count;
   int items = 1;
   String itemId;
+  int enableFlag;
   List<String> images;
   bool selected = false;
   List<ProductInfo> infos = [];
@@ -31,6 +32,7 @@ class Product {
         count = json['itemCount'],
         itemId = json['itemId'],
         itemSku = json['itemSku'],
+        enableFlag = json['enableFlag'],
         discountPrice = json['discountPrice'],
         _price = json['itemPrice'],
         fromCode = json['fromCode'],

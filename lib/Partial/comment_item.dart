@@ -56,7 +56,7 @@ class _CommentItemState extends State<CommentItem> with SuperBase {
   void _likeComment() {
     _liked = !_liked;
     setState(() {
-      widget.comment.likes += _liked ? 1 : -1;
+      widget.comment.likes += _liked ? 1 : (widget.comment.likes > 0 ? -1 : 0);
     });
 
     this.ajax(
@@ -220,7 +220,7 @@ class _CommentItemState extends State<CommentItem> with SuperBase {
                   ),
                 ),
                 Text(
-                  "${widget.comment.likes}",
+                  "${widget.comment.likes >= 0 ? widget.comment.likes : 0}",
                   style: TextStyle(
                       color: Colors.grey,
                       fontSize: 15,

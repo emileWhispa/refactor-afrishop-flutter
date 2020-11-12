@@ -31,7 +31,7 @@ class _ReviewListState extends State<ReviewList> with SuperBase {
 
   void goReview(Cart pro){
 
-    Navigator.push(
+    Navigator.pushReplacement(
         context,
         CupertinoPageRoute(
             builder: (context) => ReviewScreen(
@@ -124,6 +124,7 @@ class _ReviewListState extends State<ReviewList> with SuperBase {
                                                             widget.callback,
                                                         cart: pro)));
                                         if (dx != null) {
+                                          widget.order.commentCount++;
                                           this.goReview(pro);
                                         }
                                       },

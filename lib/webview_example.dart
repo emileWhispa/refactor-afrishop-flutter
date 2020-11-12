@@ -72,6 +72,11 @@ class _WebViewExampleState extends State<WebViewExample> with SuperBase {
         });
   }
 
+  void goFailure(){
+    Navigator.push(
+        context, CupertinoPageRoute(builder: (context) => PayFailure(user: widget.user,order: widget.order,callback: widget.callback,)));
+  }
+
   bool dpoMatch(String url) => url.contains("dpo/notify") && widget.isDpo;
 
   void listenChange(String url) async {
@@ -103,18 +108,19 @@ class _WebViewExampleState extends State<WebViewExample> with SuperBase {
                       builder: (context) => PaymentSuccess(
                         user: widget.user, order: widget.order,callback: widget.callback,)));}
             else{
-              Navigator.push(context,
-                  CupertinoPageRoute(builder: (context) => PayFailure()));}
+              goFailure();
+            }
           },
           error: (source, url) {
             Navigator.popUntil(context, (c) => c.isFirst);
             setState(() {
               _loading = true;
             });
-            Navigator.push(context,
-                CupertinoPageRoute(builder: (context) => PayFailure()));
+            goFailure();
           });
     }
+
+
 
     //String s = await _controller.evaluateJavascript("window.document.getElementsByTagName('body')[0].textContent;");
 
@@ -157,15 +163,14 @@ class _WebViewExampleState extends State<WebViewExample> with SuperBase {
                 context,
                 CupertinoPageRoute(
                     builder: (context) => PaymentSuccess(
-                      user: widget.user, order: widget.order,callback: widget.callback,)));}
-          else if( canError ){
-            Navigator.push(context,
-                CupertinoPageRoute(builder: (context) => PayFailure()));}
+                      user: widget.user, order: widget.order,callback: widget.callback,)));
+          } else if( canError ){
+            goFailure();
+          }
         },
         error: (source, url) {
           if(canError)
-            Navigator.pushReplacement(context,
-              CupertinoPageRoute(builder: (context) => PayFailure()));
+            goFailure();
         });
   }
 

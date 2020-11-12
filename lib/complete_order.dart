@@ -139,6 +139,8 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
 
     _order = widget.completedOrder;
     _order2 = widget.order;
+
+    print(order?.orderId);
     widget.list.map((e) {
       setState(() {
         itemNum = itemNum + e.itemNum;
@@ -151,33 +153,58 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
       if (widget.continueToPayment && widget.completedOrder != null) {
         goCheckOut(widget.completedOrder);
       }
+      if(order?.isPending == true){
+        checkTime();
+      }
       //DateFormat format = new DateFormat("MMM dd, yyyy hh:mm:ss");
       // print(order?.orderTime);
-      var now = DateTime.now();
-      var formattedDate = order?.getDate ?? now;
-      var addedTime = formattedDate.add(Duration(hours: 24));
-      setState(() {
-        // _diffDt = addedTime.difference(_addDt);
-        if (order?.closedByTime == true) {
-          autoClose();
-        }
-        _duration = addedTime.difference(DateTime.now());
-      });
-      _timer = Timer.periodic(Duration(seconds: 1), (t) {
-        if (_duration == Duration(hours: 0)) {
-          setState(() {
-            _duration = Duration(hours: 0);
-          });
-        } else {
-          setState(() {
-            _duration = Duration(seconds: _duration.inSeconds - 1);
-          });
-        }
-        // setState(() {
-        //   _duration = Duration(seconds: _duration.inSeconds - 1);
-        // });
-      });
     });
+  }
+
+  bool _checkingTime = false;
+
+  void checkTime() {
+    setState(() {
+      _checkingTime = true;
+    });
+    this.ajax(
+        url: "order/currentTime",
+        server: true,
+        authKey: widget.user()?.token,
+        onEnd: (){
+          setState(() {
+            _checkingTime = false;
+          });
+        },
+        onValue: (source, url) {
+          var x = json.decode(source);
+          if(x['code'] == 1){
+            var now = DateTime.tryParse(x['data']);
+            var formattedDate = order?.getDate ?? now;
+            var addedTime = formattedDate.add(Duration(hours: 24));
+            setState(() {
+              // _diffDt = addedTime.difference(_addDt);
+              if (order.closedByTime(now) == true) {
+                autoClose();
+              }
+              _duration = addedTime.difference(now);
+            });
+            _timer = Timer.periodic(Duration(seconds: 1), (t) {
+              if (_duration == Duration(hours: 0)) {
+                setState(() {
+                  _duration = Duration(hours: 0);
+                });
+              } else {
+                setState(() {
+                  _duration = Duration(seconds: _duration.inSeconds - 1);
+                });
+              }
+              // setState(() {
+              //   _duration = Duration(seconds: _duration.inSeconds - 1);
+              // });
+            });
+          }
+        });
   }
 
   void checkVisitedLink() async {
@@ -327,7 +354,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                       style: TextStyle(fontSize: 16),
                     ),
                     SizedBox(height: 12),
-                    Text(
+                    _checkingTime ? CircularProgressIndicator() : _duration == null ? SizedBox.shrink() : Text(
                       printDuration(_duration),
                       style: TextStyle(
                           fontSize: 25,
@@ -628,22 +655,24 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                                         height: 10,
                                         width: 10,
                                       ),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 8.0),
-                                            child: Text("${f.content}"),
-                                          ),
-                                          Text(
-                                            "${f.time}",
-                                            style: TextStyle(
-                                                color: Colors.grey.shade400,
-                                                fontSize: 13),
-                                          )
-                                        ],
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 8.0),
+                                              child: Text("${f.content}"),
+                                            ),
+                                            Text(
+                                              "${f.time}",
+                                              style: TextStyle(
+                                                  color: Colors.grey.shade400,
+                                                  fontSize: 13),
+                                            )
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -1356,15 +1385,24 @@ class _PopPageState extends State<PopPage> with SuperBase {
                         order: widget.order,
                         callback: widget.callback)));
           } else {
-            Navigator.push(context,
-                CupertinoPageRoute(builder: (context) => PayFailure()));
+            goFailure();
           }
         },
         error: (s, v) {
           print(s);
-          Navigator.push(
-              context, CupertinoPageRoute(builder: (context) => PayFailure()));
+          goFailure();
         });
+  }
+
+  void goFailure() {
+    Navigator.push(
+        context,
+        CupertinoPageRoute(
+            builder: (context) => PayFailure(
+                  user: widget.user,
+                  order: widget.order,
+                  callback: widget.callback,
+                )));
   }
 
   void flutterWave2() async {
@@ -1390,7 +1428,7 @@ class _PopPageState extends State<PopPage> with SuperBase {
                       "https://app.afrieshop.com/afrishop_flutterwave/flutterwave_test.html?email=${_controller.text}&amount=$price&publicKey=$key&orderId=${widget.order.orderId}",
                       "Flutterwave payment",
                       false);
-                  verifyPay();
+                  //verifyPay();
                 },
                 error: (s, v) {
                   print(s); //flutterWave();
@@ -1421,16 +1459,17 @@ class _PopPageState extends State<PopPage> with SuperBase {
         url:
             "order/currencyConversion?currency=zmk&price=${widget.order.realityPay}",
         server: true,
-        authKey: widget.user()?.token,onValue: (source,url){
+        authKey: widget.user()?.token,
+        onValue: (source, url) {
           var x = json.decode(source);
-          if( x['code'] == 1){
+          if (x['code'] == 1) {
             setState(() {
               zmk = x['data'];
             });
-          }else{
-            platform.invokeMethod("toast",x['message']);
+          } else {
+            platform.invokeMethod("toast", x['message']);
           }
-    });
+        });
 
     setState(() {
       _sending = false;
@@ -1440,11 +1479,10 @@ class _PopPageState extends State<PopPage> with SuperBase {
   double zmk;
 
   void flutterWave() async {
+    if (zmk == null) await convertMoney();
 
-    if( zmk == null ) await convertMoney();
-
-    if( zmk == null ) {
-      platform.invokeMethod("toast","Service error");
+    if (zmk == null) {
+      platform.invokeMethod("toast", "Service error");
       return;
     }
 
@@ -1456,7 +1494,7 @@ class _PopPageState extends State<PopPage> with SuperBase {
                   flutterwave: _flutterwave,
                   user: widget.user,
                   price: widget.order.realityPay,
-              priceZmk: zmk,
+                  priceZmk: zmk,
                 )));
     if (_flutterwave == null) {
       platform.invokeMethod("toast", "Required information missing");
@@ -1479,7 +1517,7 @@ class _PopPageState extends State<PopPage> with SuperBase {
           "card": _flutterwave.card,
           "country": _flutterwave.country,
           "cvv": _flutterwave.cvv,
-          "email": "user@example.com",
+          "email": _flutterwave.email,
           "firstname": _flutterwave.firstName,
           "lastname": _flutterwave.lastName,
           "month": _flutterwave.month,
@@ -1497,7 +1535,7 @@ class _PopPageState extends State<PopPage> with SuperBase {
                 map['data']['data']['link'] != null) {
               var uri = map['data']['data']['link'];
               await widget.addToCart(uri, "Flutterwave payment", false);
-              verifyPay();
+              // verifyPay();
             } else {
               platform.invokeMethod("toast", map['message']);
             }
@@ -1508,7 +1546,7 @@ class _PopPageState extends State<PopPage> with SuperBase {
                 map['data']['data']['authurl'] != null) {
               var uri = map['data']['data']['authurl'];
               await widget.addToCart(uri, "Flutterwave payment", false);
-              verifyPay();
+              //verifyPay();
             } else {
               platform.invokeMethod("toast", map['message']);
             }

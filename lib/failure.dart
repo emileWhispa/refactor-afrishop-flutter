@@ -1,9 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'Json/User.dart';
+import 'Json/order.dart';
 import 'SuperBase.dart';
+import 'pending_cart.dart';
 
 class PayFailure extends StatefulWidget{
+  final User Function() user;
+  final void Function(User user) callback;
+  final Order order;
+
+  const PayFailure({Key key,@required this.user,@required this.callback,@required this.order}) : super(key: key);
   @override
   _PayFailureState createState() => _PayFailureState();
 }
@@ -51,7 +59,12 @@ class _PayFailureState extends State<PayFailure> with SuperBase {
                                 child: Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: RaisedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      widget.user()?.requestHomePage = true;
+                                      if( widget.user() != null ) widget.callback(widget.user());
+                                      Navigator.popUntil(context,(f)=>f.isFirst);
+                                      //Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>OrderTimeout()));
+                                    },
                                     color: Colors.white,
                                     padding: EdgeInsets.all(10),
                                     shape: RoundedRectangleBorder(
@@ -71,7 +84,13 @@ class _PayFailureState extends State<PayFailure> with SuperBase {
                                 child: Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: RaisedButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Navigator.popUntil(context,(f)=>f.isFirst);
+                                      Navigator.push(
+                                          context,
+                                          CupertinoPageRoute(
+                                              builder: (context) => PendingCart(user: widget.user,callback: widget.callback)));
+                                    },
                                     color: color,
                                     padding: EdgeInsets.all(10),
                                     shape: RoundedRectangleBorder(

@@ -76,9 +76,9 @@ class _PendingCartState extends State<PendingCart> with SuperBase {
           setState(() {
             _list = _map.map((f) => Order.fromJson(f)).toList();
             _list.forEach((element) {
-              if( element.closedByTime ){
-                autoClose(element);
-              }
+//              if( element.closedByTime ){
+//                autoClose(element);
+//              }
             });
             _deleted = _list.where((f) => f.orderStatus == 0).toList();
             _unpaid = _list.where((f) => f.isPending).toList();
@@ -260,11 +260,11 @@ class __BodyStateState extends State<_BodyState> with SuperBase {
   }
 
   void goCheckOut(Order order) async {
-    if( order.closedByTime ){
-      autoClose(order);
-      platform.invokeMethod("toast","Order closed");
-      return;
-    }
+//    if( order.closedByTime ){
+//      autoClose(order);
+//      platform.invokeMethod("toast","Order closed");
+//      return;
+//    }
     await showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -358,7 +358,7 @@ class __BodyStateState extends State<_BodyState> with SuperBase {
                                                     CompleteOrder(
                                                         callback: widget.callback,
                                                         user: widget.user,
-                                                        list: _pro.itemList,
+                                                        list: [f],
                                                         ordersId: f.ordersId,
                                                         completedOrder: _pro,
                                                         order: _pro,

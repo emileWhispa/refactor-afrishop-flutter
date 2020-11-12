@@ -2,20 +2,22 @@ class Option {
   String categoryId;
   String categoryName;
   String selected;
+  int orderNum;
 
   List<SubOption> list = [];
 
-  Option(this.categoryId,this.categoryName,this.list);
+  Option(this.categoryId, this.categoryName, this.list);
 
   Option.fromJson(Map<String, dynamic> map)
       : categoryId = map['categoryId'],
-        categoryName = map['categoryName'],list = subList(map['optionList']);
+        orderNum = map['orderNum'],
+        categoryName = map['categoryName'],
+        list = subList(map['optionList']);
 
+  static List<SubOption> subList(Iterable iterable) {
+    if (iterable == null) return [];
 
-  static List<SubOption> subList(Iterable iterable){
-    if( iterable == null ) return [];
-
-    return iterable.map((f)=>SubOption.fromJson(f)).toList();
+    return iterable.map((f) => SubOption.fromJson(f)).toList();
   }
 }
 
@@ -29,7 +31,7 @@ class SubOption {
   String createTime;
   String updateTime;
 
-  SubOption(this.optionId,this.optiionSpecies,this.optionName);
+  SubOption(this.optionId, this.optiionSpecies, this.optionName);
 
   SubOption.fromJson(Map<String, dynamic> json)
       : optionId = json['optionId'],

@@ -31,6 +31,7 @@ class Order {
   double fee;
   double tax;
   double expressCost;
+  int commentCount;
   List<Cart> itemList = [];
 
   DateTime _dateTime;
@@ -54,6 +55,7 @@ class Order {
         _dateTime = _tParse(json),
         updateTime = json['updateTime'],
         userName = json['userName'],
+        commentCount = json['commentCount'],
         deliveryAddressId = json['deliveryAddressId'],
         deliveryAddress = json['deliveryAddress'],
         deliveryName = json['deliveryName'],
@@ -81,7 +83,7 @@ class Order {
 
   DateTime get getDate => DateFormat("yyyy-MMM-dd HH:mm:ss").parse('$orderTime') ?? DateTime.now();
 
-  bool get closedByTime => !getDate.add(Duration(hours: 24)).isAfter(DateTime.now()) && isPending;
+  bool closedByTime(DateTime date) => !getDate.add(Duration(hours: 24)).isAfter(date) && isPending;
 
   String get status => orderStatus == 0
       ? "Deleted"
@@ -99,7 +101,7 @@ class Order {
 
   bool get isSuccess => orderStatus == 50;
 
-  bool get isSuccessWithNonCommentItem => isSuccess && itemList.any((element) => !element.commented);
+  bool get isSuccessWithNonCommentItem => isSuccess && (commentCount == null || commentCount < itemList.length);
 
   String get date => _dateTime == null
       ? orderTime

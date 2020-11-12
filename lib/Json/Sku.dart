@@ -24,6 +24,8 @@ class Sku {
 
     return iterable.map((f)=>SubSku.fromJson(f)).toList();
   }
+
+  bool get hasImg => image != null && image.isNotEmpty;
 }
 
 

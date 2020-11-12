@@ -28,7 +28,7 @@ class Cart {
   Cart.fromJson(Map<String, dynamic> json)
       : id = json['cartRecordId'],
         checkFlag = json['checkFlag'],
-        ordersId = json['ordersId'],
+        ordersId = json['orderItemId'],
         sourceItemId = json['sourceItemId'],
         stationId = json['stationId'],
         itemTitle = json['itemTitle'],
@@ -49,7 +49,7 @@ class Cart {
   double get total => itemPrice * itemNum;
 
 
-  Product get product =>Product(this.itemPrice, this.itemTitle, this.itemImg, this.itemNum,this.itemSku,this.shopId,this.itemPrice,this.itemNum,0);
+  Product get product =>Product(this.itemPrice, this.itemTitle, this.itemImg, this.itemNum,this.itemSku,this.itemId,this.itemPrice,this.itemNum,0);
 
   double get percent => 10;
   double get bonus => total * percent / 100;

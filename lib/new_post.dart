@@ -9,13 +9,12 @@ import 'package:afri_shop/product_tag.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:video_compress/video_compress.dart';
 
 import 'Json/User.dart';
 import 'Json/choice.dart';
@@ -172,15 +171,15 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
   }
 
 
-  final FlutterFFmpeg _flutterFFmpeg = new FlutterFFmpeg();
-
-  Future<File> func(File file) async {
-    Directory appDocumentDir = await getTemporaryDirectory();
-    String rawDocumentPath = appDocumentDir.path;
-    String outputPath =  "$rawDocumentPath/$unique.mp4";
-    await _flutterFFmpeg.execute("-i ${file.path} -c:v mpeg4 $outputPath");
-    return new File(outputPath);
-  }
+//  final FlutterFFmpeg _flutterFFmpeg = new FlutterFFmpeg();
+//
+//  Future<File> func(File file) async {
+//    Directory appDocumentDir = await getTemporaryDirectory();
+//    String rawDocumentPath = appDocumentDir.path;
+//    String outputPath =  "$rawDocumentPath/$unique.mp4";
+//    await _flutterFFmpeg.execute("-i ${file.path} -c:v mpeg4 $outputPath");
+//    return new File(outputPath);
+//  }
 
   Future<File> writeToFile(ByteData data, {String extension: ""}) async {
     final buffer = data.buffer;
@@ -609,22 +608,21 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                               if (file == null) return;
                               var choice = Choice(null, file, source);
                               if (!source) {
-                                final uint8list =
-                                await VideoCompress.getFileThumbnail(
-                                  file.path,
+                                final uint8list = await VideoThumbnail.thumbnailFile(
+                                  video: file.path,
+                                  imageFormat: ImageFormat.JPEG,
+                                  maxWidth: 128, // specify the width of the thumbnail, let the height auto-scaled to keep the source aspect ratio
+                                  quality: 100,
                                 );
                                 //choice.file = ;
                                 setState(() {
                                   _sending = true;
                                 });
-                                print(file.lengthSync());
-                                choice.file = await func(file);
-                                choice.file = choice.file == null ? file : choice.file;
                                 setState(() {
                                   _sending = false;
                                 });
                                 print(choice.file.lengthSync());
-                                choice.thumb = uint8list;
+                                choice.thumb = new File(uint8list);
                               }
 
 

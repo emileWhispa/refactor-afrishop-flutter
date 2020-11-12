@@ -55,7 +55,7 @@ class _VideoAppState extends State<VideoApp> with SuperBase {
             fit: BoxFit.cover,
             image: CachedNetworkImageProvider(widget.thumb ?? "")
     )
-  ),child: FadeInImage(placeholder: def,fit: BoxFit.cover, image: CachedNetworkImageProvider(widget.thumb ?? "")),),
+  ),child: FadeInImage(placeholder: defLoader,fit: BoxFit.cover, image: CachedNetworkImageProvider(widget.thumb ?? "")),),
           ),
           Positioned(child: Center(child: CupertinoActivityIndicator(radius: 30),))
         ],

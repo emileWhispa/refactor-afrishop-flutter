@@ -281,7 +281,7 @@ class _OrderTimeoutState extends State<OrderTimeout> with SuperBase {
                                     padding: const EdgeInsets.all(10.0),
                                     child: RaisedButton(
                                       onPressed: () {
-                                        Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>PayFailure()));
+                                       // Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>PayFailure()));
                                       },
                                       color: color,
                                       padding: EdgeInsets.all(10),

@@ -60,7 +60,7 @@ class _UserProfileState extends State<UserProfile> with SuperBase {
       _nickname = _user.nickname;
       _email = _user.email;
       _avatar = _user.avatar;
-      _date = _user.birthDay;
+      _date = _user.formatDate;
       _gender = _user.sex == 1 ? "male" : _user.sex == 2 ?  "female" : "unknown";
       this._user = _user;
     } else {
@@ -558,7 +558,7 @@ class _UserProfileState extends State<UserProfile> with SuperBase {
               setState(() {
                 _date = picked == null
                     ? _date
-                    : DateFormat("MM/dd/yyyy").format(picked) ?? _date;
+                    : DateFormat("yyyy-MMM-dd").format(picked) ?? _date;
               });
             },
             child: Container(

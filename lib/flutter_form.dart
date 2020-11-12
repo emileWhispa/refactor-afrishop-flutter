@@ -74,6 +74,10 @@ class _FlutterFormState extends State<FlutterForm> with SuperBase {
     if (widget.flutterwave != null && widget.flutterwave.isPhone ) {
       _phoneController =
           new TextEditingController(text: widget.flutterwave.phone);
+    }else{
+
+      _phoneController =
+      new TextEditingController(text: "260");
     }
 
     _paymentCard.type = CardType.Others;

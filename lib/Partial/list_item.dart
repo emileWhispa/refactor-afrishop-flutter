@@ -48,8 +48,17 @@ class _ListItemState extends State<ListItem> with SuperBase {
   void initState() {
     // TODO: implement initState
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {});
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+
+      var liked = (await prefs).containsKey(_likeUrl);
+      setState(() {
+       // widget.post.liked = liked;
+      });
+    });
   }
+
+
+  String get _likeUrl => "post-like-${widget.post?.id}";
 
   void likePost() {
     if (widget.user == null) {
@@ -58,18 +67,23 @@ class _ListItemState extends State<ListItem> with SuperBase {
     }
     setState(() {
       widget.post.liked = !widget.post.liked;
-      widget.post.likes += widget.post.liked ? 1 : -1;
+      widget.post.likes += widget.post.liked ? 1 : (widget.post.likes > 0 ? -1 : 0);
       widget.likePost(widget.post);
     });
     this.ajax(
         url: "discover/like/saveLike/${widget.post.liked}",
-        base2: true,
         authKey: widget.user()?.token,
         method: "POST",
         server: true,
         data: FormData.fromMap(
             {"post": widget.post?.id, "userInfo": widget.user()?.id}),
-        onValue: (s, v) {},
+        onValue: (s, v) async {
+
+          if (widget.post.liked)
+            saveVal(_likeUrl, "liked");
+          else
+            (await prefs).remove(_likeUrl);
+        },
         error: (s, v) {});
   }
 

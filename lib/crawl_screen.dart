@@ -407,10 +407,11 @@ class _CrawlScreenState extends State<CrawlScreen> with SuperBase {
     });
   }
 
-  void sendCart(count, str, price) {
+  void sendCart(count,img, str, price) {
     var map = {
       "itemSku": str,
       "itemPrice": price,
+      "itemImg": img,
       "itemNum": count,
     };
 

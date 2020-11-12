@@ -57,6 +57,8 @@ class _CouponScreenState extends State<CouponScreen> with SuperBase {
         authKey: widget.user()?.token,
         error: (s,v)=>print(s),
         onValue: (source, url) {
+          print(source);
+          print(widget.user()?.id);
           var _map = json.decode(source)['data'];
           if( _map == null ) return;
           Iterable map = _map['validCouponList'];

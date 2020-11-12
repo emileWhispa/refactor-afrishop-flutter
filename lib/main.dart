@@ -90,8 +90,8 @@ class _MyHomePageState extends State<MyHomePage>
           return Container(
             width: double.infinity,
             constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height - 100),
-            padding: EdgeInsets.all(7),
+                maxHeight: MediaQuery.of(context).size.height - 200),
+            padding: EdgeInsets.all(7).copyWith(bottom: MediaQuery.of(context).viewInsets.bottom),
             decoration: BoxDecoration(
                 color: Colors.grey.shade100,
                 borderRadius:
@@ -103,8 +103,6 @@ class _MyHomePageState extends State<MyHomePage>
                     borderRadius: BorderRadius.only(
                         topRight: Radius.circular(6),
                         topLeft: Radius.circular(6))),
-                padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom),
                 child: AccountScreen(
                   partial: true,
                   user: () => _user,
@@ -286,7 +284,7 @@ class _MyHomePageState extends State<MyHomePage>
           _discoverKey.currentState?.goToTop();
           await showSuccess("Released successfully");
         },
-        error: (s, v) => print(v),
+        error: (s, v) => print(s),
         onEnd: () {
           setState(() {
             _sending = false;
