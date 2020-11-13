@@ -58,7 +58,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> with SuperBase {
         map:{"feedbackId": unique, "question": _controller.text},
         onValue: (source, url) {
           var data = json.decode(source);
-          _showSnack(data['message']);
+          //_showSnack(data['message']);
           _controller.clear();
           showSuccess();
         },

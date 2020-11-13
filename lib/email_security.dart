@@ -170,8 +170,12 @@ class _EmailSecurityState extends State<EmailSecurity> with SuperBase {
                 child: TextFormField(
               controller: _emailController,
               enabled: enabled,
+              inputFormatters: [
+                FilteringTextInputFormatter.deny(disableSpecial)
+              ],
               validator: (s) =>
                   emailExp.hasMatch(s) ? null : "Valid email is required",
+              keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                   filled: true,
                   hintText: "Email",

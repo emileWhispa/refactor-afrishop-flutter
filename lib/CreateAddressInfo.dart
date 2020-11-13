@@ -177,7 +177,7 @@ class _CreateAddressInfoState extends State<CreateAddressInfo> with SuperBase {
             ),
             TextFormField(
               controller: _email,
-              validator: (s)=>s.isEmpty ? null : emailExp.hasMatch(s) ? null : "Valid email is required",
+              validator: (s)=>emailExp.hasMatch(s) ? null : "Valid email is required",
               decoration: InputDecoration(
                   hintText: "Email",
                   fillColor: Colors.white,

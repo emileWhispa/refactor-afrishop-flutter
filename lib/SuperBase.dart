@@ -57,6 +57,8 @@ class SuperBase {
   RegExp reg = new RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
   RegExp emailExp = RegExp(
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+  RegExp disableSpecial = RegExp(
+      r"[^.@a-zA-Z0-9]");
   RegExp phoneExp = RegExp(r'^(?:[+0]9)?[0-9]{10}$');
   final amountValidator = RegExInputFormatter.withRegex(
       '^\$|^(0|([1-9][0-9]{0,}))(\\.[0-9]{0,})?\$');

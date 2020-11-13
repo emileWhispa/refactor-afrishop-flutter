@@ -18,10 +18,7 @@ class UserProfile extends StatefulWidget {
   final String mobile;
   final User Function() user;
   final void Function(User user) callback;
-    final void Function(User user) saveNickName;
-
-
-  final isDiscover;
+  final void Function(User user) saveNickName;
 
   const UserProfile(
       {Key key,
@@ -30,9 +27,7 @@ class UserProfile extends StatefulWidget {
       this.mobile,
       this.user,
       @required this.callback,
-      this.isDiscover,
-      this.saveNickName
-    })
+      this.saveNickName})
       : super(key: key);
 
   @override
@@ -61,7 +56,11 @@ class _UserProfileState extends State<UserProfile> with SuperBase {
       _email = _user.email;
       _avatar = _user.avatar;
       _date = _user.formatDate;
-      _gender = _user.sex == 1 ? "male" : _user.sex == 2 ?  "female" : "unknown";
+      _gender = _user.sex == 1
+          ? "male"
+          : _user.sex == 2
+              ? "female"
+              : "unknown";
       this._user = _user;
     } else {
       _mobile = widget.mobile;
@@ -89,7 +88,11 @@ class _UserProfileState extends State<UserProfile> with SuperBase {
     setState(() {
       _saving = true;
     });
-    var gnd = _gender == "male" ? 1 : _gender == "female" ? 2 : 0;
+    var gnd = _gender == "male"
+        ? 1
+        : _gender == "female"
+            ? 2
+            : 0;
     print(gnd);
     print(_gender);
     return this.ajax(
@@ -121,10 +124,10 @@ class _UserProfileState extends State<UserProfile> with SuperBase {
             user.nickname = map['data']['nick'];
             pKey.currentState?.doError("done", true);
             this.auth(jwt, jsonEncode(user), user.id);
-            platform.invokeMethod("toast","Modify Success");
+            platform.invokeMethod("toast", "Modify Success");
             widget.callback(user);
             if (pKey.currentState == null) Navigator.pop(context);
-            if( widget.isDiscover && widget.saveNickName != null){
+            if (widget.saveNickName != null) {
               widget.saveNickName(user);
             }
           } else {
@@ -264,8 +267,7 @@ class _UserProfileState extends State<UserProfile> with SuperBase {
                   ],
                 )),
                 InkWell(
-                  onTap:(){
-
+                  onTap: () {
                     showGeneralDialog(
                         context: context,
                         barrierColor: Colors.black12.withOpacity(0.6),
@@ -286,7 +288,6 @@ class _UserProfileState extends State<UserProfile> with SuperBase {
                                 fit: BoxFit.contain),
                           );
                         },
-
                         transitionBuilder:
                             (context, animation, secondaryAnimation, child) {
                           var wasCompleted = false;
@@ -473,7 +474,7 @@ class _UserProfileState extends State<UserProfile> with SuperBase {
                     Row(
                       children: <Widget>[
                         FlatButton(
-                          onPressed:() => Navigator.pop(context, _x ?? "male"),
+                          onPressed: () => Navigator.pop(context, _x ?? "male"),
                           child: Text(
                             "Apply",
                             style: TextStyle(fontWeight: FontWeight.bold),
@@ -482,20 +483,27 @@ class _UserProfileState extends State<UserProfile> with SuperBase {
                         Spacer(),
                         FlatButton(
                             onPressed: () => Navigator.pop(context),
-                            child: Icon(Icons.close,color: Colors.grey))
+                            child: Icon(Icons.close, color: Colors.grey))
                       ],
                     ),
                     Expanded(
                       child: CupertinoPicker.builder(
                         backgroundColor: Colors.white,
                         onSelectedItemChanged: (index) {
-                          _x = index == 0 ? "male" : index == 1 ? "female" : "unknown";
+                          _x = index == 0
+                              ? "male"
+                              : index == 1
+                                  ? "female"
+                                  : "unknown";
                         },
                         childCount: 3,
                         itemExtent: 36.0,
-
                         itemBuilder: (context, index) {
-                          var s = index == 0 ? "Male" : index == 1 ? "Female" : "Unknown";
+                          var s = index == 0
+                              ? "Male"
+                              : index == 1
+                                  ? "Female"
+                                  : "Unknown";
                           return Center(
                             child: Padding(
                               padding:
@@ -637,8 +645,6 @@ class __ValueChooseState extends State<_ValueChoose> {
     );
   }
 }
-
-
 
 class _UploadWidget extends StatefulWidget {
   final User user;
@@ -819,7 +825,8 @@ class __CupertinoPickerState extends State<_CupertinoPicker> {
             InkWell(
               onTap: () => Navigator.pop(context, _dateTime),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal:15.0,vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 12),
                 child: Text(
                   "Apply",
                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -829,7 +836,7 @@ class __CupertinoPickerState extends State<_CupertinoPicker> {
             Spacer(),
             IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.close,color: Colors.grey))
+                icon: Icon(Icons.close, color: Colors.grey))
           ],
         ),
         Expanded(

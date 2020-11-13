@@ -450,8 +450,6 @@ class _DiscoverProfileState extends State<DiscoverProfile> with SuperBase {
                                                   builder: (context) =>
                                                      UserProfile(                                                                                                                  
                                                           saveNickName: saveUser,
-                                                          isDiscover:
-                                                              isDiscover,
                                                           callback:
                                                               widget.callback,
                                                           user:
