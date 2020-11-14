@@ -112,6 +112,8 @@ class Order {
   bool get hasCoupon =>
       couponId != null && couponPrice != null && couponPrice > 0;
 
+  bool get hasAddress =>deliveryName != null && deliveryAddress != null;
+
   //@Deprecated("Old version replaced by api key realityPay")
   double get subTotalPriceFromCoupon =>
       hasCoupon ? subTotalPrice - couponPrice : subTotalPrice;

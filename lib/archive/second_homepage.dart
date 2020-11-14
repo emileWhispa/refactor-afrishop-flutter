@@ -1138,11 +1138,11 @@ class __CarouselState extends State<_Carousel> with SuperBase {
         ? Image(
             image: defLoader,
             fit: BoxFit.cover,
-            height: 460,
+            height: 600,
           )
         : Stack(children: [
             CarouselSlider.builder(
-              height: 460,
+              height: 600,
               autoPlayInterval: Duration(seconds: 3),
               pauseAutoPlayOnTouch: Duration(minutes: 10),
               itemBuilder: (context, i) {

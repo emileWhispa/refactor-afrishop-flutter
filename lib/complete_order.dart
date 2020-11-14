@@ -270,6 +270,34 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
     }
   }
 
+  Widget _getAddress(String address,String phone,String delivery)=>Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: <Widget>[
+      Row(
+        children: <Widget>[
+          Text(
+            "$address",
+            style:
+            TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0),
+              child: Text(
+                "$phone",
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        ],
+      ),
+      Text(
+          "$delivery")
+    ],
+  );
+
   void showSuccess() async {
     showDialog(
         context: context,
@@ -402,8 +430,8 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
               child: Row(
                 children: <Widget>[
                   Expanded(
-                    child: _address == null
-                        ? Column(
+                    child: _address == null || _order != null
+                        ? _order != null && _order.hasAddress ? _getAddress(_order.deliveryAddress, _order.deliveryPhone, _order.deliveryName) : Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Padding(
@@ -422,33 +450,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                               ),
                             ],
                           )
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  Text(
-                                    "${order?.deliveryAddress ?? _address?.address}",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0),
-                                      child: Text(
-                                        "${order?.deliveryPhone ?? _address?.phone}",
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Text(
-                                  "${order?.deliveryName ?? _address?.delivery}")
-                            ],
-                          ),
+                        : _getAddress(_address.address,_address.phone,_address.delivery),
                   ),
                   _order == null
                       ? Icon(

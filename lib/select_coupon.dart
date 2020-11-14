@@ -250,18 +250,18 @@ class _SelectCouponScreenState extends State<SelectCouponScreen>
                                       child: Container(
                                         margin: EdgeInsets.only(right: 10),
                                         decoration: BoxDecoration(
-                                            border: _coupon?.id == coupon?.id
+                                            border: _coupon?.toitableId == coupon?.toitableId
                                                 ? null
                                                 : Border.all(
                                                     color: Colors.grey),
                                             shape: BoxShape.circle,
-                                            color: _coupon?.id == coupon?.id
+                                            color: _coupon?.toitableId == coupon?.toitableId
                                                 ? color
                                                 : Colors.white),
                                         child: Padding(
                                           padding: EdgeInsets.all(
-                                              _coupon?.id == coupon?.id ? 2.0 : 11),
-                                          child: _coupon?.id == coupon?.id
+                                              _coupon?.toitableId == coupon?.toitableId ? 2.0 : 11),
+                                          child: _coupon?.toitableId == coupon?.toitableId
                                               ? Icon(
                                                   Icons.check,
                                                   size: 20.0,
