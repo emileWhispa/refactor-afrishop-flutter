@@ -5,6 +5,7 @@ import 'package:afri_shop/withdraw_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'Json/Bonus.dart';
 import 'Json/User.dart';
@@ -33,7 +34,9 @@ class _IncomeScreenState extends State<IncomeScreen> with SuperBase {
 
   List<Bonus> get _bonusList => _selected == 0
       ? _todayList
-      : _selected == 1 ? _currentMonthList : _prevMonthList;
+      : _selected == 1
+          ? _currentMonthList
+          : _prevMonthList;
   ScrollController _controller = new ScrollController();
   var _key = new GlobalKey<RefreshIndicatorState>();
   User _user;
@@ -64,7 +67,7 @@ class _IncomeScreenState extends State<IncomeScreen> with SuperBase {
         authKey: widget.user()?.token,
         onValue: (source, url) {
           var js = json.decode(source);
-          if( js['code'] == 1 ) {
+          if (js['code'] == 1) {
             setState(() {
               _user = User.fromJson2(js['data']);
             });
@@ -75,8 +78,7 @@ class _IncomeScreenState extends State<IncomeScreen> with SuperBase {
   Future<void> fetchBonuses() async {
     fetchUser();
     this.ajax(
-        url:
-            "discover/bonus/list/today?pageNo=$_current&pageSize=50",
+        url: "discover/bonus/list/today?pageNo=$_current&pageSize=50",
         authKey: widget.user()?.token,
         onValue: (source, url) {
           if (!_urls.contains(url)) {
@@ -87,7 +89,10 @@ class _IncomeScreenState extends State<IncomeScreen> with SuperBase {
           Iterable js = map['list'];
           setState(() {
             _today = map['total'];
-            var list = js.map((f) => Bonus.fromJson(f)).where((element) => !element.withDraw).toList();
+            var list = js
+                .map((f) => Bonus.fromJson(f))
+                .where((element) => !element.withDraw)
+                .toList();
             _todayList
               ..removeWhere((f) => list.any((fx) => fx.id == f.id))
               ..addAll(list);
@@ -95,8 +100,7 @@ class _IncomeScreenState extends State<IncomeScreen> with SuperBase {
         },
         onEnd: () {});
     this.ajax(
-        url:
-            "discover/bonus/list/prevMonth?pageNo=$_current1&pageSize=50",
+        url: "discover/bonus/list/prevMonth?pageNo=$_current1&pageSize=50",
         authKey: widget.user()?.token,
         onValue: (source, url) {
           if (!_urls.contains(url)) {
@@ -107,7 +111,10 @@ class _IncomeScreenState extends State<IncomeScreen> with SuperBase {
           Iterable js = map['list'];
           setState(() {
             _prevMonth = map['total'];
-            var list = js.map((f) => Bonus.fromJson(f)).where((element) => !element.withDraw).toList();
+            var list = js
+                .map((f) => Bonus.fromJson(f))
+                .where((element) => !element.withDraw)
+                .toList();
             _prevMonthList
               ..removeWhere((f) => list.any((fx) => fx.id == f.id))
               ..addAll(list);
@@ -115,8 +122,7 @@ class _IncomeScreenState extends State<IncomeScreen> with SuperBase {
         },
         onEnd: () {});
     return this.ajax(
-        url:
-            "discover/bonus/list/currentMonth?pageNo=$_current2&pageSize=50",
+        url: "discover/bonus/list/currentMonth?pageNo=$_current2&pageSize=50",
         authKey: widget.user()?.token,
         onValue: (source, url) {
           if (!_urls.contains(url)) {
@@ -127,7 +133,10 @@ class _IncomeScreenState extends State<IncomeScreen> with SuperBase {
           Iterable js = map['list'];
           setState(() {
             _currentMonth = map['total'];
-            var list = js.map((f) => Bonus.fromJson(f)).where((element) => !element.withDraw).toList();
+            var list = js
+                .map((f) => Bonus.fromJson(f))
+                .where((element) => !element.withDraw)
+                .toList();
             _currentMonthList
               ..removeWhere((f) => list.any((fx) => fx.id == f.id))
               ..addAll(list);
@@ -381,7 +390,10 @@ class _IncomeScreenState extends State<IncomeScreen> with SuperBase {
                                     style:
                                         TextStyle(fontWeight: FontWeight.bold),
                                   ),
-                                  NowBuilder(date: bonus.dateTime),
+                                  Text(bonus.dateTime == null
+                                      ? "---"
+                                      : DateFormat("yyyy-MMM-dd HH:mm:ss")
+                                          .format(bonus.dateTime)),
                                 ],
                               ),
                             ),

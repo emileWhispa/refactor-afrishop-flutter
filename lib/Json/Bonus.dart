@@ -16,7 +16,7 @@ class Bonus extends Model {
   id = json['id'],
         withDraw = json['isWithdraw'] ?? false,
         status = json['status'] ?? false,
-        dateTime = DateTime.tryParse(json['date']),
+        dateTime = DateTime.tryParse(json['date'])?.toLocal(),
         _title = json['item'] != null  ? json['item']['itemName'] : "Commission fees",
         url = json['item'] != null  ? json['item']['itemImg'] : null;
 
