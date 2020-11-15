@@ -123,6 +123,7 @@ class _AccountSecurityState extends State<AccountSecurity> with SuperBase {
               Navigator.of(context).push(CupertinoPageRoute(
                   builder: (context) => PasswordSecurity(
                         user: widget.user,
+                    callback: widget.callback,
                       )));
             },
             child: Container(

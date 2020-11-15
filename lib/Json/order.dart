@@ -81,7 +81,9 @@ class Order {
         dealTime = json['dealTime'];
 
 
-  DateTime get getDate => DateFormat("yyyy-MMM-dd HH:mm:ss").parse('$orderTime') ?? DateTime.now();
+  DateTime get getDate => DateTime.tryParse(orderTime);
+
+  String get dFormat =>getDate == null ? orderTime : DateFormat("yyyy-MMM-dd HH:mm:ss").format(getDate.toLocal());
 
   bool closedByTime(DateTime date) => !getDate.add(Duration(hours: 24)).isAfter(date) && isPending;
 

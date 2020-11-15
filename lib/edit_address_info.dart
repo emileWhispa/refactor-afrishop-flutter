@@ -27,9 +27,9 @@ class _EditAddressInfoState extends State<EditAddressInfo> with SuperBase {
   TextEditingController _email;
   var formKey = new GlobalKey<FormState>();
   var _saving = false;
-  Country _country = Country.RW;
+  Country _country;
 
-  String get phone => "${_country?.dialingCode??"250"}${_phone.text}";
+  String get phone => "${_country?.dialingCode??""}${_phone.text}";
 
   @override
   void initState() {
@@ -39,6 +39,21 @@ class _EditAddressInfoState extends State<EditAddressInfo> with SuperBase {
     _phone = new TextEditingController(text: widget.address.phone);
     _delivery = new TextEditingController(text: widget.address.delivery);
     _email = new TextEditingController(text: widget.address.email);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Country.ALL.forEach((el) {
+        if( widget.address?.isoCode == el.isoCode){
+          setState(() {
+            _country = el;
+            _phone = new TextEditingController(text: _phone.text.replaceFirst(el.dialingCode, ""));
+          });
+        }
+      });
+      if( _country == null){
+        setState(() {
+          _country = Country.RW;
+        });
+      }
+    });
   }
 
   void _saveAddress() {
@@ -55,6 +70,7 @@ class _EditAddressInfoState extends State<EditAddressInfo> with SuperBase {
           "addressDetail": _address.text,
           "deliveryName": _delivery.text,
           "email": _email.text,
+          "isoCode": _country?.isoCode,
           "phone": phone
         },
         onValue: (source, url) {

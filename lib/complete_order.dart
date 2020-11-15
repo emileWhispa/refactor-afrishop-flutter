@@ -180,6 +180,8 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
           var x = json.decode(source);
           if(x['code'] == 1){
             var now = DateTime.tryParse(x['data']);
+            print("is UTC : ${now.isUtc}");
+
             var formattedDate = order?.getDate ?? now;
             var addedTime = formattedDate.add(Duration(hours: 24));
             setState(() {
@@ -298,8 +300,10 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
     ],
   );
 
+  Timer _timing;
   void showSuccess() async {
-    showDialog(
+    _timing = Timer(Duration(seconds: 2), ()=>Navigator.maybePop(context));
+    await showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
@@ -317,6 +321,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
             ),
           );
         });
+    _timing?.cancel();
   }
 
   bool get canCheckOut =>
@@ -568,6 +573,11 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                   title: Text("Duty Fee"),
                   trailing: Text(order?.tax == 0 ? "\$${0}" : "${order?.tax}"),
                 ),
+                _order == null ? SizedBox.shrink() : ListTile(
+                  onTap: () {},
+                  title: Text("Sub-total"),
+                  trailing: Text("\$$total"),
+                ),
                 Container(
                   decoration: BoxDecoration(
                       color: canCoupon ? color.withOpacity(0.12) : null,
@@ -710,7 +720,7 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                       ListTile(
                         onTap: () {},
                         title: Text("Order Time"),
-                        trailing: Text("${order?.orderTime}"),
+                        trailing: Text("${order?.dFormat}"),
                       ),
                     ],
                   ),

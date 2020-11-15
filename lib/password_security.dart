@@ -8,8 +8,9 @@ import 'SuperBase.dart';
 
 class PasswordSecurity extends StatefulWidget {
   final User Function() user;
+  final void Function(User user) callback;
 
-  const PasswordSecurity({Key key, @required this.user}) : super(key: key);
+  const PasswordSecurity({Key key, @required this.user,@required this.callback}) : super(key: key);
 
   @override
   _PasswordSecurityState createState() => _PasswordSecurityState();
@@ -26,8 +27,8 @@ class _PasswordSecurityState extends State<PasswordSecurity> with SuperBase {
   bool _obSecure1 = true;
   bool _obSecure2 = true;
 
-  void showSuccess() {
-    showDialog(
+  void showSuccess() async {
+    await showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
@@ -39,12 +40,18 @@ class _PasswordSecurityState extends State<PasswordSecurity> with SuperBase {
                     fit: BoxFit.cover,
                     image: AssetImage("assets/logo_circle.png")),
                 SizedBox(height: 20),
-                Text("Password changed successfully",
+                Text("Password changed successfully, Login with new password",
                     style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16))
               ],
             ),
           );
         });
+    widget.user()?.openEmail = widget.user()?.email;
+
+    (await prefs).clear();
+    Navigator.popUntil(context, (route) => route.isFirst);
+
+    widget.callback(widget.user());
   }
 
   void sendPost() {
@@ -68,7 +75,6 @@ class _PasswordSecurityState extends State<PasswordSecurity> with SuperBase {
             if (js['code'] != 1) {
               _shownSnack(js['message']);
             } else {
-              Navigator.of(context).pop();
               showSuccess();
             }
           },

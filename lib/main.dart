@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:version/version.dart' as v2;
 import 'package:flutter/widgets.dart';
 import 'package:package_info/package_info.dart';
 
@@ -80,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage>
 
   var _globalKey = new GlobalKey<__AutoChangeState>();
 
-  Future<void> showLoginModel() async {
+  Future<void> showLoginModel({String email}) async {
     var user = await showModalBottomSheet<User>(
         context: context,
         shape: RoundedRectangleBorder(
@@ -110,6 +111,7 @@ class _MyHomePageState extends State<MyHomePage>
                   callback: _addUser,
                   cartState: _cartState,
                   uploadFile: null,
+                  fillEmail: email,
                 ),
               ),
             ),
@@ -146,6 +148,7 @@ class _MyHomePageState extends State<MyHomePage>
 
   String _version = "";
 
+
   List<Version> _versions = [];
 
   void _loadVersions() {
@@ -159,13 +162,18 @@ class _MyHomePageState extends State<MyHomePage>
                 .where((element) => element.versionSort == version)
                 .toList();
             if (_list.isNotEmpty && _versions.first.versionCode != _version) {
-              _homePageKey.currentState?.canPop();
+              v2.Version currentVersion =  v2.Version.parse(_version);
+              v2.Version latestVersion = v2.Version.parse(_versions.first.versionCode);
 
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return UpdateDialog(version: _versions.first);
-                  });
+              if (latestVersion > currentVersion) {
+                _homePageKey.currentState?.canPop();
+
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return UpdateDialog(version: _versions.first);
+                    });
+              }
             }
           });
         });
@@ -181,6 +189,16 @@ class _MyHomePageState extends State<MyHomePage>
       setState(() {
         _currentTabIndex = 0;
       });
+    }
+
+    if( user?.openEmail != null ){
+
+      setState(() {
+        showLoginModel(email: user?.openEmail?.toString());
+        _user = null;
+        _currentTabIndex = 0;
+      });
+      return;
     }
     setState(() {
       _user = user;
@@ -295,6 +313,8 @@ class _MyHomePageState extends State<MyHomePage>
   var _sending = false;
 
   Future<void> showSuccess(String success) async {
+    Timer(Duration(seconds: 3), ()=>Navigator.maybePop(context));
+
     await showDialog(
         context: context,
         builder: (context) {

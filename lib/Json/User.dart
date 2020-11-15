@@ -42,7 +42,10 @@ class User extends Model {
 
   bool requestHomePage = false;
 
+  String openEmail;
+
   bool requestInvitation = false;
+
 
   User(this.id, this.lastLoginTime, this.birthDay, this.phone);
 
@@ -130,6 +133,10 @@ class User extends Model {
   String get discoverId => id;
 
   String display() => username;
+
+  DateTime get lastLoginDate => lastLoginTime != null ? DateTime.tryParse(lastLoginTime) : null;
+
+  String get lastLoginFormat =>lastLoginDate != null ? DateFormat("yyyy-MMM-dd HH:mm:ss").format(lastLoginDate.toLocal()) : lastLoginTime;
 
   String get username => nickname ?? email ?? phone ?? account ??  "--";
 

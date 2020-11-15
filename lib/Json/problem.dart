@@ -17,10 +17,7 @@ class Problem {
         createTime = json['createTime'];
 
   static String parse(String data) {
-    var d = parser.parse(data);
-    return d.children.map((f) =>
-    f.hasChildNodes() ? f.children.map((e) => Uri.decodeComponent(e.text)).join(
-        " ") : Uri.decodeComponent(f.text))
-        .join(" ");
+    var d = parser.parse(Uri.decodeComponent(data));
+    return d.children.map((f) => f.text).join(" ");
   }
 }

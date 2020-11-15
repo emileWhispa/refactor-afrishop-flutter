@@ -29,6 +29,7 @@ class AccountScreen extends StatefulWidget {
   final void Function(FormData data,List<Choice> list) uploadFile;
   final bool canPop;
   final bool partial;
+  final String fillEmail;
 
   const AccountScreen(
       {Key key,
@@ -37,7 +38,7 @@ class AccountScreen extends StatefulWidget {
       this.canPop: false,
       this.partial: false,
       this.jumpTo,
-      @required this.cartState,@required this.uploadFile})
+      @required this.cartState,@required this.uploadFile, this.fillEmail})
       : super(key: key);
 
   @override
@@ -52,6 +53,7 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
   @override
   void initState() {
     super.initState();
+    _emailLogin = widget.fillEmail != null;
     WidgetsBinding.instance.addPostFrameCallback((_) async {});
   }
 
@@ -553,7 +555,7 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
           ),
         ),
     _phoneLogin || _emailLogin ? orRow : SizedBox.shrink(),
-    _emailLogin ? old_auth.Authorization(login:true) : SizedBox.shrink(),
+    _emailLogin ? old_auth.Authorization(login:true,fillEmail: widget.fillEmail,) : SizedBox.shrink(),
     _phoneLogin ? new_auth.Authorization(
       onLog: (user) async {
         showMd();

@@ -41,6 +41,7 @@ class _UserProfileState extends State<UserProfile> with SuperBase {
   String _nickname;
   String _gender;
   String _date;
+  DateTime _dateObj;
   bool _saving = false;
   User _user;
 
@@ -56,6 +57,7 @@ class _UserProfileState extends State<UserProfile> with SuperBase {
       _email = _user.email;
       _avatar = _user.avatar;
       _date = _user.formatDate;
+      _dateObj = _user.formattedBirthDate;
       _gender = _user.sex == 1
           ? "male"
           : _user.sex == 2
@@ -103,7 +105,7 @@ class _UserProfileState extends State<UserProfile> with SuperBase {
           "userId": widget.user()?.id,
           "email": _email,
           "sex": gnd,
-          "birthday": _date,
+          "birthday": _dateObj == null ? null : DateFormat("yyyy-MM-dd").format(_dateObj),
           "username": _nickname,
           "nick": nickName ?? _nickname,
           "country": widget.country,
@@ -261,7 +263,7 @@ class _UserProfileState extends State<UserProfile> with SuperBase {
                           TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      "Signed in ${_user.lastLoginTime}",
+                      "Signed in ${_user.lastLoginFormat}",
                       style: TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
@@ -567,6 +569,7 @@ class _UserProfileState extends State<UserProfile> with SuperBase {
                 _date = picked == null
                     ? _date
                     : DateFormat("yyyy-MMM-dd").format(picked) ?? _date;
+                _dateObj = picked ?? _dateObj;
               });
             },
             child: Container(

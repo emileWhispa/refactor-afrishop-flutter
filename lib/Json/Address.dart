@@ -3,6 +3,7 @@ class Address {
   String address;
   String delivery;
   String phone;
+  String isoCode;
   String email;
 
   bool sending = false;
@@ -14,6 +15,7 @@ class Address {
         address = json['addressDetail'],
         addressId = json['addressId'],
         phone = json['phone'],
+        isoCode = json['isoCode'],
         email = json['email'];
 
 
@@ -22,6 +24,7 @@ class Address {
     "addressDetail":address,
     "addressId":addressId,
     "phone":phone,
+    "isoCode":isoCode,
     "email":email,
   };
 }

@@ -358,7 +358,7 @@ class __BodyStateState extends State<_BodyState> with SuperBase {
                                                     CompleteOrder(
                                                         callback: widget.callback,
                                                         user: widget.user,
-                                                        list: [f],
+                                                        list: _pro.itemList,
                                                         ordersId: f.ordersId,
                                                         completedOrder: _pro,
                                                         order: _pro,

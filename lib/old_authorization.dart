@@ -21,8 +21,9 @@ import 'country_picker.dart';
 
 class Authorization extends StatefulWidget {
   final bool login;
+  final String fillEmail;
 
-  const Authorization({Key key, this.login: true}) : super(key: key);
+  const Authorization({Key key, this.login: true, this.fillEmail}) : super(key: key);
 
   @override
   _AuthorizationState createState() => _AuthorizationState();
@@ -50,6 +51,9 @@ class _AuthorizationState extends State<Authorization> with SuperBase {
     // TODO: implement initState
     super.initState();
     _isLogin = widget.login;
+    if( widget.fillEmail != null){
+      _emailController = new TextEditingController(text: widget.fillEmail);
+    }
     phoneNode.addListener(() {
       if (!phoneNode.hasFocus) {
         loginValid = _loginKey.currentState?.validate() ?? _loginValid;

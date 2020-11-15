@@ -43,6 +43,7 @@ class _CreateAddressInfoState extends State<CreateAddressInfo> with SuperBase {
           "addressDetail": _address.text,
           "deliveryName": _delivery.text,
           "email": _email.text,
+          "isoCode": _country?.isoCode,
           "phone": phone
         },
         onValue: (source, url) {
