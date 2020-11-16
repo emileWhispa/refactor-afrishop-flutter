@@ -201,7 +201,7 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
       var list = await MultiImagePicker.pickImages(maxImages: num);
       var x = 0;
       for (var f in list) {
-        var file = await writeToFile(await f.getByteData());
+        var file = await writeToFile(await f.getByteData(),extension: getExtension(f.name) ?? ".PNG");
         print(file.lengthSync());
         try{
          var _file =

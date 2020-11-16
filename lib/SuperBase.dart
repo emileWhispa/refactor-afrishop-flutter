@@ -364,6 +364,10 @@ class SuperBase {
     return basename(path);
   }
 
+  String getExtension(String path) {
+    return extension(path);
+  }
+
   String get unique => "${DateTime.now().millisecondsSinceEpoch}${Uuid().v4()}";
 
   double log10(num x) => log(x) / ln10;

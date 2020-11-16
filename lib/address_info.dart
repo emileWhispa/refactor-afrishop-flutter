@@ -110,7 +110,6 @@ class _AddressInfoState extends State<AddressInfo> with SuperBase {
                 )));
     if (address != null) {
       setState(() {
-        _address = address;
         _list.add(address);
       });
       this.load();

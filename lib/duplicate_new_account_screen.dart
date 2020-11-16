@@ -128,7 +128,7 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
     var tokenResult = await withCredential.user.getIdToken();
     print(withCredential.user.uid);
     print(token);
-    Clipboard.setData(ClipboardData(text: tokenResult?.token));
+    //Clipboard.setData(ClipboardData(text: tokenResult?.token));
     if (tokenResult.token != null) platform.invokeMethod("toast", "Success");
     await this.realSign(tokenResult, withCredential.user);
     return Future.value();
@@ -215,7 +215,7 @@ class AccountScreenState extends State<AccountScreen> with SuperBase {
 
       var tokenResult = await user.getIdToken();
       print(tokenResult?.token);
-      Clipboard.setData(ClipboardData(text: tokenResult?.token));
+      //Clipboard.setData(ClipboardData(text: tokenResult?.token));
 
       await this.realSign(tokenResult, user);
       platform.invokeMethod("toast", "Signed in ${user.displayName}");

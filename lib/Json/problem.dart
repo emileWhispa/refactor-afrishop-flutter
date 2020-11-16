@@ -12,7 +12,7 @@ class Problem {
       : problemId = json['problemId'],
         question = json['question'],
         enableFlag = json['enableFlag'],
-        answer = parse(json['answer']),
+        answer = Uri.decodeComponent(json['answer'] ?? ""),
         sort = json['sort'],
         createTime = json['createTime'];
 

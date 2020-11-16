@@ -50,7 +50,7 @@ class _EditAddressInfoState extends State<EditAddressInfo> with SuperBase {
       });
       if( _country == null){
         setState(() {
-          _country = Country.RW;
+          _country = Country.ZM;
         });
       }
     });

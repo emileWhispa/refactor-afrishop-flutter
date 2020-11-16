@@ -20,7 +20,7 @@ class PhoneSecurity extends StatefulWidget {
 }
 
 class _PhoneSecurityState extends State<PhoneSecurity> with SuperBase {
-    Country _country = Country.RW;
+    Country _country = Country.ZM;
     Duration _duration = new Duration(seconds: 0);
     Timer _timer;
     bool _valid = false;

@@ -573,11 +573,6 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                   title: Text("Duty Fee"),
                   trailing: Text(order?.tax == 0 ? "\$${0}" : "${order?.tax}"),
                 ),
-                _order == null ? SizedBox.shrink() : ListTile(
-                  onTap: () {},
-                  title: Text("Sub-total"),
-                  trailing: Text("\$$total"),
-                ),
                 Container(
                   decoration: BoxDecoration(
                       color: canCoupon ? color.withOpacity(0.12) : null,
@@ -628,6 +623,11 @@ class _CompleteOrderState extends State<CompleteOrder> with SuperBase {
                             style: TextStyle(
                                 color: canCoupon ? Colors.orange : null)),
                   ),
+                ),
+                _order == null ? SizedBox.shrink() : ListTile(
+                  onTap: () {},
+                  title: Text("Sub-total"),
+                  trailing: Text("\$$total"),
                 ),
               ],
             ),

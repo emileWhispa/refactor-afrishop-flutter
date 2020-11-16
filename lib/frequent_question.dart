@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:afri_shop/Json/problem.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 
 import 'Json/User.dart';
 import 'SuperBase.dart';
@@ -99,10 +100,7 @@ class _FrequentQuestionState extends State<FrequentQuestion> with SuperBase {
                         SizedBox(
                           height: 10,
                         ),
-                        Text(
-                          "${item.answer}",
-                          style: TextStyle(color: Colors.grey),
-                        ),
+                        HtmlWidget(item.answer),
                       ],
                     );
                   },

@@ -263,7 +263,7 @@ class _UserProfileState extends State<UserProfile> with SuperBase {
                           TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      "Signed in ${_user.lastLoginFormat}",
+                      "Registration time ${_user?.createDateFormat}",
                       style: TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],

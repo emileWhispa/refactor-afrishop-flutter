@@ -135,7 +135,7 @@ class _DescriptionState extends State<Description> with SuperBase {
     });
     this.ajax(
         url:
-            "itemStation/getRecommendItems?itemId=$itemId&pageNum=$current&pageSize=20",
+            "itemStation/getRecommendItems?itemId=$itemId&pageNum=$current&pageSize=18",
         onValue: (source, url) {
           if (_urls.contains(url)) {
             return;
@@ -149,7 +149,7 @@ class _DescriptionState extends State<Description> with SuperBase {
                   .map((e) => Product.fromJson(e))
               .where((element) => element.enableFlag == null || element.enableFlag == 1)
                   .toList();
-              _ended = l2.length < 20;
+              _ended = l2.length < 18;
 
               _recommended
                 ..removeWhere(

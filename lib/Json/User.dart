@@ -138,11 +138,16 @@ class User extends Model {
 
   String get lastLoginFormat =>lastLoginDate != null ? DateFormat("yyyy-MMM-dd HH:mm:ss").format(lastLoginDate.toLocal()) : lastLoginTime;
 
+
+  DateTime get creationDate => createTime != null ? DateTime.tryParse(createTime) : null;
+
+  String get createDateFormat =>creationDate != null ? DateFormat("yyyy-MMM-dd HH:mm:ss").format(creationDate.toLocal()) : createTime;
+
   String get username => nickname ?? email ?? phone ?? account ??  "--";
 
   String singleChar() => username.substring(0, 1).toUpperCase();
 
-  String get walletStr => (wallet ?? 0).toStringAsFixed(3);
+  String get walletStr => (wallet ?? 0).toString();
 
   String get networkAmountStr => (networkAmount ?? 0).toString();
 

@@ -485,7 +485,7 @@ class _OldUserDetailState extends State<OldUserDetail> with SuperBase {
                                 Padding(
                                   padding: const EdgeInsets.all(21.0),
                                   child: Text(
-                                    "\$${(_user?.walletStr ?? "0.000")}",
+                                    "\$${(_user?.walletStr ?? "0.0")}",
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(

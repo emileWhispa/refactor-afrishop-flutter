@@ -25,7 +25,7 @@ class _CreateAddressInfoState extends State<CreateAddressInfo> with SuperBase {
   TextEditingController _email = new TextEditingController();
   var formKey = new GlobalKey<FormState>();
   var _saving = false;
-  Country _country = Country.RW;
+  Country _country = Country.ZM;
 
   String get phone => "${_country?.dialingCode ?? "250"}${_phone.text}";
 
@@ -51,7 +51,7 @@ class _CreateAddressInfoState extends State<CreateAddressInfo> with SuperBase {
           if (mp['code'] == 1) {
             var address = Address.fromJson(mp['data']);
             Navigator.of(context).pop(address);
-            setDefaultAddress(address);
+            //setDefaultAddress(address);
           } else {
             _showSnack(mp['message']);
           }

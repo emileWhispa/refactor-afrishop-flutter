@@ -49,7 +49,7 @@ class FirebaseNotifications {
    // final String token = this.token ?? await _firebaseMessaging.getToken();
     //this.token = token;
 
-    Clipboard.setData(ClipboardData(text: token));
+    //Clipboard.setData(ClipboardData(text: token));
     final String serverToken = 'AAAAg-FJSfc:APA91bHr7OgmwmcP401YFBJZK_hkeeSO2qbMHXZaJa7Zup9U8dZ8XQqlFnF_z5q5fa9wskRu4PNiK8IMn0lYBjxJgi8srcafC1Mc-p2GU6T8v5kAQKvjwZoDJ_R0PVCvfroX09muIwln';
 
 //    Dio().post(
