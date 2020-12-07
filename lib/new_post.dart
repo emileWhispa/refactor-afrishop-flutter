@@ -449,6 +449,27 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
   }
 
 
+  void showFail(String fail) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Image(
+                    height: 120,
+                    fit: BoxFit.cover,
+                    image: AssetImage("assets/logo_black.png")),
+                SizedBox(height: 20),
+                Text("$fail",
+                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 19))
+              ],
+            ),
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -507,6 +528,12 @@ class _NewPostScreenState extends State<NewPostScreen> with SuperBase {
                               if (_list.length > 8) {
                                 platform.invokeMethod(
                                     "toast", "Can't exceed 9 photos");
+                                return;
+                              }
+
+                              var isDenied = await Permission.photos.isDenied;
+                              if(isDenied){
+                                showFail("Access to photos is denied");
                                 return;
                               }
 

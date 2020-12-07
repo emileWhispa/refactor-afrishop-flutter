@@ -9,6 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mime/mime.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'SuperBase.dart';
 
@@ -213,6 +214,27 @@ class _UserProfileState extends State<UserProfile> with SuperBase {
     _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(data)));
   }
 
+  void showFail(String fail) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Image(
+                    height: 120,
+                    fit: BoxFit.cover,
+                    image: AssetImage("assets/logo_black.png")),
+                SizedBox(height: 20),
+                Text("$fail",
+                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 19))
+              ],
+            ),
+          );
+        });
+  }
+
   var _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
@@ -329,6 +351,7 @@ class _UserProfileState extends State<UserProfile> with SuperBase {
             decoration: decoration,
             child: InkWell(
               onTap: () async {
+
                 var s = await showModalBottomSheet(
                     backgroundColor: Colors.transparent,
                     context: context,
@@ -659,7 +682,7 @@ class _UploadWidget extends StatefulWidget {
 }
 
 class __UploadWidgetState extends State<_UploadWidget> with SuperBase {
-  void showFail() {
+  void showFail({String text:"Upload Fail"}) {
     showDialog(
         context: context,
         builder: (context) {
@@ -672,7 +695,7 @@ class __UploadWidgetState extends State<_UploadWidget> with SuperBase {
                     fit: BoxFit.cover,
                     image: AssetImage("assets/logo_black.png")),
                 SizedBox(height: 20),
-                Text("Upload Fail",
+                Text(text,
                     style: TextStyle(fontWeight: FontWeight.w900, fontSize: 19))
               ],
             ),
@@ -704,6 +727,19 @@ class __UploadWidgetState extends State<_UploadWidget> with SuperBase {
   bool _uploading = false;
 
   void upload({ImageSource source: ImageSource.gallery}) async {
+
+
+    var isDenied = await Permission.photos.isDenied;
+    if(isDenied && source == ImageSource.gallery){
+      showFail(text:"Access to photos is denied");
+      return;
+    }
+    isDenied = await Permission.camera.isDenied;
+    if(isDenied && source == ImageSource.camera){
+      showFail(text:"Access to camera is denied, Go to Settings to enable");
+      return;
+    }
+
     var file = await ImagePicker.pickImage(source: source);
     if (file != null) {
       print(file.path);
