@@ -72,6 +72,8 @@ class Product {
     this._price = price;
   }
 
+  String itemSkuId;
+
   double get oldPrice => _price;
 
   bool get hasOldPrice => _price != null;

@@ -23,7 +23,8 @@ import 'Json/User.dart';
 
 class SuperBase {
   // Live connections
-  String server = "http://159.138.48.71:8080/zion/";
+//  String server = "http://159.138.48.71:8080/zion/";
+  String server = "https://app.afrieshop.com/afrishop/";
 //  String server0 = "http://165.22.82.105:8080/"; //Discover
 
   //Test Connections

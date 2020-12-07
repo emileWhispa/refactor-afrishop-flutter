@@ -32,7 +32,7 @@ class _PaymentSuccessState extends State<PaymentSuccess> with SuperBase {
         .addPostFrameCallback((_)async{
       await this.checkVisitedLink();
       await this.checkVisitedLinkProduct();
-      this.validateBonusMarketing();
+      //this.validateBonusMarketing();
     });
   }
   List<Cart> products = [];

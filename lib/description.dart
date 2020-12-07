@@ -51,7 +51,7 @@ class Description extends StatefulWidget {
 }
 
 class _DescriptionState extends State<Description> with SuperBase {
-  Widget _tit(int has, String title, GlobalKey key) {
+  Widget _tit(int has, String title, GlobalKey key,int page) {
     return InkWell(
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 12),
@@ -74,12 +74,12 @@ class _DescriptionState extends State<Description> with SuperBase {
       onTap: () {
         setState(() {
           _index = has;
-          if (key == null)
-            _controller.animateTo(0,
-                duration: Duration(seconds: 2), curve: Curves.easeInCubic);
-          else
-            Scrollable.ensureVisible(key?.currentContext ?? context,
-                curve: Curves.linear, duration: Duration(milliseconds: 500));
+          //if (key == null)
+            _controller.animateTo(page.toDouble(),
+                duration: Duration(milliseconds: 500), curve: Curves.linear);
+//          else
+//            Scrollable.ensureVisible(key?.currentContext ?? context,
+//                curve: Curves.linear, duration: Duration(milliseconds: 500));
         });
       },
     );
@@ -298,7 +298,7 @@ class _DescriptionState extends State<Description> with SuperBase {
     _selected = true;
 
     var payUrl =
-        "itemId=${Uri.encodeComponent(itemId)}&itemSku=${Uri.encodeComponent(product?.size)}&itemPrice=${Uri.encodeComponent('${product?.price ?? 0.0}')}&itemNum=${_newProduct.items ?? 1}";
+        "itemId=${Uri.encodeComponent(itemId)}&itemSku=${Uri.encodeComponent(product?.size)}&itemSkuId=${Uri.encodeComponent('${product?.itemSkuId ?? ""}')}&itemNum=${_newProduct.items ?? 1}";
 
     await this.ajax(
         url: "order/payNow?$payUrl",
@@ -355,6 +355,7 @@ class _DescriptionState extends State<Description> with SuperBase {
       "itemId": product?.itemId,
       "shopId": product?.itemId,
       "itemTitle": product?.title,
+      "itemSkuId": product?.itemSkuId,
       "itemPrice": product?.price ?? 0.0,
       "stationType": 1,
       "itemNum": product.items ?? 1,
@@ -442,10 +443,11 @@ class _DescriptionState extends State<Description> with SuperBase {
               product: product,
               skus: _newProduct?.sku ?? [],
               options: _newProduct?.options ?? [],
-              onAdd: (value,img , size, price) async {
+              onAdd: (value,img , size, price,itemSkuId) async {
                 _newProduct.items = value;
                 _newProduct.size = size;
                 _newProduct.price = price;
+                _newProduct.itemSkuId = itemSkuId;
                 _newProduct.url = img;
                 _newProduct.updateItem(database);
 
@@ -484,9 +486,9 @@ class _DescriptionState extends State<Description> with SuperBase {
               }),
           title: Row(
             children: <Widget>[
-              Expanded(child: _tit(0, "Product", _productKey)),
-              Expanded(child: _tit(1, "Details", _detailKey)),
-              Expanded(child: _tit(2, "Reviews", _reviewKey)),
+              Expanded(child: _tit(0, "Product", _productKey,0)),
+              Expanded(child: _tit(1, "Details", _detailKey,890)),
+              Expanded(child: _tit(2, "Reviews", _reviewKey,650)),
             ],
           ),
           centerTitle: true,
@@ -502,8 +504,246 @@ class _DescriptionState extends State<Description> with SuperBase {
         ),
       );
 
+
+  Widget get pendingWidget => Column(
+    children: <Widget>[
+
+
+
+      Container(
+        margin: EdgeInsets.symmetric(vertical: 5),
+        padding: EdgeInsets.all(15),
+        decoration: BoxDecoration(color: Colors.white),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Center(
+                child: Text(
+                  "You may like",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w900,
+                      fontFamily: 'SF UI Text'),
+                )),
+            SizedBox(height: 10),
+            GridView.builder(
+                gridDelegate:
+                SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 3.1 / 4,
+                    crossAxisSpacing: 7),
+                itemCount: _recommended.length,
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  var _pro = _recommended[index];
+                  return TouchableOpacity(
+                    padding: EdgeInsets.all(0),
+                    onTap: () async {
+                      await Navigator.of(context)
+                          .pushReplacement(CupertinoPageRoute(
+                          builder: (context) => Description(
+                            product: _pro,
+                            user: widget.user,
+                            callback: widget.callback,
+                          )));
+                      //widget.cartState.currentState?.refresh();
+                    },
+                    child: Container(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                              child: Container(
+                                constraints: BoxConstraints(
+                                    minWidth: double.infinity),
+                                child: FadeInImage(
+                                  image: CachedNetworkImageProvider(
+                                      '${_pro.url}'),
+                                  fit: BoxFit.cover,
+                                  placeholder: defLoader,
+                                ),
+                              )),
+                          SizedBox(height: 5),
+                          Padding(
+                              padding: EdgeInsets.all(5),
+                              child: Text(
+                                '${_pro.title}',
+                                style: TextStyle(
+                                    fontFamily: 'Asimov',
+                                    color: Color(0xff4d4d4d),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.normal),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              )),
+                          Padding(
+                            padding: EdgeInsets.all(5),
+                            child: Row(
+                              children: <Widget>[
+                                Text(
+                                  '\$${_pro.price}',
+                                  style: TextStyle(
+                                      color: _pro.hasOldPrice
+                                          ? Color(0xffFE8206)
+                                          : Color(0xffA9A9A9),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w900),
+                                ),
+                                _pro.hasOldPrice
+                                    ? Padding(
+                                  padding:
+                                  EdgeInsets.symmetric(
+                                      horizontal: 5),
+                                  child: Text(
+                                    '\$${_pro.oldPrice}',
+                                    style: TextStyle(
+                                        color:
+                                        Color(0xffA9A9A9),
+                                        fontSize: 11,
+                                        decoration:
+                                        TextDecoration
+                                            .lineThrough),
+                                  ),
+                                )
+                                    : SizedBox.shrink()
+                              ],
+                            ),
+                          ),
+                          Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 5),
+                              child: Text(
+                                '',
+                                style: TextStyle(
+                                    fontSize: 10,
+                                    decoration:
+                                    TextDecoration.lineThrough,
+                                    color: Color(0xff4D4D4D)
+                                        .withOpacity(0.5),
+                                    fontFamily:
+                                    'DIN Alternate Bold'),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ))
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+            Center(
+              child: _loading2 && !_ended
+                  ? Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: CircularProgressIndicator(),
+              )
+                  : SizedBox.shrink(),
+            )
+          ],
+        ),
+      )
+    ],
+  );
+
+
+
+  Widget _gridItem(String title, String url, double price,
+      {int count: 0, int index: 0}) {
+    index = (index * 3) + count;
+    return _recommended.length <= index
+        ? Container()
+        : TouchableOpacity(
+      padding: EdgeInsets.all(5),
+      onTap: () async {
+        var _pro = _recommended[index];
+        await Navigator.of(context).push(CupertinoPageRoute(
+            builder: (context) => Description(
+              product: _pro,
+              user: widget.user,
+              callback: widget.callback,
+            )));
+       // widget.cartState.currentState?.refresh();
+      },
+      child: Container(
+        height: 170,
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+                child: Container(
+                  constraints: BoxConstraints(minWidth: double.infinity),
+                  child: FadeInImage(
+                    image: CachedNetworkImageProvider('${_recommended[index].url}'),
+                    fit: BoxFit.cover,
+                    placeholder: defLoader,
+                  ),
+                )),
+            SizedBox(height: 5),
+            Padding(
+                padding: EdgeInsets.all(5),
+                child: Text(
+                  '${_recommended[index].title}',
+                  style: TextStyle(
+                      fontFamily: 'Asimov',
+                      color: Color(0xff4d4d4d),
+                      fontSize: 12,
+                      fontWeight: FontWeight.normal),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                )),
+            Padding(
+              padding: EdgeInsets.all(5),
+              child: Row(
+                children: <Widget>[
+                  Text(
+                    '\$${_recommended[index].price}',
+                    style: TextStyle(
+                        color: _recommended[index].hasOldPrice
+                            ? Color(0xffFE8206)
+                            : Color(0xffA9A9A9),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w900),
+                  ),
+                  _recommended[index].hasOldPrice
+                      ? Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 5),
+                    child: Text(
+                      '\$${_recommended[index].oldPrice}',
+                      style: TextStyle(
+                          color: Color(0xffA9A9A9),
+                          fontSize: 11,
+                          decoration: TextDecoration.lineThrough),
+                    ),
+                  )
+                      : SizedBox.shrink()
+                ],
+              ),
+            ),
+            Padding(
+                padding: EdgeInsets.symmetric(horizontal: 5),
+                child: Text(
+                  '',
+                  style: TextStyle(
+                      fontSize: 10,
+                      decoration: TextDecoration.lineThrough,
+                      color: Color(0xff4D4D4D).withOpacity(0.5),
+                      fontFamily: 'DIN Alternate Bold'),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ))
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    var _len = 5 + _recommended.length;
     return product == null
         ? Scaffold(
             appBar: app,
@@ -513,70 +753,74 @@ class _DescriptionState extends State<Description> with SuperBase {
           )
         : Scaffold(
             appBar: app,
-            body: SingleChildScrollView(
+            body: ListView.builder(
               controller: _controller,
-              child: Column(
-                children: <Widget>[
-                  Container(
+              itemCount: _len,
+              itemBuilder: (context,index){
+                if( index == 0){
+                  return Container(
                     key: _productKey,
                     child: _newProduct != null && _newProduct.images.isNotEmpty
                         ? Stack(children: <Widget>[
-                            CarouselSlider.builder(
-                                height: _appBarHeight + 10,
-                                autoPlay: true,
-                                autoPlayInterval: Duration(seconds: 2),
-                                pauseAutoPlayOnTouch: Duration(seconds: 2),
-                                itemCount: _newProduct.images.length,
-                                onPageChanged: (index) {
-                                  setState(() {
-                                    _current = index;
-                                  });
-                                },
-                                viewportFraction: 1.1,
-                                itemBuilder: (context, index) {
-                                  return Container(
-                                    width: double.infinity,
-                                    height: _appBarHeight,
-                                    color: Colors.primaries[Random()
-                                        .nextInt(Colors.primaries.length)],
-                                    child: FadeInImage(
-                                        height: _appBarHeight,
-                                        image: CachedNetworkImageProvider(
-                                            _newProduct.images[index]),
-                                        fit: BoxFit.cover,
-                                        placeholder: defLoader),
-                                  );
-                                }),
-                            Positioned(
-                                bottom: 0.0,
-                                left: 0.0,
-                                right: 0.0,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: List.generate(
-                                      _newProduct.images.length, (index) {
-                                    return Container(
-                                      width: 20.0,
-                                      height: 3.0,
-                                      margin: EdgeInsets.symmetric(
-                                          vertical: 10.0, horizontal: 2.0),
-                                      decoration: BoxDecoration(
-                                          color: _current == index
-                                              ? color
-                                              : Color.fromRGBO(0, 0, 0, 0.4)),
-                                    );
-                                  }),
-                                ))
-                          ])
+                      CarouselSlider.builder(
+                          height: _appBarHeight + 10,
+                          autoPlay: true,
+                          autoPlayInterval: Duration(seconds: 2),
+                          pauseAutoPlayOnTouch: Duration(seconds: 2),
+                          itemCount: _newProduct.images.length,
+                          onPageChanged: (index) {
+                            setState(() {
+                              _current = index;
+                            });
+                          },
+                          viewportFraction: 1.1,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              width: double.infinity,
+                              height: _appBarHeight,
+                              color: Colors.primaries[Random()
+                                  .nextInt(Colors.primaries.length)],
+                              child: FadeInImage(
+                                  height: _appBarHeight,
+                                  image: CachedNetworkImageProvider(
+                                      _newProduct.images[index]),
+                                  fit: BoxFit.cover,
+                                  placeholder: defLoader),
+                            );
+                          }),
+                      Positioned(
+                          bottom: 0.0,
+                          left: 0.0,
+                          right: 0.0,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(
+                                _newProduct.images.length, (index) {
+                              return Container(
+                                width: 20.0,
+                                height: 3.0,
+                                margin: EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 2.0),
+                                decoration: BoxDecoration(
+                                    color: _current == index
+                                        ? color
+                                        : Color.fromRGBO(0, 0, 0, 0.4)),
+                              );
+                            }),
+                          ))
+                    ])
                         : FadeInImage(
-                            height: 300,
-                            width: double.infinity,
-                            image:
-                                CachedNetworkImageProvider(widget.product.url),
-                            placeholder: defLoader,
-                            fit: BoxFit.cover),
-                  ),
-                  Container(
+                        height: 300,
+                        width: double.infinity,
+                        image:
+                        CachedNetworkImageProvider(widget.product.url),
+                        placeholder: defLoader,
+                        fit: BoxFit.cover),
+                  );
+                }
+
+                if( index == 1){
+                  return Container(
                     margin: EdgeInsets.only(bottom: 5),
                     padding: EdgeInsets.all(8),
                     decoration: BoxDecoration(color: Colors.white),
@@ -596,17 +840,17 @@ class _DescriptionState extends State<Description> with SuperBase {
                               ),
                               product.hasOldPrice
                                   ? Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 6),
-                                      child: Text(
-                                        '\$${product.oldPrice}',
-                                        style: TextStyle(
-                                            color: Color(0xffA9A9A9),
-                                            fontSize: 15,
-                                            decoration:
-                                                TextDecoration.lineThrough),
-                                      ),
-                                    )
+                                padding:
+                                EdgeInsets.symmetric(horizontal: 6),
+                                child: Text(
+                                  '\$${product.oldPrice}',
+                                  style: TextStyle(
+                                      color: Color(0xffA9A9A9),
+                                      fontSize: 15,
+                                      decoration:
+                                      TextDecoration.lineThrough),
+                                ),
+                              )
                                   : SizedBox.shrink()
                             ],
                           ),
@@ -630,21 +874,24 @@ class _DescriptionState extends State<Description> with SuperBase {
                         ),
                         Padding(
                           padding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                           child: Row(
                             children: List.generate(
                                 5,
-                                (index) => Image.asset(
-                                      'assets/${index <= score ? 'star' : 'star_border'}.png',
-                                      height: 24,
-                                      width: 24,
-                                    )).toList(),
+                                    (index) => Image.asset(
+                                  'assets/${index <= score ? 'star' : 'star_border'}.png',
+                                  height: 24,
+                                  width: 24,
+                                )).toList(),
                           ),
                         )
                       ],
                     ),
-                  ),
-                  Container(
+                  );
+                }
+
+                if( index == 2){
+                  return Container(
                     margin: EdgeInsets.symmetric(vertical: 5),
                     padding: EdgeInsets.all(15),
                     decoration: BoxDecoration(color: Colors.white),
@@ -678,8 +925,8 @@ class _DescriptionState extends State<Description> with SuperBase {
                           onTap: () {
                             Navigator.of(context).push(CupertinoPageRoute(
                                 builder: (context) => CouponScreen(
-                                      user: widget.user,
-                                    )));
+                                  user: widget.user,
+                                )));
                           },
                           child: Row(
                             children: <Widget>[
@@ -701,11 +948,14 @@ class _DescriptionState extends State<Description> with SuperBase {
                         )
                       ],
                     ),
-                  ),
-                  Container(
+                  );
+                }
+
+                if( index == 3){
+                  return Container(
                     key: _reviewKey,
                     margin:
-                        EdgeInsets.symmetric(vertical: 5).copyWith(bottom: 10),
+                    EdgeInsets.symmetric(vertical: 5).copyWith(bottom: 10),
                     padding: EdgeInsets.all(15),
                     decoration: BoxDecoration(color: Colors.white),
                     child: Column(
@@ -724,18 +974,18 @@ class _DescriptionState extends State<Description> with SuperBase {
                             Text(
                               "View all",
                               style:
-                                  TextStyle(color: Colors.orange, fontSize: 15),
+                              TextStyle(color: Colors.orange, fontSize: 15),
                             ),
                           ]),
                           onTap: () {
                             Navigator.of(context).push(CupertinoPageRoute(
                                 builder: (context) => ReviewScreen(
-                                      list: _newProduct?.reviews ?? [],
-                                      user: widget.user,
-                                      callback: widget.callback,
-                                      product: widget.product,
-                                      order: widget.order,
-                                    )));
+                                  list: _newProduct?.reviews ?? [],
+                                  user: widget.user,
+                                  callback: widget.callback,
+                                  product: widget.product,
+                                  order: widget.order,
+                                )));
                           },
                         ),
                         SizedBox(height: 15),
@@ -758,13 +1008,16 @@ class _DescriptionState extends State<Description> with SuperBase {
                                 })),
                       ],
                     ),
-                  ),
-                  Container(
+                  );
+                }
+
+                if( index == 4){
+                  return Container(
                     key: _detailKey,
                     width: double.infinity,
                     margin: EdgeInsets.symmetric(vertical: 5),
                     padding:
-                        EdgeInsets.symmetric(vertical: 20).copyWith(top: 5),
+                    EdgeInsets.symmetric(vertical: 20).copyWith(top: 5),
                     decoration: BoxDecoration(color: Colors.white),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -781,177 +1034,86 @@ class _DescriptionState extends State<Description> with SuperBase {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: (product?.infos ?? [])
                                   .map((e) => Container(
-                                        margin:
-                                            EdgeInsets.only(bottom: 9, top: 10),
-                                        child: RichText(
-                                            textAlign: TextAlign.center,
-                                            text: TextSpan(
-                                                children: [
-                                                  TextSpan(
-                                                      text: "${e.paramName} : ",
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold)),
-                                                  TextSpan(
-                                                      text:
-                                                          "\n${e.paramValue}"),
-                                                ],
-                                                style: TextStyle(
-                                                    color: Colors.black87))),
-                                      ))
+                                margin:
+                                EdgeInsets.only(bottom: 9, top: 10),
+                                child: RichText(
+                                    textAlign: TextAlign.center,
+                                    text: TextSpan(
+                                        children: [
+                                          TextSpan(
+                                              text: "${e.paramName} : ",
+                                              style: TextStyle(
+                                                  fontWeight:
+                                                  FontWeight.bold)),
+                                          TextSpan(
+                                              text:
+                                              "\n${e.paramValue}"),
+                                        ],
+                                        style: TextStyle(
+                                            color: Colors.black87))),
+                              ))
                                   .toList(),
                             ),
                           ),
                           Column(
                             children: (product?.images2 ?? [])
-                                    ?.map((f) => FadeInImage(
-                                          image: CachedNetworkImageProvider(f),
-                                          placeholder: defLoader,
-                                          fit: BoxFit.fitWidth,
-                                          width: double.infinity,
-                                        ))
-                                    ?.toList() ??
+                                ?.map((f) => FadeInImage(
+                              image: CachedNetworkImageProvider(f),
+                              placeholder: defLoader,
+                              fit: BoxFit.fitWidth,
+                              width: double.infinity,
+                            ))
+                                ?.toList() ??
                                 [],
                           ),
                         ]),
-                  ),
-                  Container(
-                    margin: EdgeInsets.symmetric(vertical: 5),
-                    padding: EdgeInsets.all(15),
-                    decoration: BoxDecoration(color: Colors.white),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Center(
-                            child: Text(
-                          "You may like",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w900,
-                              fontFamily: 'SF UI Text'),
+                  );
+                }
+
+                if (index == _len - 1) {
+                  return _ended ? SizedBox.shrink() : Center(
+                    child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 40, horizontal: 10),
+                        child: SizedBox(
+                          height: 30,
+                          width: 30,
+                          child: CircularProgressIndicator(),
                         )),
-                        SizedBox(height: 10),
-                        GridView.builder(
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 3,
-                                    childAspectRatio: 3.1 / 4,
-                                    crossAxisSpacing: 7),
-                            itemCount: _recommended.length,
-                            physics: NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemBuilder: (context, index) {
-                              var _pro = _recommended[index];
-                              return TouchableOpacity(
-                                padding: EdgeInsets.all(0),
-                                onTap: () async {
-                                  await Navigator.of(context)
-                                      .pushReplacement(CupertinoPageRoute(
-                                          builder: (context) => Description(
-                                                product: _pro,
-                                                user: widget.user,
-                                                callback: widget.callback,
-                                              )));
-                                  //widget.cartState.currentState?.refresh();
-                                },
-                                child: Container(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                          child: Container(
-                                        constraints: BoxConstraints(
-                                            minWidth: double.infinity),
-                                        child: FadeInImage(
-                                          image: CachedNetworkImageProvider(
-                                              '${_pro.url}'),
-                                          fit: BoxFit.cover,
-                                          placeholder: defLoader,
-                                        ),
-                                      )),
-                                      SizedBox(height: 5),
-                                      Padding(
-                                          padding: EdgeInsets.all(5),
-                                          child: Text(
-                                            '${_pro.title}',
-                                            style: TextStyle(
-                                                fontFamily: 'Asimov',
-                                                color: Color(0xff4d4d4d),
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.normal),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          )),
-                                      Padding(
-                                        padding: EdgeInsets.all(5),
-                                        child: Row(
-                                          children: <Widget>[
-                                            Text(
-                                              '\$${_pro.price}',
-                                              style: TextStyle(
-                                                  color: _pro.hasOldPrice
-                                                      ? Color(0xffFE8206)
-                                                      : Color(0xffA9A9A9),
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.w900),
-                                            ),
-                                            _pro.hasOldPrice
-                                                ? Padding(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 5),
-                                                    child: Text(
-                                                      '\$${_pro.oldPrice}',
-                                                      style: TextStyle(
-                                                          color:
-                                                              Color(0xffA9A9A9),
-                                                          fontSize: 11,
-                                                          decoration:
-                                                              TextDecoration
-                                                                  .lineThrough),
-                                                    ),
-                                                  )
-                                                : SizedBox.shrink()
-                                          ],
-                                        ),
-                                      ),
-                                      Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 5),
-                                          child: Text(
-                                            '',
-                                            style: TextStyle(
-                                                fontSize: 10,
-                                                decoration:
-                                                    TextDecoration.lineThrough,
-                                                color: Color(0xff4D4D4D)
-                                                    .withOpacity(0.5),
-                                                fontFamily:
-                                                    'DIN Alternate Bold'),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ))
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }),
-                        Center(
-                          child: _loading2 && !_ended
-                              ? Padding(
-                                  padding: const EdgeInsets.all(18.0),
-                                  child: CircularProgressIndicator(),
-                                )
-                              : SizedBox.shrink(),
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
+                  );
+                }
+
+                index = index - 3;
+
+                if (_recommended.length ~/ 3 < index) return Container();
+
+                return Row(
+                  children: <Widget>[
+                    Expanded(
+                        child: _gridItem(
+                            "FASHION PLEATED TOP FRIEND",
+                            "https://images-na.ssl-images-amazon.com/images/I/51iYRa329DL._SL1024_.jpg",
+                            200,
+                            index: index,
+                            count: 0)),
+                    Expanded(
+                        child: _gridItem(
+                            "FASHION PLEATED TOP FRIEND",
+                            "https://s7d5.scene7.com/is/image/UrbanOutfitters/55958102_069_b?\$medium\$&qlt=80&fit=constrain",
+                            178,
+                            index: index,
+                            count: 1)),
+                    Expanded(
+                        child: _gridItem(
+                            "FASHION PLEATED TOP FRIEND",
+                            "https://lp2.hm.com/hmgoepprod?set=width[800],quality[80],options[limit]&source=url[https://www2.hm.com/content/dam/campaign-ladies-s01/februari-2020/1301a/1301-3x2-weekend-style-forerver.jpg]&scale=width[global.width],height[15000],options[global.options]&sink=format[jpg],quality[global.quality]",
+                            187,
+                            index: index,
+                            count: 2)),
+                  ],
+                );
+
+              },
             ),
             bottomNavigationBar: Container(
               decoration: BoxDecoration(
@@ -1109,7 +1271,7 @@ class DescState extends StatefulWidget {
   final List<Sku> skus;
   final List<Option> options;
   final String joiner;
-  final void Function(int value,String img, String size, double price) onAdd;
+  final void Function(int value,String img, String size, double price,String itemSkuId) onAdd;
 
   const DescState(
       {Key key,
@@ -1208,6 +1370,10 @@ class _DescStateState extends State<DescState> with SuperBase {
   String get img => _img == null || _img.isEmpty || iterable.isEmpty
       ? widget.product.url
       : _img;
+
+  String get itemSkuId => iterable.isEmpty
+      ? null
+      : iterable.first.id;
 
   int get count => iterable.isEmpty
       ? widget.product.count
@@ -1476,7 +1642,7 @@ class _DescStateState extends State<DescState> with SuperBase {
                         widget.options
                             .map((f) => f.selected)
                             .join(widget.joiner),
-                        price);
+                        price,itemSkuId);
                   }
                 },
                 child: Text(

@@ -53,11 +53,12 @@ class _SearchScreenState extends State<SearchScreen> with SuperBase {
   bool _searched = false;
 
   void addHistory(String query) {
-    if (_histories.any((element) => element.query == query)) return;
     _histories
       ..removeWhere((f) => f.query == query)
       ..insert(0, new History(query, DateTime.now().toString()));
     //save(historyLink, _histories);
+
+    prefs.then((value) => value.remove(_searchUrl??""));
 
     this.ajax(
         url: "search/save",
@@ -65,7 +66,7 @@ class _SearchScreenState extends State<SearchScreen> with SuperBase {
         auth: true,
         server: true,
         method: "POST",
-        map: {"searchKeywords": query, "userId": widget.user()?.id},
+        map: {"searchKeywords": query},
         onValue: (source, url) {
           print(source);
         });
