@@ -528,8 +528,8 @@ class _FlutterFormState extends State<FlutterForm> with SuperBase {
                 List<String> expiryDate =
                 CardUtils.getExpiryDate(
                     _yearController.text);
-                _paymentCard.month = expiryDate[0];
-                _paymentCard.year = expiryDate[1];
+                _paymentCard.month = expiryDate[0]?.trim();
+                _paymentCard.year = expiryDate[1]?.trim();
                 var card = Flutterwave(
                     _paymentCard.number,
                     "RWF",

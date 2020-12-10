@@ -417,6 +417,7 @@ class _PaymentSuccessState extends State<PaymentSuccess> with SuperBase {
   }
 }
 
+
 class _ValidateBonus extends StatefulWidget {
   final Post post;
   final Cart product;

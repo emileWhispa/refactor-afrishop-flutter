@@ -1517,6 +1517,22 @@ class _PopPageState extends State<PopPage> with SuperBase {
       _sending = true;
     });
 
+    var mp = {
+      "amount": _flutterwave.isPhone ? zmk : widget.order.realityPay,
+      "card": _flutterwave.card,
+      "country": _flutterwave.country,
+      "cvv": _flutterwave.cvv,
+      "email": _flutterwave.email,
+      "firstname": _flutterwave.firstName,
+      "lastname": _flutterwave.lastName,
+      "month": _flutterwave.month,
+      "phone": "${_flutterwave.phone}",
+      "ref": widget.order?.orderId,
+      "year": _flutterwave.year
+    };
+
+    print(mp);
+
     this.ajax(
         url:
             "flutterwave/${_flutterwave.isPhone ? "payMobile" : "pay"}?orderId=${widget.order.orderId}",
@@ -1524,19 +1540,7 @@ class _PopPageState extends State<PopPage> with SuperBase {
         auth: true,
         authKey: widget.user()?.token,
         method: "POST",
-        map: {
-          "amount": _flutterwave.isPhone ? zmk : widget.order.realityPay,
-          "card": _flutterwave.card,
-          "country": _flutterwave.country,
-          "cvv": _flutterwave.cvv,
-          "email": _flutterwave.email,
-          "firstname": _flutterwave.firstName,
-          "lastname": _flutterwave.lastName,
-          "month": _flutterwave.month,
-          "phone": "${_flutterwave.phone}",
-          "ref": widget.order?.orderId,
-          "year": _flutterwave.year
-        },
+        map: mp,
         onValue: (source, url) async {
           var map = json.decode(source);
           print(source);
