@@ -13,6 +13,9 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
      }
 }
+ext {
+    flutterFFmpegPackage  = "min-lts"
+}
 
 
 

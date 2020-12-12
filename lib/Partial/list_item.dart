@@ -50,7 +50,7 @@ class _ListItemState extends State<ListItem> with SuperBase {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
 
-      var liked = (await prefs).containsKey(_likeUrl);
+    //  var liked = (await prefs).containsKey(_likeUrl);
       setState(() {
        // widget.post.liked = liked;
       });

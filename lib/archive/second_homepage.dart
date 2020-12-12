@@ -657,207 +657,214 @@ class SecondHomepageState extends State<SecondHomepage> with SuperBase {
               key: _control,
               displacement: 80,
               child: Scrollbar(
-                  child: ListView.builder(
-                      padding: EdgeInsets.zero,
-                      controller: _controller,
-                      itemCount: _len,
-                      itemBuilder: (context, index) {
-                        if (index == 0) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 15.0),
-                            child: _Carousel(
-                              key: _carouselState,
-                                user: widget.user, callback: widget.callback,cartState: widget.cartState),
-                          );
-                        }
+                  child: ListView(
+                    controller: _controller,
+                    children: [
+                      ListView.builder(
+                          padding: EdgeInsets.zero,
+                          itemCount: _len,
+                          physics:NeverScrollableScrollPhysics(),
 
-                        if (index == 1) {
-                          return GridView(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    crossAxisSpacing: 3,
-                                    mainAxisSpacing: 17,
-                                    childAspectRatio: 3.5),
-                            children:
-                                List.generate(_categories.length, (index) {
-                              return _row(_categories[index]);
-                            }),
-                          );
-                        }
+                          shrinkWrap:true,
+                          itemBuilder: (context, index) {
+                            if (index == 0) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 15.0),
+                                child: _Carousel(
+                                  key: _carouselState,
+                                    user: widget.user, callback: widget.callback,cartState: widget.cartState),
+                              );
+                            }
 
-                        if (index == 2) {
-                          return Container();
-                        }
+                            if (index == 1) {
+                              return GridView(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        crossAxisSpacing: 3,
+                                        mainAxisSpacing: 17,
+                                        childAspectRatio: 3.5),
+                                children:
+                                    List.generate(_categories.length, (index) {
+                                  return _row(_categories[index]);
+                                }),
+                              );
+                            }
 
-                        if (index == 3) {
-                          return Container();
-                        }
+                            if (index == 2) {
+                              return Container();
+                            }
 
-                        if (index == 4) {
-                          return Container();
-                        }
+                            if (index == 3) {
+                              return Container();
+                            }
 
-                        if (index == 5) {
-                          return Container();
-                        }
+                            if (index == 4) {
+                              return Container();
+                            }
 
-                        if (index == 6) {
-                          return Container(
-                            color: Colors.white,
-                            padding: const EdgeInsets.only(top: 18.0),
-                            child: Column(
-                              children: _posters
-                                  .map((f) => GestureDetector(
-                                        onTap: () async {
-                                          handleNavigation(f);
-                                        },
-                                        child: FadeInImage(
-                                          image: CachedNetworkImageProvider(
-                                              f.poster),
-                                          fit: BoxFit.cover,
-                                          placeholder: defLoader,
-                                        ),
-                                      ))
-                                  .toList(),
-                            ),
-                          );
-                        }
+                            if (index == 5) {
+                              return Container();
+                            }
 
-                        if (index == 7) {
-                          return Container();
-                        }
-
-                        if (index == 8) {
-                          return Container();
-                        }
-
-                        if (index == 9) {
-                          return _brand("OTHER BRANDS");
-                        }
-
-                        if (index == 10) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              color: Color(0xffFBD85A),
-                            ),
-                            child: Column(
-                              children: <Widget>[
-                                GridView.builder(
-                                  padding: EdgeInsets.zero,
-                                  itemCount:
-                                      _brands.length > 4 ? 4 : _brands.length,
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 2,
-                                          childAspectRatio: 2.63 / 4,
-                                          mainAxisSpacing: 0.0,
-                                          crossAxisSpacing: 0),
-                                  itemBuilder: (context, index) {
-                                    return InkWell(
-                                      onTap: () async {
-                                        await Navigator.of(context).push(
-                                            CupertinoPageRoute(
-                                                builder: (context) =>
-                                                    CrawlScreen(
-                                                      url: _brands[index]
-                                                          .storeUrl,
-                                                      user: widget.user,
-                                                      callback: widget.callback,
-                                                      title: _brands[index]
-                                                          .storeName,
-                                                    )));
-                                        widget.cartState.currentState?.refresh();
-                                      },
-                                      child: Container(
-                                          height: double.infinity,
-                                          decoration: BoxDecoration(
-                                              color: Color(0xffFBD85A)),
-                                          child: FadeInImage(
-                                            placeholder: defLoader,
-                                            image: CachedNetworkImageProvider(
-                                                _brands[index].itemImg1),
-                                            fit: BoxFit.cover,
-                                          )),
-                                    );
-                                  },
+                            if (index == 6) {
+                              return Container(
+                                color: Colors.white,
+                                padding: const EdgeInsets.only(top: 18.0),
+                                child: Column(
+                                  children: _posters
+                                      .map((f) => GestureDetector(
+                                            onTap: () async {
+                                              handleNavigation(f);
+                                            },
+                                            child: FadeInImage(
+                                              image: CachedNetworkImageProvider(
+                                                  f.poster),
+                                              fit: BoxFit.cover,
+                                              placeholder: defLoader,
+                                            ),
+                                          ))
+                                      .toList(),
                                 ),
-                                TouchableOpacity(
-                                    onTap: () async {
-                                      await Navigator.push(
-                                          context,
-                                          CupertinoPageRoute(
-                                              builder: (context) => BrandList(
-                                                    user: widget.user,
-                                                  )));
+                              );
+                            }
 
-                                      widget.cartState.currentState?.refresh();
-                                    },
-                                    child: Container(
-                                      color: Colors.white,
-                                      margin: EdgeInsets.all(10),
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 30, vertical: 20),
-                                      child: Center(
-                                        child: Text("VIEW MORE"),
-                                      ),
-                                    ))
+                            if (index == 7) {
+                              return Container();
+                            }
+
+                            if (index == 8) {
+                              return Container();
+                            }
+
+                            if (index == 9) {
+                              return _brand("OTHER BRANDS");
+                            }
+
+                            if (index == 10) {
+                              return Container(
+                                decoration: BoxDecoration(
+                                  color: Color(0xffFBD85A),
+                                ),
+                                child: Column(
+                                  children: <Widget>[
+                                    GridView.builder(
+                                      padding: EdgeInsets.zero,
+                                      itemCount:
+                                          _brands.length > 4 ? 4 : _brands.length,
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: 2,
+                                              childAspectRatio: 2.63 / 4,
+                                              mainAxisSpacing: 0.0,
+                                              crossAxisSpacing: 0),
+                                      itemBuilder: (context, index) {
+                                        return InkWell(
+                                          onTap: () async {
+                                            await Navigator.of(context).push(
+                                                CupertinoPageRoute(
+                                                    builder: (context) =>
+                                                        CrawlScreen(
+                                                          url: _brands[index]
+                                                              .storeUrl,
+                                                          user: widget.user,
+                                                          callback: widget.callback,
+                                                          title: _brands[index]
+                                                              .storeName,
+                                                        )));
+                                            widget.cartState.currentState?.refresh();
+                                          },
+                                          child: Container(
+                                              height: double.infinity,
+                                              decoration: BoxDecoration(
+                                                  color: Color(0xffFBD85A)),
+                                              child: FadeInImage(
+                                                placeholder: defLoader,
+                                                image: CachedNetworkImageProvider(
+                                                    _brands[index].itemImg1),
+                                                fit: BoxFit.cover,
+                                              )),
+                                        );
+                                      },
+                                    ),
+                                    TouchableOpacity(
+                                        onTap: () async {
+                                          await Navigator.push(
+                                              context,
+                                              CupertinoPageRoute(
+                                                  builder: (context) => BrandList(
+                                                        user: widget.user,
+                                                      )));
+
+                                          widget.cartState.currentState?.refresh();
+                                        },
+                                        child: Container(
+                                          color: Colors.white,
+                                          margin: EdgeInsets.all(10),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 30, vertical: 20),
+                                          child: Center(
+                                            child: Text("VIEW MORE"),
+                                          ),
+                                        ))
+                                  ],
+                                ),
+                              );
+                            }
+
+                            if (index == 11) {
+                              return _brand("FOR YOU");
+                            }
+
+                            if (index == _len - 1) {
+                              return Center(
+                                child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 40, horizontal: 10),
+                                    child: SizedBox(
+                                      height: 30,
+                                      width: 30,
+                                      child: CircularProgressIndicator(),
+                                    )),
+                              );
+                            }
+
+                            index = index - 12;
+
+                            if (_items.length ~/ 3 < index) return Container();
+
+                            return Row(
+                              children: <Widget>[
+                                Expanded(
+                                    child: _gridItem(
+                                        "FASHION PLEATED TOP FRIEND",
+                                        "https://images-na.ssl-images-amazon.com/images/I/51iYRa329DL._SL1024_.jpg",
+                                        200,
+                                        index: index,
+                                        count: 0)),
+                                Expanded(
+                                    child: _gridItem(
+                                        "FASHION PLEATED TOP FRIEND",
+                                        "https://s7d5.scene7.com/is/image/UrbanOutfitters/55958102_069_b?\$medium\$&qlt=80&fit=constrain",
+                                        178,
+                                        index: index,
+                                        count: 1)),
+                                Expanded(
+                                    child: _gridItem(
+                                        "FASHION PLEATED TOP FRIEND",
+                                        "https://lp2.hm.com/hmgoepprod?set=width[800],quality[80],options[limit]&source=url[https://www2.hm.com/content/dam/campaign-ladies-s01/februari-2020/1301a/1301-3x2-weekend-style-forerver.jpg]&scale=width[global.width],height[15000],options[global.options]&sink=format[jpg],quality[global.quality]",
+                                        187,
+                                        index: index,
+                                        count: 2)),
                               ],
-                            ),
-                          );
-                        }
-
-                        if (index == 11) {
-                          return _brand("FOR YOU");
-                        }
-
-                        if (index == _len - 1) {
-                          return Center(
-                            child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 40, horizontal: 10),
-                                child: SizedBox(
-                                  height: 30,
-                                  width: 30,
-                                  child: CircularProgressIndicator(),
-                                )),
-                          );
-                        }
-
-                        index = index - 12;
-
-                        if (_items.length ~/ 3 < index) return Container();
-
-                        return Row(
-                          children: <Widget>[
-                            Expanded(
-                                child: _gridItem(
-                                    "FASHION PLEATED TOP FRIEND",
-                                    "https://images-na.ssl-images-amazon.com/images/I/51iYRa329DL._SL1024_.jpg",
-                                    200,
-                                    index: index,
-                                    count: 0)),
-                            Expanded(
-                                child: _gridItem(
-                                    "FASHION PLEATED TOP FRIEND",
-                                    "https://s7d5.scene7.com/is/image/UrbanOutfitters/55958102_069_b?\$medium\$&qlt=80&fit=constrain",
-                                    178,
-                                    index: index,
-                                    count: 1)),
-                            Expanded(
-                                child: _gridItem(
-                                    "FASHION PLEATED TOP FRIEND",
-                                    "https://lp2.hm.com/hmgoepprod?set=width[800],quality[80],options[limit]&source=url[https://www2.hm.com/content/dam/campaign-ladies-s01/februari-2020/1301a/1301-3x2-weekend-style-forerver.jpg]&scale=width[global.width],height[15000],options[global.options]&sink=format[jpg],quality[global.quality]",
-                                    187,
-                                    index: index,
-                                    count: 2)),
-                          ],
-                        );
-                      })),
+                            );
+                          }),
+                    ],
+                  )),
               onRefresh: () {
                 _refreshList();
                 return Future.value();

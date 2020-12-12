@@ -44,7 +44,7 @@ class _CommentItemState extends State<CommentItem> with SuperBase {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       this._loadReplies();
-      var liked = (await prefs).containsKey(_likeUrl);
+      var liked = (await prefs).get(_likeUrl) != null;
       setState(() {
         _liked = liked;
       });
