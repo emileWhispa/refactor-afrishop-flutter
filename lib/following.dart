@@ -111,52 +111,48 @@ class FollowingState extends State<Following> with SuperBase {
     return RefreshIndicator(
       key: refreshKey,
       onRefresh: loadPosts,
-      child: ListView(
-        controller: _controller,
-        children: [
-          ListView.builder(
-              shrinkWrap: true,
-              physics: widget.wrap
-                  ? NeverScrollableScrollPhysics()
-                  : NeverScrollableScrollPhysics(),
-              itemCount: _list.length + 1,
-              itemBuilder: (context, index) {
-                if (_list.length <= index) {
-                  return Center(
-                    child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 40, horizontal: 10),
-                        child: SizedBox(
-                          height: 30,
-                          width: 30,
-                          child: _loadingMore
-                              ? CircularProgressIndicator()
-                              : SizedBox.shrink(),
-                        )),
-                  );
-                }
-                var pst = _list[index];
+      child: ListView.builder(
+          shrinkWrap: true,
+          controller: _controller,
+          physics: widget.wrap
+              ? NeverScrollableScrollPhysics()
+              : AlwaysScrollableScrollPhysics(),
+          itemCount: _list.length + 1,
+          itemBuilder: (context, index) {
+            if (_list.length <= index) {
+              return Center(
+                child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 40, horizontal: 10),
+                    child: SizedBox(
+                      height: 30,
+                      width: 30,
+                      child: _loadingMore
+                          ? CircularProgressIndicator()
+                          : SizedBox.shrink(),
+                    )),
+              );
+            }
+            var pst = _list[index];
 
-                return ListItem(
-                  post: pst,
-                  user: widget.user,
-                  likePost: (status) {
-                    pst.liked = status.liked;
-                    pst.likes = status.likes;
-                    save(_currentUrl, _list);
-                  },
-                  delete: () {
-                    setState(() {
-                      _list.remove(pst);
-                    });
-                    save(_currentUrl, _list);
-                    deletePost(pst, widget.user()?.token);
-                  },
-                  callback: widget.callback,
-                  cartState: widget.cartState,
-                );
-              }),
-        ],
-      ),
+            return ListItem(
+              post: pst,
+              user: widget.user,
+              likePost: (status) {
+                pst.liked = status.liked;
+                pst.likes = status.likes;
+                save(_currentUrl, _list);
+              },
+              delete: () {
+                setState(() {
+                  _list.remove(pst);
+                });
+                save(_currentUrl, _list);
+                deletePost(pst, widget.user()?.token);
+              },
+              callback: widget.callback,
+              cartState: widget.cartState,
+            );
+          }),
     );
   }
 }

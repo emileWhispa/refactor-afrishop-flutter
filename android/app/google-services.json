@@ -1,34 +1,50 @@
 {
   "project_info": {
-    "project_number": "365781530073",
-    "project_id": "robotapp-a47a3",
-    "storage_bucket": "robotapp-a47a3.appspot.com"
+    "project_number": "566420392439",
+    "firebase_url": "https://afrishop-6e142.firebaseio.com",
+    "project_id": "afrishop-6e142",
+    "storage_bucket": "afrishop-6e142.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:365781530073:android:8af9b6e475da6cb74295c8",
+        "mobilesdk_app_id": "1:566420392439:android:a1e0ababc584057e6246f2",
         "android_client_info": {
           "package_name": "io.dcloud.H52FE1175"
         }
       },
       "oauth_client": [
         {
-          "client_id": "365781530073-2amgmsrts2jvkk35fkherakb09g2vlia.apps.googleusercontent.com",
+          "client_id": "566420392439-ss62p37qiqmtnp2vudf6tpum1f1c7t1g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.dcloud.H52FE1175",
+            "certificate_hash": "0f87d205011fa1e9e26bf85a9739e54a9b7a30ff"
+          }
+        },
+        {
+          "client_id": "566420392439-9vld6bhma2dpf5jfiv4lj5atsknjmkod.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCjVHie2e60Nb17q7UnaY8Qmh1C3FZ58L0"
+          "current_key": "AIzaSyDNOm8eylkK73pttxZL9yFeFAzLY5zAPUY"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "365781530073-2amgmsrts2jvkk35fkherakb09g2vlia.apps.googleusercontent.com",
+              "client_id": "566420392439-9vld6bhma2dpf5jfiv4lj5atsknjmkod.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "566420392439-mia8ii2p67olp30n2pu3ln8vmnej0iu2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.afri-eshop.afrishop20191122"
+              }
             }
           ]
         }

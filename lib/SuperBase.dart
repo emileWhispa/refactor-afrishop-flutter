@@ -23,7 +23,7 @@ import 'Json/User.dart';
 
 class SuperBase {
   // Live connections
-//  String server = "http://159.138.48.71:8080/zion/";
+ // String server = "http://159.138.48.71:8080/zion/";
   String server = "https://app.afrieshop.com/zion/";
 //  String server0 = "http://165.22.82.105:8080/"; //Discover
 
@@ -32,7 +32,7 @@ class SuperBase {
 //  String server = "http://165.22.82.105:7000/zion/";
 
   String get server0 => server; // Discover
-  int version = 1; // sliders //0.android 1.IOS 2.PC WEB 3.Mobile Web
+  int version = 0; // sliders //0.android 1.IOS 2.PC WEB 3.Mobile Web
 
   // Those are be used while receiving shared links
   String server001 = "https://afrishop.rw/";

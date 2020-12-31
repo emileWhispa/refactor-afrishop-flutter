@@ -10,7 +10,7 @@ public class MainApplication extends FlutterApplication implements PluginRegistr
     @Override
     public void onCreate() {
         super.onCreate();
-         //FlutterFirebaseMessagingService.setPluginRegistrant(this);
+         FlutterFirebaseMessagingService.setPluginRegistrant(this);
     }
     @Override
     public void registerWith(PluginRegistry registry) {

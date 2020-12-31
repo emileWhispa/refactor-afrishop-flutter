@@ -413,6 +413,7 @@ class _CrawlScreenState extends State<CrawlScreen> with SuperBase {
       "itemPrice": price,
       "itemImg": img,
       "itemNum": count,
+      "targetUrl": webUrl,
       "itemSkuId": itemSkuId,
     };
 
@@ -439,7 +440,7 @@ class _CrawlScreenState extends State<CrawlScreen> with SuperBase {
           platform.invokeMethod("toast", "Product added to cart");
         } else {
           setState(() {});
-          // platform.invokeMethod("toast", "${map['message']}");
+           platform.invokeMethod("toast", "${map['message']}");
         }
         print(source);
       },
@@ -449,6 +450,7 @@ class _CrawlScreenState extends State<CrawlScreen> with SuperBase {
         });
       },
       error: (source, url) {
+        platform.invokeMethod("toast", "$source");
         setState(() {
           _loading = false;
         });
@@ -466,6 +468,7 @@ class _CrawlScreenState extends State<CrawlScreen> with SuperBase {
   Future<void> loadCrawl(String url) {
     print(url);
     setState(() {
+      webUrl = url;
       _loading = true;
       skus.clear();
       list.clear();
